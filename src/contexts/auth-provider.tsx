@@ -3,27 +3,8 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import axios from 'axios';
-
-interface User {
-    id: number;
-    phone_number: string;
-    fullname?: string;
-    gender?: 'MALE' | 'FEMALE';
-}
-
-interface AuthState {
-    isAuthenticated: boolean;
-    user: User | null;
-    token: string | null;
-    refreshToken: string | null;
-    loading: boolean;
-}
-
-interface AuthContextType extends AuthState {
-    setAuthData: (user: User, accessToken: string, refreshToken: string) => void;
-    logout: () => void;
-    refreshAccessToken: () => Promise<string | null>;
-}
+import { useRefreshTokenMutation } from '@/hooks/useAuth';
+import { User, AuthState, AuthContextType } from '@/api/queryTypes/User';
 
 const initialState: AuthState = {
     isAuthenticated: false,
@@ -97,6 +78,31 @@ export function ClientAuthProvider({ children }: { children: ReactNode }) {
 
     const publicOnlyRoutes = ['/login', '/register', '/verify'];
 
+    // React Query mutation for token refresh
+    const refreshTokenMutation = useRefreshTokenMutation({
+        onSuccess: (data) => {
+            const { access_token } = data;
+
+            if (access_token) {
+                localStorage.setItem('client_auth_token', access_token);
+                setCookie('client_auth_token', access_token, 30);
+                axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+
+                setAuthState(prev => ({
+                    ...prev,
+                    token: access_token
+                }));
+
+                return access_token;
+            }
+        },
+        onError: (error) => {
+            console.error('Token refresh failed:', error);
+            logout();
+        }
+    });
+
+    // Axios interceptor for automatic token refresh
     useEffect(() => {
         const interceptor = axios.interceptors.response.use(
             (response) => response,
@@ -121,6 +127,7 @@ export function ClientAuthProvider({ children }: { children: ReactNode }) {
         };
     }, [authState.isAuthenticated]);
 
+    // Load auth state on mount
     useEffect(() => {
         const savedState = loadAuthState();
         setAuthState(savedState);
@@ -130,6 +137,7 @@ export function ClientAuthProvider({ children }: { children: ReactNode }) {
         }
     }, []);
 
+    // Route protection
     useEffect(() => {
         if (!authState.loading && pathname) {
             const isPrivateRoute = privateRoutes.some(route => pathname.startsWith(route));
@@ -167,26 +175,12 @@ export function ClientAuthProvider({ children }: { children: ReactNode }) {
         try {
             if (!authState.refreshToken) return null;
 
-            const response = await axios.post('http://localhost:9090/api/auth/refresh', {
+            // Use the mutation to refresh token
+            const result = await refreshTokenMutation.mutateAsync({
                 refresh_token: authState.refreshToken
             });
 
-            const { access_token } = response.data;
-
-            if (access_token) {
-                localStorage.setItem('client_auth_token', access_token);
-                setCookie('client_auth_token', access_token, 30);
-                axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
-
-                setAuthState(prev => ({
-                    ...prev,
-                    token: access_token
-                }));
-
-                return access_token;
-            }
-
-            return null;
+            return result.access_token;
         } catch (error) {
             console.error('Token refresh failed:', error);
             return null;

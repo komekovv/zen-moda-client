@@ -1,5 +1,3 @@
-'use client'
-
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import {Menu, X, ChevronDown, LogOut, User, ShoppingCart} from 'lucide-react';
@@ -18,11 +16,18 @@ import logo from "@/assets/logo.png"
 import {useLogin} from "@/hooks/useLogin";
 import {useClientAuth} from "@/contexts/auth-provider";
 
+// Types
+interface SubCategory {
+    name: string;
+    items: string[];
+}
+
 interface NavigationItem {
     id: string;
     label: string;
     href: string;
     hasDropdown?: boolean;
+    subcategories?: SubCategory[];
 }
 
 interface HeaderProps {
@@ -44,6 +49,7 @@ interface HeaderProps {
     selectedLanguage?: string;
     onLanguageChange?: (language: string) => void;
     onSearch?: (query: string) => void;
+    onSubCategoryClick?: (category: string, subcategory: string, item: string) => void;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -54,8 +60,50 @@ const Header: React.FC<HeaderProps> = ({
                                            cartItemCount = 0,
                                            wishlistItemCount = 0,
                                            navigationItems = [
-                                               { id: "ayal", label: "Ayal", href: "/ayal" },
-                                               { id: "erkek", label: "Erkek", href: "/erkek" },
+                                               {
+                                                   id: "ayal",
+                                                   label: "Ayal",
+                                                   href: "/ayal",
+                                                   hasDropdown: true,
+                                                   subcategories: [
+                                                       {
+                                                           name: 'Geyim',
+                                                           items: ['Geyim', 'Jyns', 'Balak', 'Futbolka', 'Tomus eşikler', 'Suw eşikler', 'Klassika', '80x eşikler', 'Sport eşikler', 'Jalbar', 'Beýlekiler']
+                                                       },
+                                                       {
+                                                           name: 'Aýakgap',
+                                                           items: ['Krasofka', 'Futbol aýakgap', 'Klassik köwüş', 'MB köwüş', 'Makasinalar', 'Tomus aýakgaplar']
+                                                       },
+                                                       {
+                                                           name: 'Aksesuarlar',
+                                                           items: ['Papka', 'Sumka', 'Sagat', 'Gapjyk']
+                                                       },
+                                                       {
+                                                           name: 'Iç geyim',
+                                                           items: ['Pejamalar', 'Içki eşik', 'Içki maýka', 'Jorap']
+                                                       }
+                                                   ]
+                                               },
+                                               {
+                                                   id: "erkek",
+                                                   label: "Erkek",
+                                                   href: "/erkek",
+                                                   hasDropdown: true,
+                                                   subcategories: [
+                                                       {
+                                                           name: 'Geyim',
+                                                           items: ['Geyim', 'Jyns', 'Balak', 'Futbolka', 'Tomus eşikler', 'Suw eşikler', 'Klassika']
+                                                       },
+                                                       {
+                                                           name: 'Aýakgap',
+                                                           items: ['Krasofka', 'Futbol aýakgap', 'Klassik köwüş', 'MB köwüş']
+                                                       },
+                                                       {
+                                                           name: 'Aksesuarlar',
+                                                           items: ['Sagat', 'Gapjyk', 'Papka']
+                                                       }
+                                                   ]
+                                               },
                                                { id: "caga", label: "Çaga", href: "/caga" },
                                                { id: "yetginjek", label: "Ýetginjek", href: "/yetginjek" },
                                                { id: "ayakgap", label: "Aýakgap", href: "/ayakgap" },
@@ -76,15 +124,18 @@ const Header: React.FC<HeaderProps> = ({
                                            ],
                                            selectedLanguage = "tk",
                                            onLanguageChange,
-                                           onSearch
+                                           onSearch,
+                                           onSubCategoryClick
                                        }) => {
     const [searchQuery, setSearchQuery] = useState("");
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
     const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+    const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
     const userDropdownRef = useRef<HTMLDivElement>(null);
     const languageDropdownRef = useRef<HTMLDivElement>(null);
+    const megaDropdownRef = useRef<HTMLDivElement>(null);
 
     // Get auth state
     const { isAuthenticated, user, logout } = useClientAuth();
@@ -106,6 +157,9 @@ const Header: React.FC<HeaderProps> = ({
             }
             if (languageDropdownRef.current && !languageDropdownRef.current.contains(event.target as Node)) {
                 setIsLanguageDropdownOpen(false);
+            }
+            if (megaDropdownRef.current && !megaDropdownRef.current.contains(event.target as Node)) {
+                setActiveDropdown(null);
             }
         };
 
@@ -139,9 +193,30 @@ const Header: React.FC<HeaderProps> = ({
         setIsUserDropdownOpen(false);
     };
 
+    const handleNavItemEnter = (itemId: string) => {
+        const item = navigationItems.find(nav => nav.id === itemId);
+        if (item?.hasDropdown && item?.subcategories) {
+            setActiveDropdown(itemId);
+        }
+    };
+
+    const handleMegaDropdownLeave = () => {
+        setActiveDropdown(null);
+    };
+
+    const getCurrentCategory = (itemId: string) => {
+        const item = navigationItems.find(nav => nav.id === itemId);
+        if (!item?.subcategories) return null;
+
+        return {
+            name: item.label,
+            subcategories: item.subcategories
+        };
+    };
+
     const currentLanguage = languageOptions.find(lang => lang.code === selectedLanguage);
 
-    // Format phone number for display (add +993 prefix if not present)
+    // Format phone number for display
     const formatPhoneNumber = (phone: string) => {
         if (phone.startsWith('+993')) return phone;
         return `+993 ${phone}`;
@@ -184,8 +259,7 @@ const Header: React.FC<HeaderProps> = ({
                                     </button>
 
                                     {isLanguageDropdownOpen && (
-                                        <div
-                                            className="absolute right-0 mt-1 w-32 bg-white border border-border rounded-md shadow-lg z-50">
+                                        <div className="absolute right-0 mt-1 w-32 bg-white border border-border rounded-md shadow-lg z-50">
                                             {languageOptions.map((lang) => (
                                                 <button
                                                     key={lang.code}
@@ -251,8 +325,8 @@ const Header: React.FC<HeaderProps> = ({
                                     />
                                 </RoundedIconWrapper>
 
-                            {/* User Dropdown */}
-                            {isAuthenticated && isUserDropdownOpen && (
+                                {/* User Dropdown */}
+                                {isAuthenticated && isUserDropdownOpen && (
                                     <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
                                         <div className="p-4 border-b border-gray-100">
                                             <div className="flex items-center space-x-3">
@@ -330,7 +404,7 @@ const Header: React.FC<HeaderProps> = ({
 
                             <RoundedIconWrapper
                                 showBadge
-                                badgeCount={5}
+                                badgeCount={cartItemCount || 12}
                                 borderColor="text-border"
                                 backgroundColor="white"
                                 size={"sm"}
@@ -349,29 +423,144 @@ const Header: React.FC<HeaderProps> = ({
                 </div>
 
                 {/* Navigation Menu */}
-                <div className="border-t border-border">
+                <div
+                    className="border-t border-border relative"
+                    ref={megaDropdownRef}
+                    onMouseLeave={handleMegaDropdownLeave}
+                >
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <nav className="flex items-center justify-between space-x-2 h-14">
+                        <nav className="flex items-center justify-between h-14 relative">
                             {navigationItems.map((item, index) => (
                                 <React.Fragment key={item.id}>
                                     {index > 0 && (
                                         <div className="h-6 w-px bg-border flex-shrink-0 hidden sm:block"></div>
                                     )}
-                                    <Link
-                                        href={item.href}
-                                        className="font-rubik text-body-description text-black hover:text-primary transition-colors flex items-center space-x-1 whitespace-nowrap flex-shrink-0 text-sm lg:text-base"
+                                    <div
+                                        onMouseEnter={() => handleNavItemEnter(item.id)}
+                                        className="flex-1 relative group flex items-center justify-center"
                                     >
-                                        <span>{item.label}</span>
-                                        {item.hasDropdown && <ChevronDown className="h-3 w-3"/>}
-                                    </Link>
+                                        <Link
+                                            href={item.href}
+                                            className={`font-rubik text-body-description transition-all duration-200 flex items-center space-x-1 whitespace-nowrap text-sm lg:text-base px-2 py-2 ${
+                                                item.id === 'erkek' || activeDropdown === item.id
+                                                    ? 'text-blue-600'
+                                                    : 'text-black hover:text-blue-600'
+                                            }`}
+                                        >
+                                            <span>{item.label}</span>
+                                        </Link>
+
+                                        {/* Blue underline */}
+                                        <div className={`absolute -bottom-[9px] left-0 right-0 h-0.5 transition-all duration-200 ${
+                                            item.id === 'erkek' || activeDropdown === item.id
+                                                ? 'bg-blue-600 scale-x-100'
+                                                : 'bg-blue-600 scale-x-0 group-hover:scale-x-100'
+                                        }`}></div>
+                                    </div>
                                 </React.Fragment>
                             ))}
                         </nav>
                     </div>
+
+                    {/* Mega Dropdown - Improved Layout Based on Image */}
+                    {activeDropdown && getCurrentCategory(activeDropdown) && (
+                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-full max-w-7xl bg-white shadow-2xl border-t border-gray-200 z-50 rounded-b-lg">
+                            <div className="flex">
+                                {/* Categories Section - Tighter spacing like the image */}
+                                <div className="flex-1 px-8 py-6">
+                                    <div className={`grid gap-16 ${(() => {
+                                        const subCatCount = getCurrentCategory(activeDropdown)?.subcategories.length || 0;
+                                        if (subCatCount <= 2) return 'grid-cols-2';
+                                        if (subCatCount === 3) return 'grid-cols-3';
+                                        return 'grid-cols-4';
+                                    })()}`}>
+                                        {getCurrentCategory(activeDropdown)?.subcategories.map((subcat) => (
+                                            <div key={subcat.name} className="min-w-0">
+                                                <h3 className="font-semibold text-gray-900 mb-4 text-base text-black">
+                                                    {subcat.name}
+                                                </h3>
+                                                <ul className="space-y-2">
+                                                    {subcat.items.slice(0, 12).map((item) => (
+                                                        <li key={item}>
+                                                            <button
+                                                                onClick={() => {
+                                                                    if (onSubCategoryClick) {
+                                                                        onSubCategoryClick(getCurrentCategory(activeDropdown)!.name, subcat.name, item);
+                                                                    }
+                                                                    setActiveDropdown(null);
+                                                                }}
+                                                                className="text-gray-500 hover:text-blue-600 transition-colors duration-200 text-sm text-left w-full truncate block py-1"
+                                                            >
+                                                                {item}
+                                                            </button>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Product Images Section - 2x3 grid like the image */}
+                                <div className="w-[500px] p-6 bg-white">
+                                    <div className="grid grid-cols-2 grid-rows-3 gap-3 h-full">
+                                        {/* Large product images with realistic placeholders */}
+                                        <div className="bg-gray-100 rounded-lg overflow-hidden">
+                                            <div className="w-full h-32 bg-gradient-to-br from-orange-200 to-orange-300 flex items-center justify-center">
+                                                <div className="w-16 h-16 bg-orange-400 rounded-lg flex items-center justify-center">
+                                                    <span className="text-white text-xs font-bold">🛍️</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-gray-100 rounded-lg overflow-hidden">
+                                            <div className="w-full h-32 bg-gradient-to-br from-red-200 to-red-300 flex items-center justify-center">
+                                                <div className="w-16 h-16 bg-red-400 rounded-lg flex items-center justify-center">
+                                                    <span className="text-white text-xs font-bold">👕</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-gray-100 rounded-lg overflow-hidden">
+                                            <div className="w-full h-32 bg-gradient-to-br from-black to-gray-700 flex items-center justify-center">
+                                                <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center">
+                                                    <span className="text-white text-xs font-bold">👗</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-gray-100 rounded-lg overflow-hidden">
+                                            <div className="w-full h-32 bg-gradient-to-br from-blue-200 to-blue-300 flex items-center justify-center">
+                                                <div className="w-16 h-16 bg-blue-400 rounded-lg flex items-center justify-center">
+                                                    <span className="text-white text-xs font-bold">👟</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-gray-100 rounded-lg overflow-hidden">
+                                            <div className="w-full h-32 bg-gradient-to-br from-black to-gray-600 flex items-center justify-center">
+                                                <div className="w-16 h-16 bg-gray-700 rounded-lg flex items-center justify-center">
+                                                    <span className="text-white text-xs font-bold">👔</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-gray-100 rounded-lg overflow-hidden">
+                                            <div className="w-full h-32 bg-gradient-to-br from-purple-200 to-pink-200 flex items-center justify-center">
+                                                <div className="w-16 h-16 bg-purple-300 rounded-lg flex items-center justify-center">
+                                                    <span className="text-white text-xs font-bold">💻</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 
-            {/* Mobile Header */}
+            {/* Mobile Header - Same as before */}
             <div className="md:hidden">
                 {/* Mobile Search */}
                 <div className="p-4">

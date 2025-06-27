@@ -4,10 +4,16 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import axios from 'axios';
 import { useModal } from '@/contexts/modal-context';
+import { useClientAuth } from '@/contexts/auth-provider';
 import Modal from "@/components/modals/Modal";
 import Input from "@/components/ui/Input";
+import {
+    useLoginMutation,
+    useVerifyOTPMutation,
+    useUpdateProfileMutation,
+    useResendLoginSMSMutation
+} from '@/hooks/useAuth';
 
 const phoneSchema = z.object({
     phone: z
@@ -49,8 +55,9 @@ interface LoginModalProps {
     closeOnClickOutside?: boolean;
 }
 
-const LoginModal: React.FC<LoginModalProps> = ({ onSuccess, onError ,closeOnClickOutside = false}) => {
+const LoginModal: React.FC<LoginModalProps> = ({ onSuccess, onError, closeOnClickOutside = false }) => {
     const { isModalOpen, closeModal, getModalProps } = useModal();
+    const { setAuthData } = useClientAuth();
     const modalProps = getModalProps('login') as LoginModalProps;
 
     const [step, setStep] = useState<'phone' | 'verification' | 'profile'>('phone');
@@ -77,7 +84,78 @@ const LoginModal: React.FC<LoginModalProps> = ({ onSuccess, onError ,closeOnClic
         resolver: zodResolver(profileSchema)
     });
 
-    // Countdown timer for resend
+    // React Query mutations
+    const loginMutation = useLoginMutation({
+        onSuccess: (data) => {
+            if (data.success) {
+                setPhoneNumber(phoneForm.getValues('phone'));
+                setStep('verification');
+                setCountdown(60);
+                setErrorMessage('');
+            } else {
+                throw new Error(data.message || 'SMS ugradylmady');
+            }
+        },
+        onError: (error: any) => {
+            const errorMsg = error.response?.data?.message || error.message || 'SMS ugratmakda näsazlyk';
+            setErrorMessage(errorMsg);
+            (modalProps?.onError || onError)?.(errorMsg);
+        }
+    });
+
+    const verifyOTPMutation = useVerifyOTPMutation({
+        onSuccess: async (data) => {
+            const { access_token, refresh_token, user } = data;
+
+            if (!access_token || !refresh_token) {
+                throw new Error('Nädogry jogap');
+            }
+
+            setTokens({ access_token, refresh_token });
+
+            if (user && user.id) {
+                await completeLogin(user, access_token, refresh_token);
+            } else {
+                setStep('profile');
+            }
+            setErrorMessage('');
+        },
+        onError: (error: any) => {
+            const errorMsg = error.response?.data?.message || error.message || 'Tassyklama kody nädogry';
+            setErrorMessage(errorMsg);
+            (modalProps?.onError || onError)?.(errorMsg);
+        }
+    });
+
+    const updateProfileMutation = useUpdateProfileMutation({
+        onSuccess: async (data) => {
+            const updatedUser = data.user;
+
+            if (!updatedUser || !tokens) {
+                throw new Error('Profil täzelenmedi');
+            }
+
+            await completeLogin(updatedUser, tokens.access_token, tokens.refresh_token);
+        },
+        onError: (error: any) => {
+            const errorMsg = error.response?.data?.message || error.message || 'Profil döretmekde näsazlyk';
+            setErrorMessage(errorMsg);
+            (modalProps?.onError || onError)?.(errorMsg);
+        }
+    });
+
+    const resendSMSMutation = useResendLoginSMSMutation({
+        onSuccess: () => {
+            setCountdown(60);
+            setErrorMessage('');
+        },
+        onError: (error: any) => {
+            const errorMsg = error.response?.data?.message || error.message || 'SMS täzeden ugradylmady';
+            setErrorMessage(errorMsg);
+        }
+    });
+
+    // Countdown timer
     React.useEffect(() => {
         let interval: NodeJS.Timeout;
         if (countdown > 0) {
@@ -89,112 +167,33 @@ const LoginModal: React.FC<LoginModalProps> = ({ onSuccess, onError ,closeOnClic
     }, [countdown]);
 
     const onPhoneSubmit = async (data: PhoneFormData) => {
-        try {
-            setErrorMessage('');
-
-            const response = await axios.post('https://zen-moda.com/api/auth/login', {
-                phone: data.phone
-            });
-
-            if (response.data.success) {
-                setPhoneNumber(data.phone);
-                setStep('verification');
-                setCountdown(60); // 60 second countdown for resend
-            } else {
-                throw new Error(response.data.message || 'SMS ugradylmady');
-            }
-        } catch (error: any) {
-            const errorMessage = error.response?.data?.message || error.message || 'SMS ugratmakda näsazlyk';
-            setErrorMessage(errorMessage);
-            if (modalProps?.onError || onError) {
-                (modalProps?.onError || onError)?.(errorMessage);
-            }
-        }
+        setErrorMessage('');
+        loginMutation.mutate({ phone: data.phone });
     };
 
     const onVerificationSubmit = async (data: VerificationFormData) => {
-        try {
-            setErrorMessage('');
-
-            const response = await axios.post('https://zen-moda.com/api/auth/confirm-otp', {
-                phone_number: phoneNumber,
-                code: data.code
-            });
-
-            const { access_token, refresh_token, user } = response.data;
-
-            if (!access_token || !refresh_token) {
-                throw new Error('Nädogry jogap');
-            }
-
-            setTokens({ access_token, refresh_token });
-
-            // Check if user exists (not null) - existing user
-            if (user && user.id) {
-                // Complete login for existing user
-                await completeLogin(user, access_token, refresh_token);
-            } else {
-                // New user needs to complete profile
-                setStep('profile');
-            }
-        } catch (error: any) {
-            const errorMessage = error.response?.data?.message || error.message || 'Tassyklama kody nädogry';
-            setErrorMessage(errorMessage);
-            if (modalProps?.onError || onError) {
-                (modalProps?.onError || onError)?.(errorMessage);
-            }
-        }
+        setErrorMessage('');
+        verifyOTPMutation.mutate({
+            phone_number: phoneNumber,
+            code: data.code
+        });
     };
 
     const onProfileSubmit = async (data: ProfileFormData) => {
-        try {
-            setErrorMessage('');
-
-            if (!tokens) {
-                throw new Error('Sessiýa tanyş däl');
-            }
-
-            const response = await axios.post('https://zen-moda.com/api/auth/update-profile', {
-                fullname: data.fullname,
-                gender: data.gender
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${tokens.access_token}`
-                }
-            });
-
-            const updatedUser = response.data.user;
-
-            if (!updatedUser) {
-                throw new Error('Profil täzelenmedi');
-            }
-
-            // Complete login with updated user data
-            await completeLogin(updatedUser, tokens.access_token, tokens.refresh_token);
-        } catch (error: any) {
-            const errorMessage = error.response?.data?.message || error.message || 'Profil döretmekde näsazlyk';
-            setErrorMessage(errorMessage);
-            if (modalProps?.onError || onError) {
-                (modalProps?.onError || onError)?.(errorMessage);
-            }
-        }
+        setErrorMessage('');
+        updateProfileMutation.mutate({
+            fullname: data.fullname,
+            gender: data.gender
+        });
     };
 
     const completeLogin = async (user: any, accessToken: string, refreshToken: string) => {
-        // Store tokens and user data
-        localStorage.setItem('client_auth_token', accessToken);
-        localStorage.setItem('client_refresh_token', refreshToken);
-        localStorage.setItem('client_auth_user', JSON.stringify(user));
+        setAuthData(user, accessToken, refreshToken);
 
-        // Set axios default header
-        axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-
-        // Call success callback
         if (modalProps?.onSuccess || onSuccess) {
             (modalProps?.onSuccess || onSuccess)?.({ user, tokens: { accessToken, refreshToken } });
         }
 
-        // Close modal and reset
         handleClose();
     };
 
@@ -217,15 +216,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ onSuccess, onError ,closeOnClic
     };
 
     const resendCode = async () => {
-        try {
-            setErrorMessage('');
-            await axios.post('https://zen-moda.com/api/auth/login', {
-                phone: phoneNumber
-            });
-            setCountdown(60);
-        } catch (error: any) {
-            setErrorMessage(error.response?.data?.message || 'SMS täzeden ugradylmady');
-        }
+        setErrorMessage('');
+        resendSMSMutation.mutate(phoneNumber);
     };
 
     const getStepTitle = () => {
@@ -254,7 +246,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onSuccess, onError ,closeOnClic
             <div className="space-y-4 font-rubik">
                 {step === 'phone' && (
                     <>
-                        <p className="text-sm text-black text-center px-4 sm:px-8 font-medium ">
+                        <p className="text-sm text-black text-center px-4 sm:px-8 font-medium">
                             Tassyklaýjy kody almak üçin telefon belgiňizi giriziň
                         </p>
 
@@ -289,10 +281,10 @@ const LoginModal: React.FC<LoginModalProps> = ({ onSuccess, onError ,closeOnClic
 
                             <button
                                 type="submit"
-                                disabled={phoneForm.formState.isSubmitting}
+                                disabled={loginMutation.isPending}
                                 className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
-                                {phoneForm.formState.isSubmitting ? 'Ugradylýar...' : 'Tassykla'}
+                                {loginMutation.isPending ? 'Ugradylýar...' : 'Tassykla'}
                             </button>
                         </form>
                     </>
@@ -314,7 +306,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onSuccess, onError ,closeOnClic
                                 onClick={handleBackToPhone}
                                 className="text-xs text-blue-600 hover:text-blue-700 underline mt-2"
                             >
-                            Telefon belgiňizi üýtgetmek
+                                Telefon belgiňizi üýtgetmek
                             </button>
                         </div>
 
@@ -339,7 +331,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ onSuccess, onError ,closeOnClic
                                                 if (nextInput) nextInput.focus();
                                             }
 
-                                            // Update form value
                                             const allInputs = Array.from(e.target.parentElement!.children) as HTMLInputElement[];
                                             const code = allInputs.map(input => input.value).join('');
                                             verificationForm.setValue('code', code);
@@ -357,32 +348,31 @@ const LoginModal: React.FC<LoginModalProps> = ({ onSuccess, onError ,closeOnClic
                                 ))}
                             </div>
 
-                            <input
-                                {...verificationForm.register('code')}
-                                type="hidden"
-                            />
+                            <input {...verificationForm.register('code')} type="hidden" />
 
                             {verificationForm.formState.errors.code && (
-                                <p className="text-sm text-red-600 text-center">{verificationForm.formState.errors.code.message}</p>
+                                <p className="text-sm text-red-600 text-center">
+                                    {verificationForm.formState.errors.code.message}
+                                </p>
                             )}
 
                             <div className="text-center">
                                 <button
                                     type="button"
                                     onClick={resendCode}
-                                    disabled={countdown > 0}
+                                    disabled={countdown > 0 || resendSMSMutation.isPending}
                                     className="text-sm text-blue-600 hover:text-blue-700 underline disabled:text-gray-400 disabled:cursor-not-allowed"
                                 >
-                                    Kod gelmedi?
+                                    {resendSMSMutation.isPending ? 'Ugradylýar...' : 'Kod gelmedi?'}
                                 </button>
                             </div>
 
                             <button
                                 type="submit"
-                                disabled={verificationForm.formState.isSubmitting}
+                                disabled={verifyOTPMutation.isPending}
                                 className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
-                                {verificationForm.formState.isSubmitting ? 'Tassyklanýar...' : 'Tassykla'}
+                                {verifyOTPMutation.isPending ? 'Tassyklanýar...' : 'Tassykla'}
                             </button>
                         </form>
                     </>
@@ -407,7 +397,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ onSuccess, onError ,closeOnClic
                                 label="Adyňyz familiýaňyz"
                                 error={profileForm.formState.errors.fullname?.message}
                             />
-
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -434,16 +423,18 @@ const LoginModal: React.FC<LoginModalProps> = ({ onSuccess, onError ,closeOnClic
                                     </label>
                                 </div>
                                 {profileForm.formState.errors.gender && (
-                                    <p className="mt-1 text-sm text-red-600">{profileForm.formState.errors.gender.message}</p>
+                                    <p className="mt-1 text-sm text-red-600">
+                                        {profileForm.formState.errors.gender.message}
+                                    </p>
                                 )}
                             </div>
 
                             <button
                                 type="submit"
-                                disabled={profileForm.formState.isSubmitting}
+                                disabled={updateProfileMutation.isPending}
                                 className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
-                                {profileForm.formState.isSubmitting ? 'Döredilýär...' : 'Tassykla'}
+                                {updateProfileMutation.isPending ? 'Döredilýär...' : 'Tassykla'}
                             </button>
                         </form>
                     </>
@@ -451,4 +442,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ onSuccess, onError ,closeOnClic
             </div>
         </Modal>
     );
-};export default LoginModal;
+};
+
+export default LoginModal;
