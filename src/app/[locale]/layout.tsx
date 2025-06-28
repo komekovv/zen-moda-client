@@ -9,6 +9,7 @@ import {SupportedLocales} from "@/types/types";
 import {routing} from "@/i18n/routing";
 import {NextIntlClientProvider} from "next-intl";
 import QueryProvider from "@/providers/query-provider";
+import 'swiper/css';
 
 const inter = Inter({
     subsets: ['latin'],

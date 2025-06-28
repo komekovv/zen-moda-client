@@ -404,7 +404,7 @@ const Header: React.FC<HeaderProps> = ({
 
                             <RoundedIconWrapper
                                 showBadge
-                                badgeCount={cartItemCount || 12}
+                                badgeCount={cartItemCount || 5}
                                 borderColor="text-border"
                                 backgroundColor="white"
                                 size={"sm"}
@@ -442,7 +442,7 @@ const Header: React.FC<HeaderProps> = ({
                                         <Link
                                             href={item.href}
                                             className={`font-rubik text-body-description transition-all duration-200 flex items-center space-x-1 whitespace-nowrap text-sm lg:text-base px-2 py-2 ${
-                                                item.id === 'erkek' || activeDropdown === item.id
+                                                 activeDropdown === item.id
                                                     ? 'text-blue-600'
                                                     : 'text-black hover:text-blue-600'
                                             }`}
@@ -452,7 +452,7 @@ const Header: React.FC<HeaderProps> = ({
 
                                         {/* Blue underline */}
                                         <div className={`absolute -bottom-[9px] left-0 right-0 h-0.5 transition-all duration-200 ${
-                                            item.id === 'erkek' || activeDropdown === item.id
+                                             activeDropdown === item.id
                                                 ? 'bg-blue-600 scale-x-100'
                                                 : 'bg-blue-600 scale-x-0 group-hover:scale-x-100'
                                         }`}></div>
