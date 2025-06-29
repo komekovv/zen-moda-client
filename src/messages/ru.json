@@ -1,3 +1,29 @@
 {
-
+  "footer": {
+    "help": {
+      "title": "Помощь",
+      "frequentQuestions": "Часто задаваемые вопросы",
+      "howToOrder": "Как сделать заказ?",
+      "trackOrder": "Отследить заказ",
+      "deliveryService": "Служба доставки",
+      "sellAtZen": "Продавать в Zen Moda"
+    },
+    "information": {
+      "title": "Информация",
+      "aboutUs": "Правила использования",
+      "privacyPolicy": "Политика конфиденциальности",
+      "forZenFashion": "Почему Zen Moda",
+      "forCommunication": "Для связи",
+      "aboutUs2": "О нас"
+    },
+    "contact": {
+      "title": "Связаться",
+      "phone": "Телефон:",
+      "email": "Эл. почта:",
+      "deliveryTime": "Время доставки:",
+      "workTime": "Рабочее время:"
+    },
+    "copyright": "Copyright © 2025 Zen Moda, При поддержке",
+    "location": "Ашхабад, Туркменистан"
+  }
 }

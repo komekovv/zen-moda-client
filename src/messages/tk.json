@@ -1,3 +1,29 @@
 {
-
+  "footer": {
+    "help": {
+      "title": "Kömek",
+      "frequentQuestions": "Köp soralýan soraglar",
+      "howToOrder": "Nädip zakaz etmeli?",
+      "trackOrder": "Harydyň ýzyna tabşyrmak",
+      "deliveryService": "Eltip bermek hyzmaty",
+      "sellAtZen": "Zen Moda-da sat"
+    },
+    "information": {
+      "title": "Maglumatlar",
+      "aboutUs": "Ulanys kadalary",
+      "privacyPolicy": "Maglumat gizlinligi",
+      "forZenFashion": "Näme üçin Zen Moda",
+      "forCommunication": "Habarlaşmak üçin",
+      "aboutUs2": "Biz barada"
+    },
+    "contact": {
+      "title": "Habarlaşmak",
+      "phone": "Telefon:",
+      "email": "Email:",
+      "deliveryTime": "Eltip bermek wagty:",
+      "workTime": "Iş wagty:"
+    },
+    "copyright": "Copyright © 2025 Zen Moda, Powered by",
+    "location": "Ashgbat, Türkmenistan"
+  }
 }

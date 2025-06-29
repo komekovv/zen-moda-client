@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
 import { routing } from '@/i18n/routing';
 
-const PUBLIC_PATHS = ['/', '/login', '/forgot-password', '/register'];
+const PUBLIC_PATHS = ['/', '/login', '/forgot-password', '/register', '/profile'];
 const PROTECTED_PATHS = ['favorites'];
 
 const intlMiddleware = createMiddleware(routing);

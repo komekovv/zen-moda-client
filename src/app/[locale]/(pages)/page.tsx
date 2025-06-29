@@ -1,8 +1,11 @@
 'use client'
 import banner from "@/assets/images/banner.jpg"
+import banner2 from "@/assets/images/banner2.png"
 import Image, {StaticImageData} from "next/image";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import ProductCard from '@/components/cards/ProductCard';
+import BrandCard, {Brand} from "@/components/cards/BrandCard";
+import React from "react";
 
 const sampleProducts = [
     {
@@ -95,6 +98,52 @@ const sampleProducts = [
     },
 ];
 
+const defaultBrands: Brand[] = [
+    {
+        id: '1',
+        name: 'Reebok',
+        logo: 'https://logos-world.net/wp-content/uploads/2020/09/Reebok-Logo.png',
+        website: 'https://reebok.com'
+    },
+    {
+        id: '2',
+        name: 'Adidas',
+        logo: 'https://logos-world.net/wp-content/uploads/2020/04/Adidas-Logo.png',
+        website: 'https://adidas.com'
+    },
+    {
+        id: '3',
+        name: 'Samsung',
+        logo: 'https://logos-world.net/wp-content/uploads/2020/04/Samsung-Logo.png',
+        website: 'https://samsung.com'
+    },
+    {
+        id: '4',
+        name: 'Apple',
+        logo: 'https://logos-world.net/wp-content/uploads/2020/04/Apple-Logo.png',
+        website: 'https://apple.com'
+    },
+    {
+        id: '5',
+        name: 'Koton',
+        logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Koton_logo.svg/1200px-Koton_logo.svg.png',
+        website: 'https://koton.com'
+    },
+    {
+        id: '6',
+        name: 'Damat',
+        logo: 'https://www.damat.com.tr/images/logo.png',
+        website: 'https://damat.com.tr'
+    },
+    {
+        id: '7',
+        name: 'Damat',
+        logo: 'https://www.damat.com.tr/images/logo.png',
+        website: 'https://damat.com.tr'
+    },
+];
+
+
 export default function Home() {
     const handleFavoriteToggle = (productId: string) => {
         console.log('Favorite toggled for product:', productId);
@@ -104,68 +153,127 @@ export default function Home() {
         console.log('Product clicked:', productId);
     };
 
+    const handleBrandClick = (brand: Brand) => {
+        console.log(`Clicked on ${brand.name}`);
+    };
+
     return (
         <div>
             <Image src={banner as StaticImageData} alt={'banner'}/>
 
             <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8`}>
                 <div className="mb-8 mt-4">
-                    <h2 className="text-2xl font-bold text-black mb-2 font-rubik">Ýörite siziň üçin</h2>
+                    <h2 className="text-2xl font-bold text-black mb-8 font-rubik">Ýörite siziň üçin</h2>
+                    <Swiper
+                        spaceBetween={20}
+                        slidesPerView={6}
+                        freeMode={true}
+                        autoplay={false}
+                        breakpoints={{
+                            // Mobile
+                            320: {
+                                slidesPerView: 2,
+                                spaceBetween: 15,
+                            },
+                            // Small tablets
+                            640: {
+                                slidesPerView: 3,
+                                spaceBetween: 15,
+                            },
+                            // Tablets
+                            768: {
+                                slidesPerView: 3,
+                                spaceBetween: 20,
+                            },
+                            // Small desktop
+                            1024: {
+                                slidesPerView: 6,
+                                spaceBetween: 20,
+                            },
+                            // Medium desktop
+                            1280: {
+                                slidesPerView: 6,
+                                spaceBetween: 20,
+                            },
+                            // Large desktop
+                            1536: {
+                                slidesPerView: 6,
+                                spaceBetween: 20,
+                            },
+                        }}
+                        className="product-slider"
+                    >
+                        {sampleProducts.map((product) => (
+                            <SwiperSlide key={product.id}>
+                                <ProductCard
+                                    {...product}
+                                    onFavoriteToggle={handleFavoriteToggle}
+                                    onCardClick={handleProductClick}
+                                    className="h-full"
+                                />
+                            </SwiperSlide>
+                        ))}
+                    </Swiper>
                 </div>
 
-                <Swiper
-                    spaceBetween={20}
-                    slidesPerView={6}
-                    freeMode={true}
-                    autoplay={false}
-                    breakpoints={{
-                        // Mobile
-                        320: {
-                            slidesPerView: 2,
-                            spaceBetween: 15,
-                        },
-                        // Small tablets
-                        640: {
-                            slidesPerView: 3,
-                            spaceBetween: 15,
-                        },
-                        // Tablets
-                        768: {
-                            slidesPerView: 3,
-                            spaceBetween: 20,
-                        },
-                        // Small desktop
-                        1024: {
-                            slidesPerView: 6,
-                            spaceBetween: 20,
-                        },
-                        // Medium desktop
-                        1280: {
-                            slidesPerView: 6,
-                            spaceBetween: 20,
-                        },
-                        // Large desktop
-                        1536: {
-                            slidesPerView: 6,
-                            spaceBetween: 20,
-                        },
-                    }}
-                    className="product-slider"
-                >
-                    {sampleProducts.map((product) => (
-                        <SwiperSlide key={product.id}>
-                            <ProductCard
-                                {...product}
-                                onFavoriteToggle={handleFavoriteToggle}
-                                onCardClick={handleProductClick}
-                                className="h-full"
-                            />
-                        </SwiperSlide>
-                    ))}
-                </Swiper>
                 <div className="mb-8 mt-12">
                     <h2 className="text-2xl font-bold text-black mb-2 font-rubik">Köp görülýän kategoriýalar</h2>
                 </div>
+                <div className="mb-8 mt-12">
+                    <h2 className="text-2xl font-bold text-black mb-2 font-rubik">Brendler</h2>
+                    <Swiper
+                        spaceBetween={20}
+                        slidesPerView={6}
+                        freeMode={true}
+                        autoplay={false}
+                        breakpoints={{
+                            // Mobile
+                            320: {
+                                slidesPerView: 2,
+                                spaceBetween: 15,
+                            },
+                            // Small tablets
+                            640: {
+                                slidesPerView: 3,
+                                spaceBetween: 15,
+                            },
+                            // Tablets
+                            768: {
+                                slidesPerView: 3,
+                                spaceBetween: 20,
+                            },
+                            // Small desktop
+                            1024: {
+                                slidesPerView: 6,
+                                spaceBetween: 20,
+                            },
+                            // Medium desktop
+                            1280: {
+                                slidesPerView: 6,
+                                spaceBetween: 20,
+                            },
+                            // Large desktop
+                            1536: {
+                                slidesPerView: 6,
+                                spaceBetween: 20,
+                            },
+                        }}
+                        className="product-slider"
+                    >
+                        {defaultBrands.map((brand, index) => (
+                            <SwiperSlide key={brand.id}>
+                                    <BrandCard
+                                        key={`${brand.id}-${index}`}
+                                        brand={brand}
+                                        size="md"
+                                        variant="minimal"
+                                        onClick={handleBrandClick}
+                                    />
+                            </SwiperSlide>
+                        ))}
+                    </Swiper>
+                </div>
+                <Image src={banner2 as StaticImageData} alt={'banner2'}/>
             </div>
         </div>
     );
