@@ -1,15 +1,16 @@
 'use client'
 import React, { useState } from 'react';
 import { Heart } from 'lucide-react';
+import Image from "next/image";
+import Link from "next/link";
+import {ImageI} from "@/types/types";
 
-// Types (same as before)
 interface ProductCardProps {
     id: string;
     title: string;
-    image: string;
+    image: { path: string } | string;
     currentPrice: number;
     originalPrice?: number;
-    currency?: string;
     discount?: number;
     rating?: number;
     reviewCount?: number;
@@ -19,6 +20,7 @@ interface ProductCardProps {
     onFavoriteToggle?: (id: string) => void;
     onCardClick?: (id: string) => void;
     className?: string;
+    forMain?: boolean;
 }
 
 interface TimerProps {
@@ -36,7 +38,6 @@ interface DiscountBadgeProps {
     discount: number;
 }
 
-// Timer Component
 const Timer: React.FC<TimerProps> = ({ endTime, onExpire }) => {
     const [timeLeft, setTimeLeft] = React.useState<{
         hours: number;
@@ -73,13 +74,12 @@ const Timer: React.FC<TimerProps> = ({ endTime, onExpire }) => {
     };
 
     return (
-        <div className="absolute top-0 left-0 bg-warning text-white px-2 py-1 rounded text-sm font-bold tracking-wider">
+        <div className="absolute top-0 left-0 bg-warning text-white px-2 py-1 rounded text-xs font-bold tracking-wider">
             {formatTime(timeLeft.hours, timeLeft.minutes, timeLeft.seconds)}
         </div>
     );
 };
 
-// Rating Component
 const Rating: React.FC<RatingProps> = ({ rating, reviewCount, maxRating = 5 }) => {
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 !== 0;
@@ -88,7 +88,6 @@ const Rating: React.FC<RatingProps> = ({ rating, reviewCount, maxRating = 5 }) =
     return (
         <div className="flex items-center gap-1">
             <div className="flex">
-                {/* Full stars */}
                 {Array.from({ length: fullStars }).map((_, index) => (
                     <svg
                         key={`full-${index}`}
@@ -99,7 +98,6 @@ const Rating: React.FC<RatingProps> = ({ rating, reviewCount, maxRating = 5 }) =
                     </svg>
                 ))}
 
-                {/* Half star */}
                 {hasHalfStar && (
                     <div className="relative">
                         <svg className="w-4 h-4 text-passive" viewBox="0 0 20 20" fill="currentColor">
@@ -113,7 +111,6 @@ const Rating: React.FC<RatingProps> = ({ rating, reviewCount, maxRating = 5 }) =
                     </div>
                 )}
 
-                {/* Empty stars */}
                 {Array.from({ length: emptyStars }).map((_, index) => (
                     <svg
                         key={`empty-${index}`}
@@ -133,23 +130,20 @@ const Rating: React.FC<RatingProps> = ({ rating, reviewCount, maxRating = 5 }) =
     );
 };
 
-// Discount Badge Component
 const DiscountBadge: React.FC<DiscountBadgeProps> = ({ discount }) => {
     return (
-        <div className="absolute bottom-0 left-0 bg-sale text-white px-2 py-1 rounded text-sm font-bold">
+        <div className="absolute bottom-0 left-0 bg-sale text-white px-2 py-1 rounded text-xs font-bold">
             -{discount}%
         </div>
     );
 };
 
-// Product Card Component
 const ProductCard: React.FC<ProductCardProps> = ({
                                                      id,
                                                      title,
                                                      image,
                                                      currentPrice,
                                                      originalPrice,
-                                                     currency = 'TMT',
                                                      discount,
                                                      rating = 0,
                                                      reviewCount,
@@ -158,12 +152,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
                                                      isFavorite = false,
                                                      onFavoriteToggle,
                                                      onCardClick,
-                                                     className = ''
+                                                     className = '',
+                                                     forMain = false
                                                  }) => {
     const [favorite, setFavorite] = useState(isFavorite);
 
     const handleFavoriteClick = (e: React.MouseEvent) => {
         e.stopPropagation();
+        e.preventDefault();
         setFavorite(!favorite);
         onFavoriteToggle?.(id);
     };
@@ -173,25 +169,29 @@ const ProductCard: React.FC<ProductCardProps> = ({
     };
 
     const formatPrice = (price: number) => {
-        return `${price} ${currency}`;
+        return `${price.toFixed(0)} TMT`;
     };
 
-    return (
+    const CardContent = () => (
         <div
-            className={`relative rounded cursor-pointer group select-none ${className}`}
+            className={`relative cursor-pointer group select-none flex flex-col gap-2.5 ${
+                forMain ? 'w-[154px]' : 'w-full'
+            } ${className}`}
             onClick={handleCardClick}
         >
-            {/* Image Container */}
-            <div className="relative aspect-square overflow-hidden rounded bg-blue-shade-1">
-                <img
-                    src={image}
+            <div className={`relative overflow-hidden rounded bg-blue-shade-1 ${
+                forMain ? 'aspect-[154/200]' : 'aspect-square'
+            }`}>
+                <Image
+                    src={typeof image === 'string' ? image : image.path}
                     alt={title}
+                    width={forMain ? 154 : 300}
+                    height={forMain ? 200 : 300}
                     className="w-full h-full object-cover"
                     loading="lazy"
                     draggable={false}
                 />
 
-                {/* Timer Badge */}
                 {isOnSale && saleEndTime && (
                     <Timer
                         endTime={saleEndTime}
@@ -199,46 +199,50 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     />
                 )}
 
-                {/* Discount Badge */}
                 {discount && <DiscountBadge discount={discount} />}
 
-                {/* Favorite Button */}
                 <button
                     onClick={handleFavoriteClick}
-                    className="absolute top-0 right-0 w-8 h-8 flex items-center justify-center transition-all duration-200"
+                    className="absolute top-1 right-1 w-8 h-8 flex items-center justify-center"
                     aria-label={favorite ? 'Remove from favorites' : 'Add to favorites'}
                 >
                     <Heart
                         className={`w-5 h-5 transition-colors duration-200 ${
-                            favorite ? 'fill-sale text-sale' : 'text-black fill-white hover:text-sale'
+                            favorite ? 'fill-sale text-sale' : 'fill-white text-black hover:text-sale'
                         }`}
                     />
                 </button>
             </div>
 
-            {/* Content */}
-            <div className="pl-0 pr-4 py-4 space-y-2">
-                {/* Price */}
+            <div className="space-y-1">
                 <div className="flex items-center gap-2">
-          <span className="text-body-price text-sale font-rubik">
-            {formatPrice(currentPrice)}
-          </span>
+                    <span className="text-body-price text-sale font-rubik">
+                        {formatPrice(currentPrice)}
+                    </span>
                     {originalPrice && originalPrice > currentPrice && (
                         <span className="text-body-description text-passive line-through font-rubik">
-              {formatPrice(originalPrice)}
-            </span>
+                            {formatPrice(originalPrice)}
+                        </span>
                     )}
                 </div>
 
-                {/* Title */}
                 <h3 className="text-black text-body-description font-rubik line-clamp-2 leading-relaxed">
                     {title}
                 </h3>
 
-                {/* Rating */}
                 <Rating rating={rating} reviewCount={reviewCount} />
             </div>
         </div>
+    );
+
+    if (onCardClick) {
+        return <CardContent />;
+    }
+
+    return (
+        <Link href={`/product/${id}`} className="block">
+            <CardContent />
+        </Link>
     );
 };
 

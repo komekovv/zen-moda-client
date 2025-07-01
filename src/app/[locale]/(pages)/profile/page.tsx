@@ -14,7 +14,6 @@ import {
     Calendar
 } from 'lucide-react';
 
-// Types for better TypeScript support
 interface UserProfile {
     id: string;
     name: string;

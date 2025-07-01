@@ -43,10 +43,16 @@ const config: Config = {
         'h1': ['64px', { lineHeight: '80px', fontWeight: '700' }],
         'h2': ['40px', { lineHeight: '52px', fontWeight: '700' }],
         'h3': ['24px', { lineHeight: '33px', fontWeight: '700' }],
+        'h1-mobile': ['32px', { lineHeight: '42px', fontWeight: '700' }],
+        'h2-mobile': ['24px', { lineHeight: '33px', fontWeight: '600' }],
+        'h3-mobile': ['18px', { lineHeight: '25px', fontWeight: '600' }],
 
-        'body-price': ['18px', { lineHeight: '26px', fontWeight: '800' }],
+        'body-price': ['18px', { lineHeight: '26px', fontWeight: '700' }],
+        'body-price-mobile': ['16px', { lineHeight: '23px', fontWeight: '700' }],
         'body-brand': ['16px', { lineHeight: '23px', fontWeight: '600' }],
+        'body-brand-mobile': ['14px', { lineHeight: '23px', fontWeight: '500' }],
         'body-description': ['14px', { lineHeight: '23px', fontWeight: '500' }],
+        'body-description-mobile': ['12px', { lineHeight: '19px', fontWeight: '400' }],
 
         'small': ['12px', { lineHeight: '19px', fontWeight: '400' }],
       },

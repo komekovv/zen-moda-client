@@ -41,6 +41,11 @@ const nextConfig = {
                 hostname: 'zen-moda.com',
                 pathname: '/**',
             },
+            {
+                protocol: 'https',
+                hostname: '*',
+                pathname: '/**'
+            }
         ],
     },
 };

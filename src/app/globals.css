@@ -25,3 +25,9 @@ body {
     text-wrap: balance;
   }
 }
+
+@layer components {
+  .heading-main-page {
+    @apply text-h3-mobile sm:text-h3 font-rubik sm:font-inter text-black;
+  }
+}
