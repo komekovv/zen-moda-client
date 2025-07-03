@@ -25,5 +25,66 @@
     },
     "copyright": "Copyright © 2025 Zen Moda, При поддержке",
     "location": "Ашхабад, Туркменистан"
+  },
+  "product_detail": {
+    "breadcrumb": {
+      "home": "Главная",
+      "product": "Товар"
+    },
+    "gallery": {
+      "thumbnail": "миниатюра"
+    },
+    "info": {
+      "code": "Код",
+      "last_update": "Последнее обновление",
+      "reviews": "отзывов",
+      "reviews_link": "32 Отзыва (4.2)",
+      "installment": "Рассрочка",
+      "color": "Цвет",
+      "size": "Размер",
+      "add_favorite": "Добавить в избранное",
+      "remove_favorite": "Удалить из избранного",
+      "share": "Поделиться"
+    },
+    "actions": {
+      "add_to_cart": "Корзина жөн",
+      "adding": "Добавление..."
+    },
+    "color_selector": {
+      "select": "Выбрать цвет"
+    },
+    "specifications": {
+      "title": "Афраштыынлыклары",
+      "material": "Материал",
+      "brand": "Бренд",
+      "season": "Сезон",
+      "color": "Цвет",
+      "size": "Размер",
+      "weight": "Вес",
+      "country": "Страна производитель"
+    },
+    "description": {
+      "title": "Берян",
+      "show_more": "Показать больше",
+      "show_less": "Показать меньше"
+    },
+    "store": {
+      "reviews": "Үлаагийн",
+      "visit_store": "Магазина гир"
+    },
+    "similar_products": {
+      "title": "Мерсиз харытлар"
+    },
+    "reviews": {
+      "title": "Тесвир",
+      "count": "отзывов",
+      "verified": "Проверено",
+      "show_all": "Показать все {{count}} отзывов",
+      "show_less": "Скрыть отзывы"
+    },
+    "complaint": {
+      "title": "Шикает етмек",
+      "description": "Агзр-ман харыт сарнады талазтраьын бајла бидра, \"Сорая бер\" дуумаанте басйп."
+    }
   }
 }

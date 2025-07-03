@@ -4,11 +4,12 @@ import { Heart } from 'lucide-react';
 import Image from "next/image";
 import Link from "next/link";
 import {ImageI} from "@/types/types";
+import {StaticImport} from "next/dist/shared/lib/get-img-props";
 
 interface ProductCardProps {
     id: string;
     title: string;
-    image: { path: string } | string;
+    image: StaticImport;
     currentPrice: number;
     originalPrice?: number;
     discount?: number;
@@ -21,6 +22,7 @@ interface ProductCardProps {
     onCardClick?: (id: string) => void;
     className?: string;
     forMain?: boolean;
+    forStore?: boolean;
 }
 
 interface TimerProps {
@@ -153,7 +155,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
                                                      onFavoriteToggle,
                                                      onCardClick,
                                                      className = '',
-                                                     forMain = false
+                                                     forMain = false,
+                                                     forStore = false
                                                  }) => {
     const [favorite, setFavorite] = useState(isFavorite);
 
@@ -172,6 +175,37 @@ const ProductCard: React.FC<ProductCardProps> = ({
         return `${price.toFixed(0)} TMT`;
     };
 
+    if (forStore) {
+        const StoreImageContent = () => (
+            <div
+                className={`relative cursor-pointer group select-none w-16 h-16 md:w-16 md:h-16 sm:w-[51px] sm:h-[51px] ${className}`}
+                onClick={handleCardClick}
+            >
+                <div className="relative overflow-hidden rounded bg-blue-shade-1 w-full h-full">
+                    <Image
+                        src={image}
+                        alt={title}
+                        width={64}
+                        height={64}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        draggable={false}
+                    />
+                </div>
+            </div>
+        );
+
+        if (onCardClick) {
+            return <StoreImageContent />;
+        }
+
+        return (
+            <Link href={`/product/${id}`} className="block">
+                <StoreImageContent />
+            </Link>
+        );
+    }
+
     const CardContent = () => (
         <div
             className={`relative cursor-pointer group select-none flex flex-col gap-2.5 ${
@@ -183,7 +217,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 forMain ? 'aspect-[154/200]' : 'aspect-square'
             }`}>
                 <Image
-                    src={typeof image === 'string' ? image : image.path}
+                    src={image}
                     alt={title}
                     width={forMain ? 154 : 300}
                     height={forMain ? 200 : 300}

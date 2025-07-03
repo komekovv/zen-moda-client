@@ -25,5 +25,66 @@
     },
     "copyright": "Copyright © 2025 Zen Moda, Powered by",
     "location": "Ashgbat, Türkmenistan"
+  },
+  "product_detail": {
+    "breadcrumb": {
+      "home": "Baş sahypa",
+      "product": "Haryt"
+    },
+    "gallery": {
+      "thumbnail": "kiçi surat"
+    },
+    "info": {
+      "code": "Kod",
+      "last_update": "Soňky täzelenme",
+      "reviews": "syn",
+      "reviews_link": "32 Syn (4.2)",
+      "installment": "Bölüp tölemek",
+      "color": "Reňk",
+      "size": "Ölçeg",
+      "add_favorite": "Halanlaryna goş",
+      "remove_favorite": "Halanlaryndan aýyr",
+      "share": "Paýlaş"
+    },
+    "actions": {
+      "add_to_cart": "Sebet goş",
+      "adding": "Goşulýar..."
+    },
+    "color_selector": {
+      "select": "Reňk saýla"
+    },
+    "specifications": {
+      "title": "Aýratynlyklary",
+      "material": "Material",
+      "brand": "Marka",
+      "season": "Pasyl",
+      "color": "Reňk",
+      "size": "Ölçeg",
+      "weight": "Agramlylyk",
+      "country": "Öndüriji ýurt"
+    },
+    "description": {
+      "title": "Beýan",
+      "show_more": "Has köp görkez",
+      "show_less": "Az görkez"
+    },
+    "store": {
+      "reviews": "Syn",
+      "visit_store": "Dükana gir"
+    },
+    "similar_products": {
+      "title": "Meňzeş harytlar"
+    },
+    "reviews": {
+      "title": "Synlar",
+      "count": "syn",
+      "verified": "Tassyklanan",
+      "show_all": "{{count}} synyň hemmesini görkez",
+      "show_less": "Synlary gizle"
+    },
+    "complaint": {
+      "title": "Şikaýat etmek",
+      "description": "Eger-de haryt sargydy maglumatlaryň bolsa, \"Sorag ber\" düwmesine basyň."
+    }
   }
 }

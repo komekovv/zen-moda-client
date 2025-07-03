@@ -2,24 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
 import { routing } from '@/i18n/routing';
 
-const PUBLIC_PATHS = ['/', '/login', '/forgot-password', '/register', '/profile'];
-const PROTECTED_PATHS = ['favorites'];
+const PRIVATE_PATHS = ['/favorites', '/profile', '/dashboard', '/admin'];
 
 const intlMiddleware = createMiddleware(routing);
 
-function isPublicPath(pathname: string): boolean {
+function isPrivatePath(pathname: string): boolean {
     const pathWithoutLocale = pathname.replace(/^\/(tk|ru)/, '') || '/';
-    return PUBLIC_PATHS.some(publicPath => {
-        return pathWithoutLocale === publicPath ||
-            pathWithoutLocale.startsWith(`${publicPath}/`);
-    });
-}
-
-function isProtectedPath(pathname: string): boolean {
-    const pathWithoutLocale = pathname.replace(/^\/(tk|ru)/, '') || '/';
-    return PROTECTED_PATHS.some(protectedPath => {
-        return pathWithoutLocale === protectedPath ||
-            pathWithoutLocale.startsWith(`${protectedPath}/`);
+    return PRIVATE_PATHS.some(privatePath => {
+        return pathWithoutLocale === privatePath ||
+            pathWithoutLocale.startsWith(`${privatePath}/`);
     });
 }
 
@@ -87,6 +78,7 @@ function createUnauthorizedResponse(): NextResponse {
 export default async function middleware(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
 
+    // Skip middleware for Next.js internals and static files
     if (
         pathname.startsWith('/_next') ||
         pathname.startsWith('/api') ||
@@ -95,44 +87,28 @@ export default async function middleware(request: NextRequest) {
         return NextResponse.next();
     }
 
-    const isPublic = isPublicPath(pathname);
-    const isProtected = isProtectedPath(pathname);
+    const isPrivate = isPrivatePath(pathname);
+
+    // For public paths, just apply internationalization
+    if (!isPrivate) {
+        return intlMiddleware(request);
+    }
+
+    // For private paths, check authentication
     const token = getTokenFromRequest(request);
 
-    if (isPublic) {
-        if (token && !isTokenExpired(token)) {
-            const redirectUrl = createRedirectUrl(request, '/');
-            return NextResponse.redirect(redirectUrl);
-        }
-        if (token && isTokenExpired(token)) {
-            const response = intlMiddleware(request);
-            response.cookies.delete('auth_token');
-            return response;
-        }
-        return intlMiddleware(request);
+    if (!token) {
+        const loginUrl = createRedirectUrl(request, '/login');
+        return NextResponse.redirect(loginUrl);
     }
 
-    if (isProtected || !isPublic) {
-        if (!token) {
-            if (pathname.startsWith('/api')) {
-                return createUnauthorizedResponse();
-            }
-            const loginUrl = createRedirectUrl(request, '/login');
-            return NextResponse.redirect(loginUrl);
-        }
-
-        if (isTokenExpired(token)) {
-            const response = pathname.startsWith('/api')
-                ? createUnauthorizedResponse()
-                : NextResponse.redirect(createRedirectUrl(request, '/login'));
-
-            response.cookies.delete('auth_token');
-            return response;
-        }
-
-        return intlMiddleware(request);
+    if (isTokenExpired(token)) {
+        const response = NextResponse.redirect(createRedirectUrl(request, '/login'));
+        response.cookies.delete('auth_token');
+        return response;
     }
 
+    // Token is valid, apply internationalization
     return intlMiddleware(request);
 }
 
