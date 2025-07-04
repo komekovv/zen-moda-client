@@ -61,7 +61,8 @@
       "color": "Reňk",
       "size": "Ölçeg",
       "weight": "Agramlylyk",
-      "country": "Öndüriji ýurt"
+      "country": "Öndüriji ýurt",
+      "warranty": "Garantiya"
     },
     "description": {
       "title": "Beýan",
@@ -70,13 +71,13 @@
     },
     "store": {
       "reviews": "Syn",
-      "visit_store": "Dükana gir"
+      "visit_store": "Magazina gir"
     },
     "similar_products": {
       "title": "Meňzeş harytlar"
     },
     "reviews": {
-      "title": "Synlar",
+      "title": "Teswir",
       "count": "syn",
       "verified": "Tassyklanan",
       "show_all": "{{count}} synyň hemmesini görkez",
@@ -85,6 +86,13 @@
     "complaint": {
       "title": "Şikaýat etmek",
       "description": "Eger-de haryt sargydy maglumatlaryň bolsa, \"Sorag ber\" düwmesine basyň."
+    }
+  },
+  "brands": {
+    "title": "Brendler",
+    "breadcrumb": {
+      "home": "Öý",
+      "brands": "Brendler"
     }
   }
 }

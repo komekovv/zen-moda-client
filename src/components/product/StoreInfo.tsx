@@ -66,7 +66,7 @@ const StoreInfo: React.FC<StoreInfoProps> = ({ store }) => {
     };
 
     return (
-        <div className="bg-blue-shade-1 rounded-lg p-6 mb-8">
+        <div className=" rounded-lg py-6 mb-8">
             <div className="flex items-center gap-4">
                 {/* Store Logo */}
                 <div className="relative w-16 h-16 bg-white rounded-lg flex items-center justify-center overflow-hidden">
@@ -81,13 +81,12 @@ const StoreInfo: React.FC<StoreInfoProps> = ({ store }) => {
 
                 {/* Store Info */}
                 <div className="flex-1">
-                    <h3 className="text-body-brand text-black font-rubik font-semibold mb-1">
+                    <h3 className="text-h1-mobile text-black font-rubik font-semibold mb-1">
                         {store.name}
                     </h3>
-                    <p className="text-body-description text-passive font-rubik mb-2">
+                    <p className="text-body-brand text-black font-normal font-rubik mb-2">
                         {store.reviewCount} {t('store.reviews')}
                     </p>
-                    {renderStoreRating()}
                 </div>
 
                 {/* Visit Store Button */}

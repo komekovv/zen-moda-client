@@ -10,6 +10,8 @@ import StoreInfo from '@/components/product/StoreInfo';
 import SimilarProducts from '@/components/product/SimilarProducts';
 import { useTranslations } from 'next-intl';
 import {Detail1, Detail2, Detail3, Detail4, Prod1, Prod2, Prod3, Prod4, Prod5} from "@/assets/images/products";
+import {ChevronRightIcon} from "lucide-react";
+import {Link} from "@/i18n/navigation";
 
 interface ProductPageProps {
     params: {
@@ -26,8 +28,8 @@ export default function ProductPage({ params }: ProductPageProps) {
         title: "Erkek sport ayakabısı 565ASB - VR02",
         brand: "Adidas",
         code: "565ASB-VR02",
-        category: "Ayak",
-        subcategory: "Ayakkabı",
+        category: "Egin-eşik",
+        subcategory: "Aýýakgap",
         currentPrice: 2458,
         originalPrice: 3200,
         discount: 23,
@@ -180,30 +182,35 @@ export default function ProductPage({ params }: ProductPageProps) {
     }
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="max-w-7xl mx-auto bg-white mt-2">
             {/* Breadcrumb */}
-            <div className="container mx-auto px-4 py-4">
-                <nav className="text-sm">
-                    <span className="text-passive">{t('breadcrumb.home')}</span>
-                    <span className="mx-2 text-passive">{'>'}</span>
-                    <span className="text-passive">{product.category}</span>
-                    <span className="mx-2 text-passive">{'>'}</span>
-                    <span className="text-passive">{product.subcategory}</span>
-                    <span className="mx-2 text-passive">{'>'}</span>
-                    <span className="text-black font-medium">{t('breadcrumb.product')}</span>
+            <div className="mx-auto px-4 py-4">
+                <nav className="text-sm flex items-center gap-2">
+                    <Link href={`/`} className="text-black">{t('breadcrumb.home')}</Link>
+                    <ChevronRightIcon size={15}/>
+                    <span className="text-black">{product.category}</span>
+                    <ChevronRightIcon size={15}/>
+                    <span className="text-black">{product.subcategory}</span>
+                    <ChevronRightIcon size={15}/>
+                    <span className="text-primary font-medium">{t('breadcrumb.product')}</span>
                 </nav>
             </div>
 
             {/* Main Product Section */}
             <div className="container mx-auto px-4">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-                    {/* Left Column - Image Gallery */}
-                    <ProductImageGallery images={product.images} productName={product.title} />
+                <div className="flex flex-col lg:flex-row gap-8 mb-12">
+                    {/* Left Column - Image Gallery with constrained width */}
+                    <div className="w-full lg:max-w-xl xl:max-w-3xl flex-shrink-0">
+                        <ProductImageGallery images={product.images} productName={product.title} />
+                    </div>
 
                     {/* Right Column - Product Info */}
-                    <ProductInfo product={product} />
+                    <div className="flex-1">
+                        <ProductInfo product={product} />
+                    </div>
                 </div>
-                <div className={`max-w-5xl`}>
+
+                <div className="max-w-3xl">
                     {/* Product Description */}
                     <ProductDescription description={product.description} />
 

@@ -103,7 +103,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
     return (
         <div className="space-y-6">
             {/* Brand and Title */}
-            <div>
+            <div className={`border border-border rounded-lg p-4`}>
                 <h1 className="text-h2 text-primary font-rubik mb-2">{product.brand}</h1>
                 <p className="text-body-description text-black font-rubik">
                     {product.title} • {t('info.code')}: {product.code}
@@ -113,41 +113,45 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
                 </p>
             </div>
 
-            {/* Rating */}
-            <div className="flex items-center gap-4">
-                {renderRating()}
-                <span className="text-sale font-bold">{t('info.reviews_link')}</span>
-            </div>
-
-            {/* Price */}
-            <div className="flex items-center gap-4">
-                <div className="bg-sale text-white px-3 py-1 rounded text-body-price font-rubik font-bold">
-                    TMT {formatPrice(product.currentPrice)}
+            <div className={`border border-border rounded-lg p-4`}>
+                {/* Rating */}
+                <div className="flex items-center gap-4 ">
+                    {renderRating()}
+                    <span className="text-sale font-bold">{t('info.reviews_link')}</span>
                 </div>
-                <span className="text-small text-passive font-rubik">
-          {t('info.installment')}: 0,23.59
-        </span>
+
+                {/* Price */}
+                <div className="flex items-center gap-4">
+                    <div className="bg-sale text-white px-3 py-1 rounded text-body-price font-rubik font-bold">
+                        TMT {formatPrice(product.currentPrice)}
+                    </div>
+                    <span className="text-small text-passive font-rubik">
+                      {t('info.installment')}: 0,23.59
+                    </span>
+                </div>
             </div>
 
             {/* Color Selection */}
-            <div>
-                <h3 className="text-body-brand text-black font-rubik mb-3">{t('info.color')}:</h3>
-                <ProductColorSelector
-                    colors={product.colors}
-                    selectedColor={selectedColor}
-                    onColorSelect={setSelectedColor}
-                />
+            <div className={`border border-border rounded-lg p-4 space-y-4`}>
+                <div>
+                    <h3 className="text-body-brand text-black font-rubik mb-3">{t('info.color')}:</h3>
+                    <ProductColorSelector
+                        colors={product.colors}
+                        selectedColor={selectedColor}
+                        onColorSelect={setSelectedColor}
+                    />
+                </div>
+                {/* Size Selection */}
+                <div>
+                    <h3 className="text-body-brand text-black font-rubik mb-3">{t('info.size')}:</h3>
+                    <ProductSizeSelector
+                        sizes={product.sizes}
+                        selectedSize={selectedSize}
+                        onSizeSelect={setSelectedSize}
+                    />
+                </div>
             </div>
 
-            {/* Size Selection */}
-            <div>
-                <h3 className="text-body-brand text-black font-rubik mb-3">{t('info.size')}:</h3>
-                <ProductSizeSelector
-                    sizes={product.sizes}
-                    selectedSize={selectedSize}
-                    onSizeSelect={setSelectedSize}
-                />
-            </div>
 
             {/* Action Buttons */}
             <div className="flex items-center gap-3">

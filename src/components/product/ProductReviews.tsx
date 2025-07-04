@@ -74,8 +74,8 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
     }
 
     return (
-        <div className="bg-white rounded-lg border border-border overflow-hidden mb-8">
-            <div className="bg-tab px-6 py-4 border-b border-border">
+        <div className="bg-white border-t border-border overflow-hidden mb-8">
+            <div className=" py-4 border-b border-border">
                 <div className="flex items-center justify-between">
                     <h2 className="text-h3 text-black font-rubik">
                         {t('reviews.title')}
@@ -89,7 +89,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
                 </div>
             </div>
 
-            <div className="px-6 py-4">
+            <div className="py-4">
                 <div className="space-y-6">
                     {displayedReviews.map((review) => (
                         <div key={review.id} className="border-b border-border last:border-b-0 pb-6 last:pb-0">
@@ -99,11 +99,6 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
                                         <h4 className="text-body-brand text-black font-rubik font-medium">
                                             {review.userName}
                                         </h4>
-                                        {review.verified && (
-                                            <span className="text-small text-success bg-success/10 px-2 py-1 rounded">
-                        {t('reviews.verified')}
-                      </span>
-                                        )}
                                     </div>
                                     {renderStars(review.rating)}
                                 </div>

@@ -38,7 +38,7 @@ const SimilarProducts: React.FC<SimilarProductsProps> = ({
                 {title || t('similar_products.title')}
             </h2>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-4 lg:gap-12">
                 {products.map((product) => (
                     <ProductCard
                         key={product.id}

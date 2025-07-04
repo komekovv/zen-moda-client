@@ -26,7 +26,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
     };
 
     return (
-        <div className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4">
+        <div className="w-full flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4">
             {/* Thumbnail Images - Bottom on mobile, Left side on md+ */}
             <div className="flex space-x-2 overflow-x-auto md:flex-col md:space-x-0 md:space-y-2 md:overflow-y-auto order-2 md:order-1">
                 {images.map((image, index) => (

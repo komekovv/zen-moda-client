@@ -16,17 +16,24 @@ const ProductSpecifications: React.FC<ProductSpecificationsProps> = ({
                                                                      }) => {
     const t = useTranslations('product_detail');
 
+    const getSpecificationLabel = (key: string) => {
+        try {
+            return t(`specifications.${key}`);
+        } catch (error) {
+            return key;
+        }
+    };
+
     const renderSpecificationRow = (spec: Specification, index: number) => (
         <div
             key={spec.key}
-            className={`grid grid-cols-2 py-3 ${
-                index !== specifications.length - 1 ? 'border-b border-border' : ''
-            }`}
+            className="flex py-2"
         >
-            <div className="text-body-description text-black font-rubik">
-                {/*{t(`specifications.${spec.key}`, spec.key)}*/}
+            <div className="text-body-description text-passive font-rubik ">
+                {getSpecificationLabel(spec.key)}
             </div>
-            <div className="text-body-description text-black font-rubik">
+            <div className="flex-1 border-b border-accent-2 border-dashed min-w-[20px] mx-2"></div>
+            <div className="text-body-description text-black font-rubik flex-shrink-0 w-32">
                 {spec.value}
             </div>
         </div>
@@ -37,24 +44,22 @@ const ProductSpecifications: React.FC<ProductSpecificationsProps> = ({
     }
 
     return (
-        <div className="bg-white rounded-lg border border-border overflow-hidden mb-8">
-            <div className="bg-tab px-6 py-4 border-b border-border">
+        <div className="border-t border-border overflow-hidden mb-8">
+            <div className="py-4 border-b border-border">
                 <h2 className="text-h3 text-black font-rubik">
                     {t('specifications.title')}
                 </h2>
             </div>
 
-            <div className="px-6">
+            <div className="">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
-                    {/* Left Column */}
-                    <div>
+                    <div className="space-y-1">
                         {specifications.slice(0, Math.ceil(specifications.length / 2)).map((spec, index) =>
                             renderSpecificationRow(spec, index)
                         )}
                     </div>
 
-                    {/* Right Column */}
-                    <div>
+                    <div className="space-y-1">
                         {specifications.slice(Math.ceil(specifications.length / 2)).map((spec, index) =>
                             renderSpecificationRow(spec, index + Math.ceil(specifications.length / 2))
                         )}
