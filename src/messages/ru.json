@@ -93,5 +93,12 @@
       "home": "Главная",
       "brands": "Бренды"
     }
+  },
+  "stores": {
+    "title": "Magazinlar",
+    "breadcrumb": {
+      "home": "Öý",
+      "stores": "Magazinlar"
+    }
   }
 }

@@ -94,5 +94,12 @@
       "home": "Öý",
       "brands": "Brendler"
     }
+  },
+  "stores": {
+    "title": "Magazinlar",
+    "breadcrumb": {
+      "home": "Öý",
+      "stores": "Magazinlar"
+    }
   }
 }
