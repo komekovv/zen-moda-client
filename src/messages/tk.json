@@ -1,4 +1,14 @@
 {
+  "home": {
+    "loading": "Ýüklenýär...",
+    "error": "Ýalňyşlyk",
+    "something_went_wrong": "Bir zat nädogry boldy",
+    "no_products_available": "Elýeterli harytlar ýok",
+    "no_categories_available": "Elýeterli kategoriýalar ýok",
+    "no_brands_available": "Elýeterli brendler ýok",
+    "no_markets_available": "Elýeterli magazinler ýok",
+    "view_all": "Hemmesini görmek"
+  },
   "footer": {
     "help": {
       "title": "Kömek",

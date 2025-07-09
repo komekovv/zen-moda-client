@@ -20,7 +20,7 @@ export const Socks = socks as StaticImport;
 export const Sweater = sweater as StaticImport;
 export const Tshirt = tshirt as StaticImport;
 
-export const mockCategories: Category[] = [
+export const mockCategories = [
     {
         id: '1',
         name: 'Jeans',

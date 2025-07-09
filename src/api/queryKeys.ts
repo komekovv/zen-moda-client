@@ -6,23 +6,7 @@ export const AUTH_QUERY_KEYS = {
     USER_PAYMENT_METHODS: ['auth', 'user', 'payment-methods'],
 } as const;
 
-export const PRODUCT_QUERY_KEYS = {
-    ALL: ['products'],
-    LIST: (filters?: any) => [...PRODUCT_QUERY_KEYS.ALL, 'list', filters],
-    DETAIL: (id: string | number) => [...PRODUCT_QUERY_KEYS.ALL, 'detail', id],
-    CATEGORIES: ['products', 'categories'],
-    BRANDS: ['products', 'brands'],
-} as const;
-
-export const CART_QUERY_KEYS = {
-    ALL: ['cart'],
-    ITEMS: ['cart', 'items'],
-    COUNT: ['cart', 'count'],
-} as const;
-
-export const ORDER_QUERY_KEYS = {
-    ALL: ['orders'],
-    LIST: (filters?: any) => [...ORDER_QUERY_KEYS.ALL, 'list', filters],
-    DETAIL: (id: string | number) => [...ORDER_QUERY_KEYS.ALL, 'detail', id],
-    HISTORY: ['orders', 'history'],
+export const HOME_QUERY_KEYS = {
+    HOME: ['home'] as const,
+    HOME_DATA: ['home', 'data'] as const,
 } as const;

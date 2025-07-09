@@ -9,7 +9,7 @@ import {StaticImport} from "next/dist/shared/lib/get-img-props";
 interface ProductCardProps {
     id: string;
     title: string;
-    image: StaticImport;
+    image: string | StaticImport;
     currentPrice: number;
     originalPrice?: number;
     discount?: number;

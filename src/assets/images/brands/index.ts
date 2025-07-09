@@ -7,7 +7,7 @@ import appleLogo from "@/assets/images/brands/apple-logo.png";
 import kotonLogo from "@/assets/images/brands/koton-logo.png";
 import damatLogo from "@/assets/images/brands/damat-logo.png";
 
-export const defaultBrands: Brand[] = [
+export const defaultBrands = [
     {
         id: '1',
         name: 'Reebok',

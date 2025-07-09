@@ -32,7 +32,8 @@ interface StoreCardProps {
     id: string;
     title: string;
     description: string;
-    image: StaticImport;
+    image: StaticImport | string;
+    isVerified: boolean;
     products: Product[];
     className?: string;
     onStoreClick?: (id: string) => void;
@@ -49,8 +50,6 @@ const StoreCard: React.FC<StoreCardProps> = ({
                                                  onStoreClick,
                                                  onProductClick
                                              }) => {
-    const t = useTranslations('store_card');
-
     const handleStoreClick = (e: React.MouseEvent) => {
         // Only trigger store click if clicking on the store area, not product
         if (!(e.target as HTMLElement).closest('[data-product-click]')) {
@@ -94,7 +93,7 @@ const StoreCard: React.FC<StoreCardProps> = ({
 
             {/* Product Images */}
             <div className="flex justify-center gap-2">
-                {products.slice(0, 3).map((product) => (
+                {products?.slice(0, 3).map((product) => (
                     <div
                         key={product.id}
                         data-product-click

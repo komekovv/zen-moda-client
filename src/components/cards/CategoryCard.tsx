@@ -6,7 +6,7 @@ import { ImageI } from "@/types/types";
 export interface Category {
     id: string;
     name: string;
-    photos: ImageI;
+    photos: string;
 }
 
 interface CategoryCardProps {
@@ -18,7 +18,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                                                        category,
                                                        className = '',
                                                    }) => {
-    const categoryImage = category.photos && category.photos.path;
+    const categoryImage = category.photos && category.photos;
 
     return (
         <Link href={`/category/${category.id}`}>

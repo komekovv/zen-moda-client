@@ -1,4 +1,14 @@
 {
+  "home": {
+    "loading": "Загрузка...",
+    "error": "Ошибка",
+    "something_went_wrong": "Что-то пошло не так",
+    "no_products_available": "Нет доступных товаров",
+    "no_categories_available": "Нет доступных категорий",
+    "no_brands_available": "Нет доступных брендов",
+    "no_markets_available": "Нет доступных магазинов",
+    "view_all": "Посмотреть все"
+  },
   "footer": {
     "help": {
       "title": "Помощь",

@@ -1,302 +1,386 @@
 'use client'
-import {mockStores} from "@/assets/images/stores"
-import {mockCategories} from "@/assets/images/categories"
-import Image, {StaticImageData} from "next/image";
-import {Swiper, SwiperSlide} from 'swiper/react';
-import {useTranslations} from 'next-intl';
+import Image from "next/image";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { useTranslations, useLocale } from 'next-intl';
 import ProductCard from '@/components/cards/ProductCard';
 import BrandCard from "@/components/cards/BrandCard";
 import React from "react";
 import CategoryCard from "@/components/cards/CategoryCard";
 import StoreCard from "@/components/cards/StoreCard";
-import {defaultBrands} from "@/assets/images/brands";
-import {products, sampleProducts} from "@/assets/images/products";
-import {Banner1, Banner3, Banner4, Banner5, Banner6, Banner7, Banner8} from "@/assets/images/banners";
+import { Banner1 } from "@/assets/images/banners";
+import { useHomeData } from '@/hooks/useHome';
+import { HomeSection } from '@/api/queryTypes/Home';
+import { getLocalizedText } from '@/lib/utils/helpers';
+
+const SectionSkeleton = () => (
+    <div className="animate-pulse">
+        <div className="h-8 bg-gray-200 rounded w-64 mb-8"></div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
+            {Array.from({ length: 6 }).map((_, index) => (
+                <div key={index} className="bg-gray-200 h-40 w-40 rounded-lg"></div>
+            ))}
+        </div>
+    </div>
+);
+
+const SectionError = ({ error }: { error: string }) => (
+    <div className="text-center py-8">
+        <div className="text-red-500 mb-4">{error}</div>
+        <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-primary text-white rounded hover:bg-blue-600"
+        >
+            Retry
+        </button>
+    </div>
+);
 
 export default function Home() {
     const t = useTranslations('home');
+    const locale = useLocale();
+
+    const {
+        data: homeData,
+        isLoading,
+        isError,
+        error
+    } = useHomeData();
 
     const handleFavoriteToggle = (productId: string) => {
         console.log('Favorite toggled for product:', productId);
     };
 
+    if (isLoading) {
+        return (
+            <div>
+                <div className={`w-full h-[175px] md:h-full`}>
+                    <Image src={Banner1} alt={'banner'} className={`object-cover w-full h-full`}/>
+                </div>
+                <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8`}>
+                    <SectionSkeleton />
+                    <div className="mt-12">
+                        <SectionSkeleton />
+                    </div>
+                    <div className="mt-12">
+                        <SectionSkeleton />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (isError) {
+        return (
+            <div>
+                <div className={`w-full h-[175px] md:h-full`}>
+                    <Image src={Banner1} alt={'banner'} className={`object-cover w-full h-full`}/>
+                </div>
+                <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8`}>
+                    <SectionError error={error?.message || t('something_went_wrong')} />
+                </div>
+            </div>
+        );
+    }
+
+    const renderSection = (section: HomeSection, index: number) => {
+        const sectionTitle = section.title;
+        const marginClass = index === 0 ? "mb-8 mt-4" : "mb-8 mt-12";
+
+        switch (section.type) {
+            case 'specially_for_you':
+                return (
+                    <div key={section.slug} className={marginClass}>
+                        <h2 className="heading-main-page mb-8">{sectionTitle}</h2>
+                        {section.products && section.products.length > 0 ? (
+                            <Swiper
+                                spaceBetween={20}
+                                slidesPerView={6}
+                                freeMode={true}
+                                autoplay={false}
+                                breakpoints={{
+                                    320: { slidesPerView: 2.5, spaceBetween: 15 },
+                                    640: { slidesPerView: 3, spaceBetween: 15 },
+                                    768: { slidesPerView: 3, spaceBetween: 20 },
+                                    1024: { slidesPerView: 6, spaceBetween: 20 }
+                                }}
+                                className="product-slider"
+                            >
+                                {section.products.map((product) => (
+                                    <SwiperSlide key={product.id}>
+                                        <ProductCard
+                                            id={product.id}
+                                            originalPrice={product.originalPrice}
+                                            currentPrice={product.originalPrice as number}
+                                            discount={product.discount}
+                                            image={product.images[0]?.path || ''}
+                                            isOnSale={product.isSale}
+                                            rating={product.rating}
+                                            reviewCount={product.reviewCount}
+                                            isFavorite={product.isFavorite}
+                                            onFavoriteToggle={handleFavoriteToggle}
+                                            title={getLocalizedText(product.name, locale)}
+                                        />
+                                    </SwiperSlide>
+                                ))}
+                            </Swiper>
+                        ) : (
+                            <div className="text-center py-8 text-gray-500">
+                                {t('no_products_available')}
+                            </div>
+                        )}
+                    </div>
+                );
+
+            case 'popular_categories':
+                return (
+                    <div key={section.slug} className={marginClass}>
+                        <h2 className="heading-main-page mb-8">{sectionTitle}</h2>
+                        {section.categories?.data && section.categories.data.length > 0 ? (
+                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 2xl:grid-cols-10 gap-4 md:gap-6">
+                                {section.categories.data.map((category, categoryIndex) => (
+                                    <CategoryCard
+                                        key={`${category.catalogId}-${categoryIndex}`}
+                                        category={{
+                                            id: category.catalogId || categoryIndex.toString(),
+                                            name: getLocalizedText(category.categoryName, locale),
+                                            photos: category.photos[0]?.path || '',
+                                        }}
+                                        className="w-full"
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-8 text-gray-500">
+                                {t('no_categories_available')}
+                            </div>
+                        )}
+                    </div>
+                );
+
+            case 'most_viewed':
+                return (
+                    <div key={section.slug} className={marginClass}>
+                        <h2 className="heading-main-page mb-8">{sectionTitle}</h2>
+                        {section.products && section.products.length > 0 ? (
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
+                                {section.products.map((product) => (
+                                    <ProductCard
+                                        id={product.id}
+                                        originalPrice={product.originalPrice}
+                                        currentPrice={product.originalPrice as number}
+                                        discount={product.discount}
+                                        image={product.images[0]?.path || ''}
+                                        isOnSale={product.isSale}
+                                        rating={product.rating}
+                                        reviewCount={product.reviewCount}
+                                        isFavorite={product.isFavorite}
+                                        onFavoriteToggle={handleFavoriteToggle}
+                                        title={getLocalizedText(product.name, locale)}
+                                        className={'w-full'}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-8 text-gray-500">
+                                {t('no_products_available')}
+                            </div>
+                        )}
+                    </div>
+                );
+
+            case 'brands':
+                return (
+                    <div key={section.slug} className={marginClass}>
+                        <h2 className="heading-main-page mb-8">{sectionTitle}</h2>
+                        {section.brands && section.brands.length > 0 ? (
+                            <Swiper
+                                spaceBetween={16}
+                                slidesPerView="auto"
+                                freeMode={true}
+                                autoplay={false}
+                                breakpoints={{
+                                    320: { slidesPerView: 2.5, spaceBetween: 12 },
+                                    640: { slidesPerView: 2.5, spaceBetween: 16 },
+                                    768: { slidesPerView: 3.2, spaceBetween: 16 },
+                                    1024: { slidesPerView: 4.2, spaceBetween: 20 },
+                                    1280: { slidesPerView: 5, spaceBetween: 20 },
+                                    1536: { slidesPerView: 5.5, spaceBetween: 24 }
+                                }}
+                                className="brand-slider"
+                            >
+                                {section.brands.map((brand, brandIndex) => (
+                                    <SwiperSlide key={brand.id}
+                                                 className="!w-auto min-w-[140px] sm:min-w-[160px] md:min-w-[180px] lg:min-w-[200px]">
+                                        <BrandCard
+                                            key={`${brand.id}-${brandIndex}`}
+                                            brand={{
+                                                id: brand.id,
+                                                name: brand.name,
+                                                photos: brand.photos[0]?.path || '',
+                                            }}
+                                        />
+                                    </SwiperSlide>
+                                ))}
+                            </Swiper>
+                        ) : (
+                            <div className="text-center py-8 text-gray-500">
+                                {t('no_brands_available')}
+                            </div>
+                        )}
+                    </div>
+                );
+
+            case 'markets':
+                return (
+                    <div key={section.slug} className={marginClass}>
+                        <h2 className="heading-main-page mb-8">{sectionTitle}</h2>
+                        {section.markets && section.markets.length > 0 ? (
+                            <>
+                                <div className="mb-4">
+                                    <Swiper
+                                        spaceBetween={16}
+                                        slidesPerView="auto"
+                                        freeMode={true}
+                                        autoplay={false}
+                                        breakpoints={{
+                                            320: { slidesPerView: 1.5, spaceBetween: 12 },
+                                            640: { slidesPerView: 2.5, spaceBetween: 16 },
+                                            768: { slidesPerView: 3, spaceBetween: 16 },
+                                            1024: { slidesPerView: 4, spaceBetween: 15 },
+                                            1280: { slidesPerView: 5, spaceBetween: 15 }
+                                        }}
+                                        className="store-slider"
+                                    >
+                                        {section.markets.map((market) => (
+                                            <SwiperSlide key={market.id}>
+                                                <StoreCard
+                                                    id={market.id}
+                                                    isVerified={market.isVerified ?? false}
+                                                    description={market.description}
+                                                    image={market.logoURL || ''}
+                                                    products={[]}
+                                                    title={market.name}
+                                                />
+                                            </SwiperSlide>
+                                        ))}
+                                    </Swiper>
+                                </div>
+                                {section.banners && section.banners.length > 0 && (
+                                    <Swiper
+                                        spaceBetween={16}
+                                        slidesPerView="auto"
+                                        freeMode={true}
+                                        autoplay={false}
+                                        breakpoints={{
+                                            320: { slidesPerView: 1, spaceBetween: 12 },
+                                            640: { slidesPerView: 1.5, spaceBetween: 16 },
+                                            768: { slidesPerView: 3, spaceBetween: 16 }
+                                        }}
+                                        className="banner-slider"
+                                    >
+                                        {section.banners.map((banner) => (
+                                            <SwiperSlide key={banner.id}>
+                                                <Image
+                                                    src={banner.photos.path}
+                                                    alt={banner.name}
+                                                    className={'rounded-lg'}
+                                                    width={400}
+                                                    height={200}
+                                                />
+                                            </SwiperSlide>
+                                        ))}
+                                    </Swiper>
+                                )}
+                            </>
+                        ) : (
+                            <div className="text-center py-8 text-gray-500">
+                                {t('no_markets_available')}
+                            </div>
+                        )}
+                    </div>
+                );
+
+            case 'cheap_products':
+                return (
+                    <div key={section.slug} className={marginClass}>
+                        <h2 className="heading-main-page mb-8">{sectionTitle}</h2>
+                        {section.products && section.products.length > 0 ? (
+                            <>
+                                {/* Banners for cheap products section */}
+                                {section.banners && section.banners.length > 0 && (
+                                    <div className="mb-4">
+                                        <Swiper
+                                            spaceBetween={16}
+                                            slidesPerView="auto"
+                                            freeMode={true}
+                                            autoplay={false}
+                                            breakpoints={{
+                                                320: { slidesPerView: 1, spaceBetween: 12 },
+                                                640: { slidesPerView: 1.5, spaceBetween: 16 },
+                                                768: { slidesPerView: 3, spaceBetween: 16 }
+                                            }}
+                                        >
+                                            {section.banners.map((banner) => (
+                                                <SwiperSlide key={banner.id}>
+                                                    <Image
+                                                        src={banner.photos.path}
+                                                        alt={banner.name}
+                                                        className={'rounded-lg'}
+                                                        width={400}
+                                                        height={200}
+                                                    />
+                                                </SwiperSlide>
+                                            ))}
+                                        </Swiper>
+                                    </div>
+                                )}
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
+                                    {section.products.map((product) => (
+                                        <ProductCard
+                                            id={product.id}
+                                            originalPrice={product.originalPrice}
+                                            currentPrice={product.originalPrice as number}
+                                            discount={product.discount}
+                                            image={product.images[0]?.path || ''}
+                                            isOnSale={product.isSale}
+                                            rating={product.rating}
+                                            reviewCount={product.reviewCount}
+                                            isFavorite={product.isFavorite}
+                                            onFavoriteToggle={handleFavoriteToggle}
+                                            title={getLocalizedText(product.name, locale)}
+                                            className="w-full"
+                                        />
+                                    ))}
+                                </div>
+                            </>
+                        ) : (
+                            <div className="text-center py-8 text-gray-500">
+                                {t('no_products_available')}
+                            </div>
+                        )}
+                    </div>
+                );
+
+            default:
+                return null;
+        }
+    };
+
     return (
         <div>
+            {/* Hero Banner */}
             <div className={`w-full h-[175px] md:h-full`}>
                 <Image src={Banner1} alt={'banner'} className={`object-cover w-full h-full`}/>
             </div>
 
             <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8`}>
-                <div className="mb-8 mt-4">
-                    <h2 className="heading-main-page mb-8">Ýörite siziň üçin</h2>
-                    <Swiper
-                        spaceBetween={20}
-                        slidesPerView={6}
-                        freeMode={true}
-                        autoplay={false}
-                        breakpoints={{
-                            // Mobile
-                            320: {
-                                slidesPerView: 2.5,
-                                spaceBetween: 15,
-                            },
-                            // Small tablets
-                            640: {
-                                slidesPerView: 3,
-                                spaceBetween: 15,
-                            },
-                            // Tablets
-                            768: {
-                                slidesPerView: 3,
-                                spaceBetween: 20,
-                            },
-                            // Small desktop
-                            1024: {
-                                slidesPerView: 6,
-                                spaceBetween: 20,
-                            }
-                        }}
-                        className="product-slider"
-                    >
-                        {sampleProducts.map((product) => (
-                            <SwiperSlide key={product.id}>
-                                <ProductCard
-                                    {...product}
-                                    onFavoriteToggle={handleFavoriteToggle}
-                                />
-                            </SwiperSlide>
-                        ))}
-                    </Swiper>
-                </div>
+                {homeData?.map((section, index) => renderSection(section, index))}
 
-                <div className="mb-8 mt-12">
-                    <h2 className="heading-main-page mb-8">Köp görülýän kategoriýalar</h2>
-
-                    <div
-                        className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 2xl:grid-cols-10 gap-4 md:gap-6">
-                        {mockCategories.map((category) => (
-                            <CategoryCard
-                                key={category.id}
-                                category={category}
-                                className="w-full"
-                            />
-                        ))}
+                {(!homeData || homeData.length === 0) && (
+                    <div className="text-center py-16 text-gray-500">
+                        <p className="text-lg">{t('no_products_available')}</p>
                     </div>
-                </div>
-
-                <div className="mb-8 mt-12">
-                    <h2 className="heading-main-page mb-8">Iň köp görülen harytlar</h2>
-                    <div
-                        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
-                        {sampleProducts.map((product) => (
-                            <ProductCard
-                                key={product.id}
-                                {...product}
-                                onFavoriteToggle={handleFavoriteToggle}
-                                className="w-full"
-                            />
-                        ))}
-                    </div>
-                </div>
-
-                <div className="mb-8 mt-12">
-                    <h2 className="heading-main-page mb-8">Brendlar</h2>
-                    <Swiper
-                        spaceBetween={16}
-                        slidesPerView="auto"
-                        freeMode={true}
-                        autoplay={false}
-                        breakpoints={{
-                            // Mobile
-                            320: {
-                                slidesPerView: 2.5,
-                                spaceBetween: 12,
-                            },
-                            // Small tablets
-                            640: {
-                                slidesPerView: 2.5,
-                                spaceBetween: 16,
-                            },
-                            // Tablets
-                            768: {
-                                slidesPerView: 3.2,
-                                spaceBetween: 16,
-                            },
-                            // Small desktop
-                            1024: {
-                                slidesPerView: 4.2,
-                                spaceBetween: 20,
-                            },
-                            // Medium desktop
-                            1280: {
-                                slidesPerView: 5,
-                                spaceBetween: 20,
-                            },
-                            // Large desktop
-                            1536: {
-                                slidesPerView: 5.5,
-                                spaceBetween: 24,
-                            },
-                        }}
-                        className="brand-slider"
-                    >
-                        {defaultBrands.map((brand, index) => (
-                            <SwiperSlide key={brand.id}
-                                         className="!w-auto min-w-[140px] sm:min-w-[160px] md:min-w-[180px] lg:min-w-[200px]">
-                                <BrandCard
-                                    key={`${brand.id}-${index}`}
-                                    brand={brand}
-                                />
-                            </SwiperSlide>
-                        ))}
-                    </Swiper>
-                </div>
-
-                <div className="mb-8 mt-12">
-                    <h2 className="heading-main-page mb-8">300 TMT aşakday harytlar</h2>
-                    <div
-                        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
-                        {sampleProducts.map((product) => (
-                            <ProductCard
-                                key={product.id}
-                                {...product}
-                                onFavoriteToggle={handleFavoriteToggle}
-                                className="w-full"
-                            />
-                        ))}
-                    </div>
-                </div>
-
-                <div className="mb-8 mt-12">
-                    <h2 className="heading-main-page mb-8">Magazinler</h2>
-                    <div className="mb-4">
-                        <Swiper
-                            spaceBetween={16}
-                            slidesPerView="auto"
-                            freeMode={true}
-                            autoplay={false}
-                            breakpoints={{
-                                // Mobile
-                                320: {
-                                    slidesPerView: 1.5,
-                                    spaceBetween: 12,
-                                },
-                                // Small tablets
-                                640: {
-                                    slidesPerView: 2.5,
-                                    spaceBetween: 16,
-                                },
-                                // Tablets
-                                768: {
-                                    slidesPerView: 3,
-                                    spaceBetween: 16,
-                                },
-                                // Small desktop
-                                1024: {
-                                    slidesPerView: 4,
-                                    spaceBetween: 15,
-                                },
-                                // Medium desktop
-                                1280: {
-                                    slidesPerView: 5,
-                                    spaceBetween: 15,
-                                },
-                            }}
-                            className="store-slider"
-                        >
-                            {mockStores.map((store, index) => (
-                                <SwiperSlide key={store.id}
-                                             >
-                                    <StoreCard
-                                        {...store}
-                                    />
-                                </SwiperSlide>
-                            ))}
-                        </Swiper>
-                    </div>
-                    <Swiper
-                        spaceBetween={16}
-                        slidesPerView="auto"
-                        freeMode={true}
-                        autoplay={false}
-                        breakpoints={{
-                            // Mobile
-                            320: {
-                                slidesPerView: 1,
-                                spaceBetween: 12,
-                            },
-                            // Small tablets
-                            640: {
-                                slidesPerView: 1.5,
-                                spaceBetween: 16,
-                            },
-                            // Tablets
-                            768: {
-                                slidesPerView: 3,
-                                spaceBetween: 16,
-                            },
-                        }}
-                        className="brand-slider"
-                    >
-                        <SwiperSlide>
-                            <Image src={Banner3} alt={'banner'} className={'rounded-lg'}/>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <Image src={Banner4} alt={'banner'} className={'rounded-lg'}/>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <Image src={Banner5} alt={'banner'} className={'rounded-lg'}/>
-                        </SwiperSlide>
-                    </Swiper>
-                </div>
-                <div className="mb-8 mt-12">
-                    <h2 className="heading-main-page mb-8">Ýörite siziň üçin</h2>
-                    <Swiper
-                        spaceBetween={16}
-                        slidesPerView="auto"
-                        freeMode={true}
-                        autoplay={false}
-                        breakpoints={{
-                            // Mobile
-                            320: {
-                                slidesPerView: 1,
-                                spaceBetween: 12,
-                            },
-                            // Small tablets
-                            640: {
-                                slidesPerView: 1.5,
-                                spaceBetween: 16,
-                            },
-                            // Tablets
-                            768: {
-                                slidesPerView: 3,
-                                spaceBetween: 16,
-                            },
-                        }}
-                    >
-                        <SwiperSlide>
-                            <Image src={Banner6} alt={'banner'} className={'rounded-lg'}/>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <Image src={Banner7} alt={'banner'} className={'rounded-lg'}/>
-                        </SwiperSlide>
-                        <SwiperSlide>
-                            <Image src={Banner8} alt={'banner'} className={'rounded-lg'}/>
-                        </SwiperSlide>
-                    </Swiper>
-                    <div
-                        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6 mt-4">
-                        {products.map((product) => (
-                            <ProductCard
-                                key={product.id}
-                                {...product}
-                                onFavoriteToggle={handleFavoriteToggle}
-                                className="w-full"
-                            />
-                        ))}
-                    </div>
-                </div>
-                {/*<Image src={banner2 as StaticImageData} alt={''}/>*/}
+                )}
             </div>
         </div>
     );

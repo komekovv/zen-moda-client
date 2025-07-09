@@ -2,7 +2,6 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import BrandCard, { Brand } from '@/components/cards/BrandCard';
-import {defaultBrands} from "@/assets/images/brands";
 import {ChevronRightIcon} from "lucide-react";
 import {Link} from "@/i18n/navigation";
 
@@ -32,14 +31,14 @@ const BrandPage: React.FC = () => {
                 </div>
 
                 {/* Brands Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-16">
-                    {defaultBrands.map((brand) => (
-                        <BrandCard
-                            key={brand.id}
-                            brand={brand}
-                        />
-                    ))}
-                </div>
+                {/*<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-16">*/}
+                {/*    {defaultBrands.map((brand) => (*/}
+                {/*        <BrandCard*/}
+                {/*            key={brand.id}*/}
+                {/*            brand={brand}*/}
+                {/*        />*/}
+                {/*    ))}*/}
+                {/*</div>*/}
             </div>
         </div>
     );
