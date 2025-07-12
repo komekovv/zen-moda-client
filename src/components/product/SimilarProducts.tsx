@@ -34,7 +34,7 @@ const SimilarProducts: React.FC<SimilarProductsProps> = ({
 
     return (
         <div className="mb-8">
-            <h2 className="text-h3 text-black font-rubik mb-6">
+            <h2 className="text-h3-mobile md:text-h3 text-black font-rubik mb-6">
                 {title || t('similar_products.title')}
             </h2>
 

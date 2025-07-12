@@ -16,6 +16,7 @@ import {Link, usePathname} from "@/i18n/navigation";
 import {useCatalogs} from "@/hooks/useCatalogs";
 import {transformCatalogsToNavigation} from "@/lib/utils/catalogUtils";
 import {useTranslations, useLocale} from "next-intl";
+import {SupportedLocales} from "@/types/types";
 
 // Types
 interface HeaderProps {
@@ -34,7 +35,7 @@ interface HeaderProps {
         label: string;
     }>;
     selectedLanguage?: string;
-    onLanguageChange?: (language: string) => void;
+    onLanguageChange?: (language: SupportedLocales) => void;
     onSearch?: (query: string) => void;
     onSubCategoryClick?: (category: string, subcategory: string, item: string) => void;
 }
@@ -213,7 +214,7 @@ const Header: React.FC<HeaderProps> = ({
                                                 <button
                                                     key={lang.code}
                                                     onClick={() => {
-                                                        if (onLanguageChange) onLanguageChange(lang.code);
+                                                        if (onLanguageChange) onLanguageChange(lang.code as SupportedLocales);
                                                         setIsLanguageDropdownOpen(false);
                                                     }}
                                                     className="block w-full text-left px-3 py-2 font-rubik text-small text-black hover:bg-blue-shade-1 transition-colors"

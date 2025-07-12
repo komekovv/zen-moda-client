@@ -58,7 +58,7 @@
     },
     "info": {
       "code": "Код",
-      "last_update": "Последнее обновление",
+      "delivery_time": "Eltip berilmeli wagty:",
       "reviews": "отзывов",
       "reviews_link": "32 Отзыва (4.2)",
       "installment": "Рассрочка",
@@ -91,7 +91,7 @@
       "show_less": "Показать меньше"
     },
     "store": {
-      "reviews": "Үлаагийн",
+      "followers": "Yzarlaýjy",
       "visit_store": "Магазина гир"
     },
     "similar_products": {

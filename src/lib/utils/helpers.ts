@@ -1,5 +1,5 @@
 import {RequestCookie} from "next/dist/compiled/@edge-runtime/cookies";
-import {SupportedLocales} from "@/types/types";
+import {LocalizedText, SupportedLocales} from "@/types/types";
 
 export const CheckObjOrArrForNull = (obj_or_arr: any) => {
     if (obj_or_arr !== null && obj_or_arr !== undefined) {
@@ -14,13 +14,13 @@ export const isUndefined = (data: any): data is undefined | null => {
 };
 
 export const getLocalizedText = (
-    text: Record<string, SupportedLocales>,
+    text: LocalizedText,
     locale: string = 'tk'
 ): string => {
     if (!text) return '';
 
-    if (text[locale as keyof Record<string, SupportedLocales>]) {
-        return text[locale as keyof Record<string, SupportedLocales>];
+    if (text[locale as SupportedLocales]) {
+        return text[locale as SupportedLocales];
     }
 
     return text.tk || text.ru || '';

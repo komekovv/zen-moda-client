@@ -1,129 +1,136 @@
-'use client'
-import React, { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import React from 'react';
+import Rating from '@/components/ui/Rating';
+import {StaticImport} from "next/dist/shared/lib/get-img-props";
+import Image from "next/image";
 
 interface Review {
     id: string;
-    userName: string;
+    user: string;
     rating: number;
-    date: string;
     comment: string;
-    verified?: boolean;
+    date: string;
 }
 
-interface ProductReviewsProps {
-    reviews: Review[];
+interface ProductInfo {
+    image: string | StaticImport;
+    brand: string;
+    name: string;
     rating: number;
     reviewCount: number;
 }
 
+interface ProductReviewsProps {
+    product: ProductInfo;
+    reviews: Review[];
+    totalReviews?: number;
+    onViewAll?: () => void;
+}
+
 const ProductReviews: React.FC<ProductReviewsProps> = ({
-                                                           reviews,
-                                                           rating,
-                                                           reviewCount
+                                                           product = {
+                                                               image: '/adidas-shoe.jpg',
+                                                               brand: 'Adidas',
+                                                               name: 'Adidas. Erkek sport aýakgaby 55562- VR02 Gara renkli aýakgap Sport',
+                                                               rating: 4.3,
+                                                               reviewCount: 213
+                                                           },
+                                                           reviews = [
+                                                               {
+                                                                   id: '1',
+                                                                   rating: 5,
+                                                                   comment: 'Diam, nisl iaculis arcu vitae egestas dolor magna risus neque suscipit magnis neque quis velit a odi morbi enim, urna adipiscing risus orci magna magna',
+                                                                   user: 'Aman Amanow',
+                                                                   date: '16.03.2021'
+                                                               },
+                                                               {
+                                                                   id: '2',
+                                                                   rating: 5,
+                                                                   comment: 'Diam, nisl iaculis arcu vitae egestas dolor magna risus neque suscipit magnis neque quis velit a odi morbi enim, urna adipiscing risus orci magna magna',
+                                                                   user: 'Aman Amanow',
+                                                                   date: '16.03.2021'
+                                                               },
+                                                               {
+                                                                   id: '3',
+                                                                   rating: 5,
+                                                                   comment: 'Diam, nisl iaculis arcu vitae egestas dolor magna risus neque suscipit magnis neque quis velit a odi morbi enim, urna adipiscing risus orci magna magna',
+                                                                   user: 'Aman Amanow',
+                                                                   date: '16.03.2021'
+                                                               }
+                                                           ],
+                                                           totalReviews = 213,
+                                                           onViewAll
                                                        }) => {
-    const t = useTranslations('product_detail');
-    const [showAllReviews, setShowAllReviews] = useState(false);
-
-    const displayedReviews = showAllReviews ? reviews : reviews.slice(0, 3);
-
-    const renderStars = (rating: number) => {
-        const fullStars = Math.floor(rating);
-        const hasHalfStar = rating % 1 !== 0;
-        const emptyStars = 5 - Math.ceil(rating);
-
-        return (
-            <div className="flex">
-                {Array.from({ length: fullStars }).map((_, index) => (
-                    <svg
-                        key={`full-${index}`}
-                        className="w-4 h-4 fill-warning text-warning"
-                        viewBox="0 0 20 20"
-                    >
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                ))}
-                {hasHalfStar && (
-                    <div className="relative">
-                        <svg className="w-4 h-4 text-passive" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                        <div className="absolute inset-0 w-1/2 overflow-hidden">
-                            <svg className="w-4 h-4 fill-warning text-warning" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                        </div>
-                    </div>
-                )}
-                {Array.from({ length: emptyStars }).map((_, index) => (
-                    <svg
-                        key={`empty-${index}`}
-                        className="w-4 h-4 text-passive"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                    >
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                ))}
-            </div>
-        );
-    };
-
-    if (!reviews || reviews.length === 0) {
-        return null;
-    }
-
     return (
-        <div className="bg-white border-t border-border overflow-hidden mb-8">
-            <div className=" py-4 border-b border-border">
-                <div className="flex items-center justify-between">
-                    <h2 className="text-h3 text-black font-rubik">
-                        {t('reviews.title')}
-                    </h2>
-                    <div className="flex items-center gap-2">
-                        {renderStars(rating)}
-                        <span className="text-body-description text-black font-rubik ml-2">
-              {rating.toFixed(1)} ({reviewCount} {t('reviews.count')})
-            </span>
+        <div className="bg-white border-t border-[#E5E5E5] py-6 mb-4">
+            <div className="flex items-center justify-between mb-6">
+                <h2 className="text-[#161616] text-2xl font-bold">Teswir</h2>
+                <button
+                    className="text-[#A0A3BD] text-sm"
+                    onClick={onViewAll}
+                >
+                    Hemmesini gör ({totalReviews})
+                </button>
+            </div>
+
+            <div className="bg-[#F8F9FA] rounded-lg p-4 mb-6">
+                <div className="flex gap-4">
+                    <div className="w-20 h-20 bg-white rounded-lg border border-[#E5E5E5] flex items-center justify-center overflow-hidden">
+                        <Image
+                            width={200}
+                            height={200}
+                            src={product.image}
+                            alt={product.name}
+                            className="w-full h-full object-cover"
+                        />
+                    </div>
+
+                    <div className="flex-1">
+                        <div className="text-[#0762C8] font-semibold mb-1">
+                            {product.brand}
+                        </div>
+                        <div className="text-[#161616] text-sm mb-2">
+                            {product.name}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[#161616] font-semibold">
+                            {product.rating}
+                          </span>
+                            <Rating
+                                rating={product.rating}
+                                maxRating={5}
+                            />
+                            <span className="text-[#A0A3BD] text-sm">
+                                ({product.reviewCount} Teswir)
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div className="py-4">
-                <div className="space-y-6">
-                    {displayedReviews.map((review) => (
-                        <div key={review.id} className="border-b border-border last:border-b-0 pb-6 last:pb-0">
-                            <div className="flex items-start justify-between mb-2">
-                                <div>
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <h4 className="text-body-brand text-black font-rubik font-medium">
-                                            {review.userName}
-                                        </h4>
-                                    </div>
-                                    {renderStars(review.rating)}
-                                </div>
-                                <span className="text-small text-passive font-rubik">
-                  {review.date}
-                </span>
-                            </div>
-                            <p className="text-body-description text-black font-rubik leading-relaxed">
-                                {review.comment}
-                            </p>
+            <div className="space-y-6">
+                {reviews.map((review) => (
+                    <div key={review.id} className="border-b border-[#E5E5E5] last:border-b-0 pb-6 last:pb-0">
+                        <div className="mb-3">
+                            <Rating
+                                rating={review.rating}
+                                maxRating={5}
+                            />
                         </div>
-                    ))}
-                </div>
 
-                {reviews.length > 3 && (
-                    <button
-                        onClick={() => setShowAllReviews(!showAllReviews)}
-                        className="mt-6 text-primary font-rubik text-body-description font-medium hover:underline"
-                    >
-                        {showAllReviews
-                            ? t('reviews.show_less')
-                            : t('reviews.show_all', { count: reviews.length - 3 })
-                        }
-                    </button>
-                )}
+                        <p className="text-[#161616] mb-4 leading-relaxed">
+                            {review.comment}
+                        </p>
+
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-[#161616] font-medium">
+                            {review.user}
+                          </span>
+                          <span className="text-[#A0A3BD]">
+                            {review.date}
+                          </span>
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
     );

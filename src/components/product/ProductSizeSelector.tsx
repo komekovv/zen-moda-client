@@ -1,11 +1,15 @@
-'use client'
 import React from 'react';
-import { useTranslations } from 'next-intl';
+
+interface SizeOption {
+    id: string;
+    size: string;
+    available: boolean;
+}
 
 interface ProductSizeSelectorProps {
-    sizes: string[];
-    selectedSize: string;
-    onSizeSelect: (size: string) => void;
+    sizes: SizeOption[];
+    selectedSize?: string;
+    onSizeSelect?: (sizeId: string) => void;
 }
 
 const ProductSizeSelector: React.FC<ProductSizeSelectorProps> = ({
@@ -13,23 +17,40 @@ const ProductSizeSelector: React.FC<ProductSizeSelectorProps> = ({
                                                                      selectedSize,
                                                                      onSizeSelect
                                                                  }) => {
-    const t = useTranslations('product_detail');
+    const handleSizeSelect = (sizeId: string) => {
+        const size = sizes.find(s => s.id === sizeId);
+        if (size && size.available) {
+            onSizeSelect?.(sizeId);
+        }
+    };
+
+    const selectedSizeValue = sizes.find(s => s.id === selectedSize)?.size || '';
 
     return (
-        <div className="flex flex-wrap gap-2">
-            {sizes.map((size) => (
-                <button
-                    key={size}
-                    onClick={() => onSizeSelect(size)}
-                    className={`px-4 py-2 rounded-lg border transition-colors font-rubik text-body-description ${
-                        selectedSize === size
-                            ? 'bg-primary text-white border-primary'
-                            : 'bg-white text-black border-border hover:border-primary hover:bg-blue-shade-1'
-                    }`}
-                >
-                    {size}
-                </button>
-            ))}
+        <div>
+            <div className="mb-2 text-body-brand">
+                <span className="text-black">Razmer: </span>
+                <span className="text-passive">{selectedSizeValue}</span>
+            </div>
+
+            <div className="flex gap-3">
+                {sizes.map((size) => (
+                    <button
+                        key={size.id}
+                        className={`w-12 h-10 xl:h-12 xl:w-14 rounded-lg border border-border text-body-brand transition-colors ${
+                            selectedSize === size.id && size.available
+                                ? 'bg-primary text-white'
+                                : size.available
+                                    ? 'bg-white text-black hover:bg-gray-50'
+                                    : 'bg-tab text-passive cursor-not-allowed'
+                        }`}
+                        onClick={() => handleSizeSelect(size.id)}
+                        disabled={!size.available}
+                    >
+                        {size.size}
+                    </button>
+                ))}
+            </div>
         </div>
     );
 };

@@ -1,20 +1,17 @@
 // api/queryTypes/Catalog.ts
 
-export interface LocalizedString {
-    tk: string;
-    ru: string;
-}
+import {LocalizedText} from "@/types/types";
 
 export interface Subcategory {
     id: string;
-    name: LocalizedString;
+    name: LocalizedText;
     photo: string;
     order: string;
 }
 
 export interface Category {
     id: string;
-    name: LocalizedString;
+    name: LocalizedText;
     order: string;
     photo: string;
     subcategories: Subcategory[];
@@ -22,7 +19,7 @@ export interface Category {
 
 export interface Catalog {
     id: string;
-    name: LocalizedString;
+    name: LocalizedText;
     slug: string;
     order: string;
     categories: Category[];
@@ -33,7 +30,6 @@ export interface GetCatalogsResponse {
     totalCount: number;
 }
 
-// Helper types for navigation (unchanged)
 export interface NavigationSubcategory {
     name: string;
     items: string[];

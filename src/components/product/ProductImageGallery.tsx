@@ -26,8 +26,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
     };
 
     return (
-        <div className="w-full flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4">
-            {/* Thumbnail Images - Bottom on mobile, Left side on md+ */}
+        <div className="w-full flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4 gap-4 md:gap-0">
             <div className="flex space-x-2 overflow-x-auto md:flex-col md:space-x-0 md:space-y-2 md:overflow-y-auto order-2 md:order-1">
                 {images.map((image, index) => (
                     <button
@@ -49,7 +48,6 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
                 ))}
             </div>
 
-            {/* Main Image */}
             <div className="relative bg-blue-shade-1 border border-border overflow-hidden aspect-square flex-1 order-1 md:order-2">
                 <Image
                     src={images[selectedImageIndex]?.path || '/placeholder-product.jpg'}

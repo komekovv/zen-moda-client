@@ -4,21 +4,8 @@ import {
     Catalog,
     NavigationItem,
     NavigationSubcategory,
-    LocalizedString,
 } from '@/api/queryTypes/Catalog';
-
-/**
- * Get localized text based on locale
- */
-export const getLocalizedText = (
-    localizedString: LocalizedString,
-    locale: string
-): string => {
-    if (locale === 'ru' && localizedString.ru) {
-        return localizedString.ru;
-    }
-    return localizedString.tk || localizedString.ru || '';
-};
+import {getLocalizedText} from "@/lib/utils/helpers";
 
 /**
  * Transform API catalog data to navigation items for Header component

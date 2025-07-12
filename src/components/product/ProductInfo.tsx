@@ -1,10 +1,12 @@
 'use client'
-import React, { useState } from 'react';
-import { Heart, Share2 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import React, {useState} from 'react';
+import {Heart, Share2, Truck} from 'lucide-react';
+import {useLocale, useTranslations} from 'next-intl';
 import ProductSizeSelector from './ProductSizeSelector';
 import ProductColorSelector from './ProductColorSelector';
 import ProductActions from './ProductActions';
+import Rating from "@/components/ui/Rating";
+import {getLocalizedText} from "@/lib/utils/helpers";
 
 interface Product {
     id: string;
@@ -25,21 +27,19 @@ interface Product {
         name: string;
         rating: number;
     };
+    hasLowStock?: boolean;
 }
 
 interface ProductInfoProps {
     product: any;
 }
 
-const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
+const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     const t = useTranslations('product_detail');
+    const locale = useLocale();
     const [selectedSize, setSelectedSize] = useState<string>('');
     const [selectedColor, setSelectedColor] = useState<string>('');
     const [isFavorite, setIsFavorite] = useState(product.isFavorite || false);
-
-    const formatPrice = (price: number) => {
-        return `${price.toFixed(0)} TMT`;
-    };
 
     const handleFavoriteToggle = () => {
         setIsFavorite(!isFavorite);
@@ -54,102 +54,88 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
             });
         }
     };
-
-    const renderRating = () => {
-        const fullStars = Math.floor(product.rating);
-        const hasHalfStar = product.rating % 1 !== 0;
-        const emptyStars = 5 - Math.ceil(product.rating);
-
-        return (
-            <div className="flex items-center gap-1">
-                <div className="flex">
-                    {Array.from({ length: fullStars }).map((_, index) => (
-                        <svg
-                            key={`full-${index}`}
-                            className="w-4 h-4 fill-warning text-warning"
-                            viewBox="0 0 20 20"
-                        >
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                    ))}
-                    {hasHalfStar && (
-                        <div className="relative">
-                            <svg className="w-4 h-4 text-passive" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                            <div className="absolute inset-0 w-1/2 overflow-hidden">
-                                <svg className="w-4 h-4 fill-warning text-warning" viewBox="0 0 20 20">
-                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                </svg>
-                            </div>
-                        </div>
-                    )}
-                    {Array.from({ length: emptyStars }).map((_, index) => (
-                        <svg
-                            key={`empty-${index}`}
-                            className="w-4 h-4 text-passive"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                        >
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                    ))}
-                </div>
-                <span className="text-small text-black ml-2">{product.reviewCount} {t('info.reviews')}</span>
-            </div>
-        );
-    };
+    const localizedTitle = getLocalizedText(product.title, locale);
 
     return (
         <div className="space-y-6">
-            {/* Brand and Title */}
-            <div className={`border border-border rounded-lg p-4`}>
-                <h1 className="text-h2 text-primary font-rubik mb-2">{product.brand}</h1>
-                <p className="text-body-description text-black font-rubik">
-                    {product.title} • {t('info.code')}: {product.code}
-                </p>
-                <p className="text-small text-passive font-rubik">
-                    {t('info.last_update')}: 16.03.2021 - 18.03.2021
-                </p>
-            </div>
-
-            <div className={`border border-border rounded-lg p-4`}>
-                {/* Rating */}
-                <div className="flex items-center gap-4 ">
-                    {renderRating()}
-                    <span className="text-sale font-bold">{t('info.reviews_link')}</span>
+            <div className="bg-white border border-border rounded-lg p-6">
+                <div className="flex justify-between items-start mb-2">
+                    <h2 className="text-primary text-h2-mobile md:text-h2 font-bold font-rubik">
+                        {product.brand}
+                    </h2>
+                    {product.hasLowStock && (
+                        <span className="text-sale text-sm font-medium">
+                            Gutarýar
+                        </span>
+                    )}
                 </div>
 
-                {/* Price */}
-                <div className="flex items-center gap-4">
-                    <div className="bg-sale text-white px-3 py-1 rounded text-body-price font-rubik font-bold">
-                        TMT {formatPrice(product.currentPrice)}
-                    </div>
-                    <span className="text-small text-passive font-rubik">
-                      {t('info.installment')}: 0,23.59
+                <h3 className="text-black text-body-brand font-medium mb-2">
+                    {product.brand}. {localizedTitle}
+                </h3>
+
+                <div className="flex items-center gap-2 text-black">
+                    <Truck className="w-5 h-5"/>
+                    <span className="text-body-description">
+                      {t('info.delivery_time')} <span className="font-semibold"> 16.03.2021 - 18.03.2021</span>
                     </span>
                 </div>
             </div>
 
+            <div className="bg-white border border-border rounded-lg p-6">
+                <div className="flex items-center justify-between">
+                    <div className="">
+                        <div className={"flex items-center gap-4"}>
+                            <div className="bg-[#FC185B] text-white px-2 py-2 rounded-lg font-bold text-lg">
+                                {/*-{product.discountPercentage}%*/}
+                                -40%
+                            </div>
+
+                            <div className="flex flex-col">
+                                <div className="text-passive text-body-description-mobile line-through">
+                                    {product.currentPrice} TMT
+                                </div>
+                                <div className="text-sale text-body-price font-bold">
+                                    {product.currentPrice} TMT
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="mt-2 text-body-brand font-normal">
+                            <span className="text-black">Arzanladyş wagty: </span>
+                            <span className="text-warning font-rubik">
+                              {/*{product.countdownTime}*/} 01:23:59
+                            </span>
+                        </div>
+                    </div>
+
+                    <div className="h-16 w-px bg-border"></div>
+
+                    <div className="flex flex-col items-center gap-2">
+                        <Rating
+                            rating={product.rating}
+                            isLarge
+                        />
+                        <div className="text-black text-body-brand">
+                            {product.reviewCount} Teswir ({product.rating})
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {/* Color Selection */}
-            <div className={`border border-border rounded-lg p-4 space-y-4`}>
-                <div>
-                    <h3 className="text-body-brand text-black font-rubik mb-3">{t('info.color')}:</h3>
-                    <ProductColorSelector
-                        colors={product.colors}
-                        selectedColor={selectedColor}
-                        onColorSelect={setSelectedColor}
-                    />
-                </div>
-                {/* Size Selection */}
-                <div>
-                    <h3 className="text-body-brand text-black font-rubik mb-3">{t('info.size')}:</h3>
-                    <ProductSizeSelector
-                        sizes={product.sizes}
-                        selectedSize={selectedSize}
-                        onSizeSelect={setSelectedSize}
-                    />
-                </div>
+            <div className="bg-white border border-border rounded-lg p-6">
+                <ProductColorSelector
+                    colors={product.colors}
+                    selectedColor={selectedColor}
+                    onColorSelect={setSelectedColor}
+                />
+
+                <ProductSizeSelector
+                    sizes={product.sizes}
+                    selectedSize={selectedSize}
+                    onSizeSelect={setSelectedSize}
+                />
             </div>
 
 
@@ -179,7 +165,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
                     className="w-12 h-12 flex items-center justify-center border border-border rounded-lg hover:bg-blue-shade-1 transition-colors"
                     aria-label={t('info.share')}
                 >
-                    <Share2 className="w-6 h-6 text-passive hover:text-primary" />
+                    <Share2 className="w-6 h-6 text-passive hover:text-primary"/>
                 </button>
             </div>
         </div>

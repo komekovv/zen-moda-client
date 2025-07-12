@@ -58,7 +58,7 @@
     },
     "info": {
       "code": "Kod",
-      "last_update": "Soňky täzelenme",
+      "delivery_time": "Eltip berilmeli wagty:",
       "reviews": "syn",
       "reviews_link": "32 Syn (4.2)",
       "installment": "Bölüp tölemek",
@@ -92,7 +92,7 @@
       "show_less": "Az görkez"
     },
     "store": {
-      "reviews": "Syn",
+      "followers": "Yzarlaýjy",
       "visit_store": "Magazina gir"
     },
     "similar_products": {

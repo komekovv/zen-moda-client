@@ -46,7 +46,7 @@ const ProductSpecifications: React.FC<ProductSpecificationsProps> = ({
     return (
         <div className="border-t border-border overflow-hidden mb-8">
             <div className="py-4 border-b border-border">
-                <h2 className="text-h3 text-black font-rubik">
+                <h2 className="text-h3-mobile md:text-h3 text-black font-rubik">
                     {t('specifications.title')}
                 </h2>
             </div>

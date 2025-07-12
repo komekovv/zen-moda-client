@@ -1,18 +1,23 @@
 'use client'
 import React from 'react';
-import Image from 'next/image';
-import { useTranslations } from 'next-intl';
+import {StaticImport} from "next/dist/shared/lib/get-img-props";
+import Image from "next/image";
+import {LocalizedText} from "@/types/types";
+import {getLocalizedText} from "@/lib/utils/helpers";
+import {useLocale} from "next-intl";
 
-interface Color {
-    name: string;
-    hex: string;
-    image?: string;
+interface ColorOption {
+    id: string;
+    name: LocalizedText;
+    image: string | StaticImport;
+    available: boolean;
+    code: string;
 }
 
 interface ProductColorSelectorProps {
-    colors: Color[];
-    selectedColor: string;
-    onColorSelect: (colorName: string) => void;
+    colors: ColorOption[];
+    selectedColor?: string;
+    onColorSelect?: (colorId: string) => void;
 }
 
 const ProductColorSelector: React.FC<ProductColorSelectorProps> = ({
@@ -20,43 +25,57 @@ const ProductColorSelector: React.FC<ProductColorSelectorProps> = ({
                                                                        selectedColor,
                                                                        onColorSelect
                                                                    }) => {
-    const t = useTranslations('product_detail');
+    const locale = useLocale();
+    const handleColorSelect = (colorId: string) => {
+        const color = colors.find(c => c.id === colorId);
+        if (color && color.available) {
+            onColorSelect?.(colorId);
+        }
+    };
+
+    const selectedColorName = getLocalizedText(
+        colors.find(c => c.id === selectedColor)?.name || { tk: '', ru: '' },
+        locale
+    );
 
     return (
-        <div className="flex flex-wrap gap-3">
-            {colors.map((color) => (
-                <button
-                    key={color.name}
-                    onClick={() => onColorSelect(color.name)}
-                    className={`relative w-12 h-12 rounded-lg border-2 transition-all overflow-hidden ${
-                        selectedColor === color.name
-                            ? 'border-primary scale-110'
-                            : 'border-border hover:border-passive'
-                    }`}
-                    title={color.name}
-                    aria-label={`${t('color_selector.select')} ${color.name}`}
-                >
-                    {color.image ? (
-                        <Image
-                            src={color.image}
-                            alt={color.name}
-                            fill
-                            className="object-cover"
-                        />
-                    ) : (
-                        <div
-                            className="w-full h-full"
-                            style={{ backgroundColor: color.hex }}
-                        />
-                    )}
+        <div className="mb-2">
+            <div className="mb-4 text-body-brand">
+                <span className="text-black">Reňk: </span>
+                <span className="text-passive">{selectedColorName}</span>
+            </div>
 
-                    {selectedColor === color.name && (
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-3 h-3 bg-white rounded-full border border-black" />
+            <div className="flex gap-2">
+                {colors.map((color) => (
+                    <div
+                        key={color.id}
+                        className={`relative w-16 h-16 xl:h-20 xl:w-20 rounded-lg border-2 cursor-pointer transition-colors ${
+                            selectedColor === color.id
+                                ? 'border-primary'
+                                : 'border-border'
+                        } ${!color.available ? 'cursor-not-allowed' : ''}`}
+                        onClick={() => handleColorSelect(color.id)}
+                    >
+                        <div className="w-full h-full rounded-lg overflow-hidden">
+                            <Image
+                                width={200}
+                                height={200}
+                                src={color.image}
+                                alt={color.name.tk}
+                                className="w-full aspect-square object-cover"
+                            />
+                            {!color.available && (
+                                <div
+                                    className="absolute inset-0 rounded-lg"
+                                    style={{
+                                        background: 'linear-gradient(180deg, rgba(229, 229, 229, 0.5) 99.99%, rgba(255, 255, 255, 0) 100%)'
+                                    }}
+                                />
+                            )}
                         </div>
-                    )}
-                </button>
-            ))}
+                    </div>
+                ))}
+            </div>
         </div>
     );
 };

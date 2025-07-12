@@ -22,3 +22,5 @@ export interface ImageI {
 }
 
 export type SupportedLocales = typeof routing.locales[number];
+
+export type LocalizedText = Record<SupportedLocales, string>;

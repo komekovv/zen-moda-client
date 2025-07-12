@@ -1,4 +1,4 @@
-import {SupportedLocales} from "@/types/types";
+import {LocalizedText, SupportedLocales} from "@/types/types";
 
 export interface Photo {
     path: string;
@@ -8,7 +8,7 @@ export interface Photo {
 export interface Product {
     id: string;
     variantId: string;
-    name: Record<string, SupportedLocales>;
+    name: LocalizedText;
     description: string;
     slug: string | null;
     basePrice: string;
@@ -29,7 +29,7 @@ export interface Product {
 }
 
 export interface Category {
-    categoryName: Record<string, SupportedLocales>;
+    categoryName: LocalizedText;
     catalogId: string | null;
     productCount: number;
     viewCount: number;
@@ -69,7 +69,7 @@ export interface Banner {
 }
 
 export interface HomeSection {
-    // title: Record<string, SupportedLocales>;
+    // title: LocalizedText;
     title: string;
     slug: string;
     allBtn: boolean;

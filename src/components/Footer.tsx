@@ -146,7 +146,7 @@ const Footer: React.FC = () => {
                                     {t('contact.email')}
                                 </div>
                                 <a href="mailto:info@ZenModa.biz" className="hover:text-gray-900 transition-colors">
-                                    info@ZenModa.biz
+                                    info@ZenModa
                                 </a>
                             </div>
 
@@ -154,7 +154,7 @@ const Footer: React.FC = () => {
                                 <div className="font-medium text-gray-900">Instagram:</div>
                                 <a href="https://instagram.com/ZenModa.biz"
                                    className="hover:text-gray-900 transition-colors">
-                                    @ZenModa.biz
+                                    @ZenModa
                                 </a>
                             </div>
                         </div>

@@ -35,7 +35,6 @@ export type GenderType = 'male' | 'female';
 export interface UpdateProfileRequest {
     fullname: string;
     gender: GenderType;
-    // phone_number: string;
 }
 
 export interface UpdateProfileResponse {

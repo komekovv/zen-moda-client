@@ -1,15 +1,20 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocale } from "next-intl";
 import { getLocalizedText } from "@/lib/utils/helpers";
 import { SupportedLocales } from "@/types/types";
+import { useCatalogs } from "@/hooks/useCatalogs";
+import Image from "next/image";
 
 const CategoryPage = () => {
-    const [activeCatalogId, setActiveCatalogId] = useState('1');
-    const [activeCategoryId, setActiveCategoryId] = useState('1');
+    const [activeCatalogId, setActiveCatalogId] = useState('');
+    const [activeCategoryId, setActiveCategoryId] = useState('');
     const locale = useLocale();
 
-    // Updated data structure based on your API format
+    const { data: catalogsData, isLoading, error } = useCatalogs();
+
+    // Mock data (commented out for reference)
+    /*
     const mockData = {
         "data": [
             {
@@ -164,21 +169,77 @@ const CategoryPage = () => {
         ],
         "totalCount": 3
     };
+    */
 
-    // Get catalogs from the data
-    const catalogs = mockData.data.map(catalog => ({
+    // Set initial active catalog and category when data is loaded
+    useEffect(() => {
+        if (catalogsData?.data && catalogsData.data.length > 0) {
+            // Set first catalog as active if none is selected
+            if (!activeCatalogId) {
+                setActiveCatalogId(catalogsData.data[0].id);
+            }
+
+            // Set first category of active catalog if none is selected
+            const activeCatalog = catalogsData.data.find(catalog => catalog.id === activeCatalogId);
+            if (activeCatalog && activeCatalog.categories.length > 0 && !activeCategoryId) {
+                setActiveCategoryId(activeCatalog.categories[0].id);
+            }
+        }
+    }, [catalogsData, activeCatalogId, activeCategoryId]);
+
+    // Handle loading state
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <p className="text-gray-600">Loading catalogs...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Handle error state
+    if (error) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="text-red-500 mb-4">
+                        <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.732 15.5c-.77.833.192 2.5 1.732 2.5z" />
+                        </svg>
+                    </div>
+                    <p className="text-gray-600">Error loading catalogs. Please try again.</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Handle no data state
+    if (!catalogsData?.data || catalogsData.data.length === 0) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <p className="text-gray-600">No catalogs available.</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Get catalogs from the API data
+    const catalogs = catalogsData.data.map(catalog => ({
         id: catalog.id,
-        name: getLocalizedText(catalog.name as Record<string, SupportedLocales>, locale),
+        name: getLocalizedText(catalog.name, locale),
         slug: catalog.slug,
         order: catalog.order
     }));
 
     // Get categories for the active catalog
-    const activeCatalog = mockData.data.find(catalog => catalog.id === activeCatalogId);
+    const activeCatalog = catalogsData.data.find(catalog => catalog.id === activeCatalogId);
     const categories = activeCatalog ? activeCatalog.categories.map(category => ({
         id: category.id,
-        name: getLocalizedText(category.name as Record<string, SupportedLocales>, locale),
-        image: category.photo,
+        name: getLocalizedText(category.name, locale),
+        image: 'http://216.250.13.41:9090/' + category.photo,
         order: category.order
     })) : [];
 
@@ -186,8 +247,8 @@ const CategoryPage = () => {
     const activeCategory = activeCatalog?.categories.find(category => category.id === activeCategoryId);
     const subcategories = activeCategory ? activeCategory.subcategories.map(subcategory => ({
         id: subcategory.id,
-        title: getLocalizedText(subcategory.name as Record<string, SupportedLocales>, locale),
-        image: subcategory.photo,
+        title: getLocalizedText(subcategory.name, locale),
+        image: 'http://216.250.13.41:9090/' + subcategory.photo,
         order: subcategory.order
     })) : [];
 
@@ -215,7 +276,7 @@ const CategoryPage = () => {
                                 onClick={() => {
                                     setActiveCatalogId(catalog.id);
                                     // Reset category selection when changing catalog
-                                    const newCatalog = mockData.data.find(c => c.id === catalog.id);
+                                    const newCatalog = catalogsData.data.find(c => c.id === catalog.id);
                                     if (newCatalog && newCatalog.categories.length > 0) {
                                         setActiveCategoryId(newCatalog.categories[0].id);
                                     }
@@ -238,7 +299,7 @@ const CategoryPage = () => {
                                 key={catalog.id}
                                 onClick={() => {
                                     setActiveCatalogId(catalog.id);
-                                    const newCatalog = mockData.data.find(c => c.id === catalog.id);
+                                    const newCatalog = catalogsData.data.find(c => c.id === catalog.id);
                                     if (newCatalog && newCatalog.categories.length > 0) {
                                         setActiveCategoryId(newCatalog.categories[0].id);
                                     }
@@ -272,10 +333,12 @@ const CategoryPage = () => {
                                             : 'bg-gray-50'
                                     }`}
                                 >
-                                    <img
+                                    <Image
+                                        width={200}
+                                        height={200}
                                         src={category.image}
                                         alt={category.name}
-                                        className="w-10 h-10 rounded-lg object-cover"
+                                        className="aspect-square rounded-lg object-cover"
                                     />
                                     <span className="text-xs text-center text-gray-700 leading-tight">
                                         {category.name}
@@ -294,14 +357,16 @@ const CategoryPage = () => {
                             {categories.find(cat => cat.id === activeCategoryId)?.name || getLocalizedLabel('categories')}
                         </h2>
 
-                        {/* 2-column grid for mobile */}
+                        {/* 3-column grid for mobile */}
                         <div className="grid grid-cols-3 gap-3">
                             {subcategories.map((item) => (
                                 <div
                                     key={item.id}
                                     className="bg-white rounded-lg border border-gray-200 p-2 transition-shadow cursor-pointer"
                                 >
-                                    <img
+                                    <Image
+                                        width={200}
+                                        height={200}
                                         src={item.image}
                                         alt={item.title}
                                         className="w-full aspect-square object-cover rounded-lg mb-2"
@@ -319,7 +384,7 @@ const CategoryPage = () => {
                 <div className="hidden lg:flex w-full">
                     {/* Left Sidebar - Categories (Desktop) */}
                     <div className="w-64 bg-white border-r border-gray-200">
-                        <div className="p-4">
+                        <div className="p-4 h-screen">
                             <h3 className="text-lg font-semibold text-gray-900 mb-4">
                                 {getLocalizedLabel('categories')}
                             </h3>
