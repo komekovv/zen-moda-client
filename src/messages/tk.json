@@ -1,4 +1,16 @@
 {
+  "header": {
+    "help": "Kömek",
+    "stores": "Magazinler",
+    "my_subscriptions": "Ýazarlaýan magazinlarym",
+    "add_store": "Magazin goşmak",
+    "search_placeholder": "Şu yerden gözle",
+    "user_label": "Ulanyjy",
+    "profile": "Profil",
+    "logout": "Çykmak",
+    "menu": "Menu",
+    "navigation_error": "Nawigasiýa ýüklemekde ýalňyşlyk"
+  },
   "home": {
     "loading": "Ýüklenýär...",
     "error": "Ýalňyşlyk",
@@ -110,6 +122,55 @@
     "breadcrumb": {
       "home": "Öý",
       "stores": "Magazinlar"
+    }
+  },
+  "profile": {
+    "breadcrumb": {
+      "home": "Baş sahypa",
+      "personal_cabinet": "Şahsy otag"
+    },
+    "menu": {
+      "profile": "Profil",
+      "orders": "Sargytlarym",
+      "addresses": "Adreslerim",
+      "favorites": "Halanlaryм",
+      "bonuses": "Baha bermek",
+      "help": "Kömek"
+    },
+    "tabs": {
+      "profile": "Profil"
+    },
+    "sidebar": {
+      "title": "Şahsy otag"
+    },
+    "content": {
+      "profile_information": "Profil maglumatlarym"
+    },
+    "form": {
+      "full_name": "Doly adynyz",
+      "full_name_placeholder": "Doly adyňyzy giriziň",
+      "phone_number": "Telefon belgisi",
+      "phone_number_placeholder": "Telefon belgiňiz",
+      "phone_number_note": "Telefon belgisini üýtgedip bolmaýar. Üýtgetmek üçin goldaw gullugy bilen habarlaşyň.",
+      "gender": "Jynsynyz",
+      "gender_select": "Saýlaň",
+      "gender_male": "Erkek",
+      "gender_female": "Aýal"
+    },
+    "actions": {
+      "edit": "Üýtgetmek",
+      "save": "Ýatda sakla",
+      "cancel": "Ýatyr"
+    },
+    "messages": {
+      "profile_updated_success": "Profil üstünlikli täzelendi",
+      "profile_update_error": "Profil täzelemekde ýalňyşlyk boldy. Gaýtadan synanyşyň."
+    },
+    "loading": {
+      "user_data": "Ulanyjy maglumatlary ýüklenýär..."
+    },
+    "default": {
+      "unnamed_user": "Atsyz ulanyjy"
     }
   }
 }

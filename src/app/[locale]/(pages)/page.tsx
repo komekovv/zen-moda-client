@@ -109,14 +109,14 @@ export default function Home() {
                                     <SwiperSlide key={product.id}>
                                         <ProductCard
                                             id={product.id}
-                                            originalPrice={product.originalPrice}
-                                            currentPrice={product.originalPrice as number}
-                                            discount={product.discount}
+                                            originalPrice={product.discountPrice}
+                                            currentPrice={product.basePrice}
+                                            discount={product.discountPrice}
                                             image={product.images[0]?.path || ''}
                                             isOnSale={product.isSale}
                                             rating={product.rating}
                                             reviewCount={product.reviewCount}
-                                            isFavorite={product.isFavorite}
+                                            isFavorite={product.isInWishlist}
                                             onFavoriteToggle={handleFavoriteToggle}
                                             title={getLocalizedText(product.name, locale)}
                                         />
@@ -143,7 +143,7 @@ export default function Home() {
                                         category={{
                                             id: category.catalogId || categoryIndex.toString(),
                                             name: getLocalizedText(category.categoryName, locale),
-                                            photos: category.photos[0]?.path || '',
+                                            photo: category.photo|| '',
                                         }}
                                         className="w-full"
                                     />
@@ -166,17 +166,17 @@ export default function Home() {
                                 {section.products.map((product) => (
                                     <ProductCard
                                         id={product.id}
-                                        originalPrice={product.originalPrice}
-                                        currentPrice={product.originalPrice as number}
-                                        discount={product.discount}
+                                        originalPrice={product.discountPrice}
+                                        currentPrice={product.basePrice}
+                                        discount={product.discountPrice}
                                         image={product.images[0]?.path || ''}
                                         isOnSale={product.isSale}
                                         rating={product.rating}
                                         reviewCount={product.reviewCount}
-                                        isFavorite={product.isFavorite}
+                                        isFavorite={product.isInWishlist}
                                         onFavoriteToggle={handleFavoriteToggle}
                                         title={getLocalizedText(product.name, locale)}
-                                        className={'w-full'}
+                                        className="w-full"
                                     />
                                 ))}
                             </div>
@@ -216,7 +216,7 @@ export default function Home() {
                                             brand={{
                                                 id: brand.id,
                                                 name: brand.name,
-                                                photos: brand.photos[0]?.path || '',
+                                                photo: brand.photo || '',
                                             }}
                                         />
                                     </SwiperSlide>
@@ -281,7 +281,7 @@ export default function Home() {
                                         {section.banners.map((banner) => (
                                             <SwiperSlide key={banner.id}>
                                                 <Image
-                                                    src={banner.photos.path}
+                                                    src={banner.photos}
                                                     alt={banner.name}
                                                     className={'rounded-lg'}
                                                     width={400}
@@ -323,7 +323,7 @@ export default function Home() {
                                             {section.banners.map((banner) => (
                                                 <SwiperSlide key={banner.id}>
                                                     <Image
-                                                        src={banner.photos.path}
+                                                        src={banner.photos}
                                                         alt={banner.name}
                                                         className={'rounded-lg'}
                                                         width={400}
@@ -338,14 +338,14 @@ export default function Home() {
                                     {section.products.map((product) => (
                                         <ProductCard
                                             id={product.id}
-                                            originalPrice={product.originalPrice}
-                                            currentPrice={product.originalPrice as number}
-                                            discount={product.discount}
+                                            originalPrice={product.discountPrice}
+                                            currentPrice={product.basePrice}
+                                            discount={product.discountPrice}
                                             image={product.images[0]?.path || ''}
                                             isOnSale={product.isSale}
                                             rating={product.rating}
                                             reviewCount={product.reviewCount}
-                                            isFavorite={product.isFavorite}
+                                            isFavorite={product.isInWishlist}
                                             onFavoriteToggle={handleFavoriteToggle}
                                             title={getLocalizedText(product.name, locale)}
                                             className="w-full"

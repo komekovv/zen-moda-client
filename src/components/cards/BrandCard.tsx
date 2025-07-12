@@ -6,7 +6,7 @@ import { ImageI } from "@/types/types";
 export interface Brand {
     id: string;
     name: string;
-    photos: string;
+    photo: string;
 }
 
 interface BrandCardProps {
@@ -18,8 +18,8 @@ const BrandCard: React.FC<BrandCardProps> = ({
                                                  brand,
                                                  className = '',
                                              }) => {
-    const brandImage = brand.photos && brand.photos;
-    console.log(brand.photos)
+    const brandImage = brand.photo && brand.photo;
+    console.log(brand.photo)
 
     return (
         <Link href={`/brand/${brand.id}`} className="block">

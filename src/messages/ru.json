@@ -1,4 +1,16 @@
 {
+  "header": {
+    "help": "Помощь",
+    "stores": "Магазины",
+    "my_subscriptions": "Мои подписки",
+    "add_store": "Добавить магазин",
+    "search_placeholder": "Поиск по товарам",
+    "user_label": "Пользователь",
+    "profile": "Профиль",
+    "logout": "Выйти",
+    "menu": "Меню",
+    "navigation_error": "Ошибка загрузки навигации"
+  },
   "home": {
     "loading": "Загрузка...",
     "error": "Ошибка",
@@ -109,6 +121,55 @@
     "breadcrumb": {
       "home": "Öý",
       "stores": "Magazinlar"
+    }
+  },
+  "profile": {
+    "breadcrumb": {
+      "home": "Главная",
+      "personal_cabinet": "Личный кабинет"
+    },
+    "menu": {
+      "profile": "Профиль",
+      "orders": "Мои заказы",
+      "addresses": "Мои адреса",
+      "favorites": "Избранное",
+      "bonuses": "Оценки",
+      "help": "Помощь"
+    },
+    "tabs": {
+      "profile": "Профиль"
+    },
+    "sidebar": {
+      "title": "Личный кабинет"
+    },
+    "content": {
+      "profile_information": "Информация профиля"
+    },
+    "form": {
+      "full_name": "Полное имя",
+      "full_name_placeholder": "Введите ваше полное имя",
+      "phone_number": "Номер телефона",
+      "phone_number_placeholder": "Ваш номер телефона",
+      "phone_number_note": "Номер телефона нельзя изменить. Обратитесь в службу поддержки для изменения.",
+      "gender": "Пол",
+      "gender_select": "Выберите пол",
+      "gender_male": "Мужской",
+      "gender_female": "Женский"
+    },
+    "actions": {
+      "edit": "Редактировать",
+      "save": "Сохранить",
+      "cancel": "Отмена"
+    },
+    "messages": {
+      "profile_updated_success": "Профиль успешно обновлен",
+      "profile_update_error": "Ошибка при обновлении профиля. Попробуйте еще раз."
+    },
+    "loading": {
+      "user_data": "Загрузка данных пользователя..."
+    },
+    "default": {
+      "unnamed_user": "Пользователь без имени"
     }
   }
 }

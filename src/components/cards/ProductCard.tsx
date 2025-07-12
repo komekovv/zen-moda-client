@@ -10,9 +10,9 @@ interface ProductCardProps {
     id: string;
     title: string;
     image: string | StaticImport;
-    currentPrice: number;
-    originalPrice?: number;
-    discount?: number;
+    currentPrice: string;
+    originalPrice?: string;
+    discount?: string;
     rating?: number;
     reviewCount?: number;
     isOnSale?: boolean;
@@ -37,7 +37,7 @@ interface RatingProps {
 }
 
 interface DiscountBadgeProps {
-    discount: number;
+    discount: string;
 }
 
 const Timer: React.FC<TimerProps> = ({ endTime, onExpire }) => {
@@ -251,11 +251,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <div className="space-y-1">
                 <div className="flex items-center gap-2">
                     <span className="text-body-price text-sale font-rubik">
-                        {formatPrice(currentPrice)}
+                        {currentPrice}
                     </span>
                     {originalPrice && originalPrice > currentPrice && (
                         <span className="text-body-description text-passive line-through font-rubik">
-                            {formatPrice(originalPrice)}
+                            {currentPrice}
                         </span>
                     )}
                 </div>

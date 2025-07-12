@@ -7,17 +7,25 @@ export interface Photo {
 
 export interface Product {
     id: string;
+    variantId: string;
     name: Record<string, SupportedLocales>;
-    price: number;
-    originalPrice?: number;
-    discount?: number;
+    description: string;
+    slug: string | null;
+    basePrice: string;
+    discountPrice?: string;
+    discountPercentage?: number;
+    currency: string;
     images: Photo[];
     brand?: string;
-    isNew?: boolean;
-    isSale?: boolean;
     rating?: number;
     reviewCount?: number;
-    isFavorite?: boolean;
+    isNew?: boolean;
+    isFeatured?: boolean;
+    isRecommended?: boolean;
+    isInWishlist?: boolean;
+    isInCart?: boolean;
+    isInComparison?: boolean;
+    isSale?: boolean;
 }
 
 export interface Category {
@@ -25,7 +33,7 @@ export interface Category {
     catalogId: string | null;
     productCount: number;
     viewCount: number;
-    photos: Photo[];
+    photo: string;
 }
 
 export interface CategoriesData {
@@ -36,7 +44,7 @@ export interface CategoriesData {
 export interface Brand {
     id: string;
     name: string;
-    photos: {path: string; object_type: string}[];
+    photo: string;
 }
 
 export interface Market {
@@ -54,7 +62,7 @@ export interface Banner {
     id: number;
     name: string;
     description: string;
-    photos: {path: string; object_type: string};
+    photos: string;
     priority: number;
     link?: string;
     type?: string;

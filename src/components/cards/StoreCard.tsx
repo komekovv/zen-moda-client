@@ -11,8 +11,8 @@ interface Product {
     title: string;
     image: StaticImport;
     currentPrice: number;
-    originalPrice?: number;
-    discount?: number;
+    originalPrice?: string;
+    discount?: string;
     rating?: number;
     reviewCount?: number;
     isOnSale?: boolean;
@@ -107,7 +107,7 @@ const StoreCard: React.FC<StoreCardProps> = ({
                             id={product.id}
                             title={product.title}
                             image={product.image as StaticImport}
-                            currentPrice={product.currentPrice}
+                            currentPrice={String(product.currentPrice)}
                             originalPrice={product.originalPrice}
                             discount={product.discount}
                             rating={product.rating}

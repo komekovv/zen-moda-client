@@ -39,8 +39,8 @@ export const authService = {
      * Update user profile
      */
     updateProfile: async (data: UpdateProfileRequest): Promise<UpdateProfileResponse> => {
-        return api.post<UpdateProfileRequest, UpdateProfileResponse>({
-            url: '/auth/update-profile',
+        return api.put<UpdateProfileRequest, UpdateProfileResponse>({
+            url: '/user/profile',
             data
         });
     },

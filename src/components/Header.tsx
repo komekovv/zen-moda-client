@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import Link from 'next/link';
 import {Menu, X, ChevronDown, LogOut, User, ShoppingCart} from 'lucide-react';
 import {PhoneIcon} from "@/components/icons/PhoneIcon";
 import {SearchIcon} from "@/components/icons/SearchIcon";
@@ -15,21 +14,12 @@ import Image, {StaticImageData} from "next/image";
 import logo from "@/assets/logo.png"
 import {useLogin} from "@/hooks/useLogin";
 import {useClientAuth} from "@/contexts/auth-provider";
+import {Link} from "@/i18n/navigation";
+import {useCatalogs} from "@/hooks/useCatalogs";
+import {transformCatalogsToNavigation} from "@/lib/utils/catalogUtils";
+import {useTranslations, useLocale} from "next-intl";
 
 // Types
-interface SubCategory {
-    name: string;
-    items: string[];
-}
-
-interface NavigationItem {
-    id: string;
-    label: string;
-    href: string;
-    hasDropdown?: boolean;
-    subcategories?: SubCategory[];
-}
-
 interface HeaderProps {
     phoneNumber?: string;
     logoText?: string;
@@ -37,7 +27,6 @@ interface HeaderProps {
     searchPlaceholder?: string;
     cartItemCount?: number;
     wishlistItemCount?: number;
-    navigationItems?: NavigationItem[];
     topMenuItems?: Array<{
         label: string;
         href: string;
@@ -56,67 +45,14 @@ const Header: React.FC<HeaderProps> = ({
                                            phoneNumber = "+993 65 64 63 32",
                                            logoText = "ZEN MODA",
                                            logoHref = "/",
-                                           searchPlaceholder = "Şu yerden gözle",
+                                           searchPlaceholder,
                                            cartItemCount = 0,
                                            wishlistItemCount = 0,
-                                           navigationItems = [
-                                               {
-                                                   id: "ayal",
-                                                   label: "Ayal",
-                                                   href: "/ayal",
-                                                   hasDropdown: true,
-                                                   subcategories: [
-                                                       {
-                                                           name: 'Geyim',
-                                                           items: ['Geyim', 'Jyns', 'Balak', 'Futbolka', 'Tomus eşikler', 'Suw eşikler', 'Klassika', '80x eşikler', 'Sport eşikler', 'Jalbar', 'Beýlekiler']
-                                                       },
-                                                       {
-                                                           name: 'Aýakgap',
-                                                           items: ['Krasofka', 'Futbol aýakgap', 'Klassik köwüş', 'MB köwüş', 'Makasinalar', 'Tomus aýakgaplar']
-                                                       },
-                                                       {
-                                                           name: 'Aksesuarlar',
-                                                           items: ['Papka', 'Sumka', 'Sagat', 'Gapjyk']
-                                                       },
-                                                       {
-                                                           name: 'Iç geyim',
-                                                           items: ['Pejamalar', 'Içki eşik', 'Içki maýka', 'Jorap']
-                                                       }
-                                                   ]
-                                               },
-                                               {
-                                                   id: "erkek",
-                                                   label: "Erkek",
-                                                   href: "/erkek",
-                                                   hasDropdown: true,
-                                                   subcategories: [
-                                                       {
-                                                           name: 'Geyim',
-                                                           items: ['Geyim', 'Jyns', 'Balak', 'Futbolka', 'Tomus eşikler', 'Suw eşikler', 'Klassika']
-                                                       },
-                                                       {
-                                                           name: 'Aýakgap',
-                                                           items: ['Krasofka', 'Futbol aýakgap', 'Klassik köwüş', 'MB köwüş']
-                                                       },
-                                                       {
-                                                           name: 'Aksesuarlar',
-                                                           items: ['Sagat', 'Gapjyk', 'Papka']
-                                                       }
-                                                   ]
-                                               },
-                                               { id: "caga", label: "Çaga", href: "/caga" },
-                                               { id: "yetginjek", label: "Ýetginjek", href: "/yetginjek" },
-                                               { id: "ayakgap", label: "Aýakgap", href: "/ayakgap" },
-                                               { id: "sumka", label: "Sumka/Aksessuar", href: "/sumka-aksessuar" },
-                                               { id: "kitap", label: "Kitap", href: "/kitap" },
-                                               { id: "elektronika", label: "Elektronika", href: "/elektronika" },
-                                               { id: "arzanladyslar", label: "Arzanladyşlar", href: "/arzanladyslar" }
-                                           ],
                                            topMenuItems = [
-                                               { label: "Kömek", href: "/help" },
-                                               { label: "Magazinler", href: "/stores" },
-                                               { label: "Ýazarlaýan magazinlarým", href: "/my-subscriptions" },
-                                               { label: "Magazin goşmak", href: "/add-store" }
+                                               { label: "help", href: "/help" },
+                                               { label: "stores", href: "/stores" },
+                                               { label: "my_subscriptions", href: "/my-subscriptions" },
+                                               { label: "add_store", href: "/add-store" }
                                            ],
                                            languageOptions = [
                                                { code: "tk", label: "Türkmen" },
@@ -127,6 +63,9 @@ const Header: React.FC<HeaderProps> = ({
                                            onSearch,
                                            onSubCategoryClick
                                        }) => {
+    const t = useTranslations('header');
+    const locale = useLocale();
+
     const [searchQuery, setSearchQuery] = useState("");
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
@@ -139,6 +78,14 @@ const Header: React.FC<HeaderProps> = ({
 
     // Get auth state
     const { isAuthenticated, user, logout } = useClientAuth();
+
+    // Fetch catalogs from API
+    const { data: catalogsData, isLoading: catalogsLoading, isError: catalogsError } = useCatalogs();
+
+    // Transform API data to navigation items
+    const navigationItems = catalogsData?.data
+        ? transformCatalogsToNavigation(catalogsData.data, locale)
+        : [];
 
     const { openLoginModal } = useLogin({
         onSuccess: (data) => {
@@ -222,6 +169,9 @@ const Header: React.FC<HeaderProps> = ({
         return `+993 ${phone}`;
     };
 
+    // Default search placeholder based on locale
+    const defaultSearchPlaceholder = searchPlaceholder || t('search_placeholder');
+
     return (
         <header className="bg-white shadow-sm">
             {/* Desktop Header */}
@@ -244,7 +194,7 @@ const Header: React.FC<HeaderProps> = ({
                                         href={item.href}
                                         className="font-rubik text-small text-black hover:text-primary transition-colors"
                                     >
-                                        {item.label}
+                                        {t(item.label)}
                                     </Link>
                                 ))}
 
@@ -295,7 +245,7 @@ const Header: React.FC<HeaderProps> = ({
                                     type="text"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    placeholder={searchPlaceholder}
+                                    placeholder={defaultSearchPlaceholder}
                                     className="w-full pl-4 pr-12 h-10 border border-border rounded-sm font-rubik text-body-description focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                                 />
                                 <button
@@ -339,7 +289,7 @@ const Header: React.FC<HeaderProps> = ({
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-sm font-medium text-gray-900 truncate">
-                                                        {user?.fullname || 'Ulanyjy'}
+                                                        {user?.fullname || t('user_label')}
                                                     </p>
                                                     <p className="text-xs text-gray-500">
                                                         {user?.phone_number ? formatPhoneNumber(user.phone_number) : ''}
@@ -359,7 +309,7 @@ const Header: React.FC<HeaderProps> = ({
                                                     height={16}
                                                     className="mr-3 text-gray-400"
                                                 />
-                                                Profil
+                                                {t('profile')}
                                             </Link>
                                         </div>
 
@@ -369,7 +319,7 @@ const Header: React.FC<HeaderProps> = ({
                                                 className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                                             >
                                                 <LogOut className="w-4 h-4 mr-3" />
-                                                Çykmak
+                                                {t('logout')}
                                             </button>
                                         </div>
                                     </div>
@@ -430,43 +380,55 @@ const Header: React.FC<HeaderProps> = ({
                 >
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <nav className="flex items-center justify-between h-14 relative">
-                            {navigationItems.map((item, index) => (
-                                <React.Fragment key={item.id}>
-                                    {index > 0 && (
-                                        <div className="h-6 w-px bg-border flex-shrink-0 hidden sm:block"></div>
-                                    )}
-                                    <div
-                                        onMouseEnter={() => handleNavItemEnter(item.id)}
-                                        className="flex-1 relative group flex items-center justify-center"
-                                    >
-                                        <Link
-                                            href={item.href}
-                                            className={`font-rubik text-body-description transition-all duration-200 flex items-center space-x-1 whitespace-nowrap text-sm lg:text-base px-2 py-2 ${
-                                                 activeDropdown === item.id
-                                                    ? 'text-blue-600'
-                                                    : 'text-black hover:text-blue-600'
-                                            }`}
+                            {catalogsLoading ? (
+                                // Loading skeleton for navigation
+                                <div className="flex items-center space-x-8 w-full">
+                                    {[...Array(6)].map((_, index) => (
+                                        <div key={index} className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
+                                    ))}
+                                </div>
+                            ) : catalogsError ? (
+                                // Error state
+                                <div className="text-red-500 text-sm">{t('navigation_error')}</div>
+                            ) : (
+                                navigationItems.map((item, index) => (
+                                    <React.Fragment key={item.id}>
+                                        {index > 0 && (
+                                            <div className="h-6 w-px bg-border flex-shrink-0 hidden sm:block"></div>
+                                        )}
+                                        <div
+                                            onMouseEnter={() => handleNavItemEnter(item.id)}
+                                            className="flex-1 relative group flex items-center justify-center"
                                         >
-                                            <span>{item.label}</span>
-                                        </Link>
+                                            <Link
+                                                href={item.href}
+                                                className={`font-rubik text-body-description transition-all duration-200 flex items-center space-x-1 whitespace-nowrap text-sm lg:text-base px-2 py-2 ${
+                                                    activeDropdown === item.id
+                                                        ? 'text-blue-600'
+                                                        : 'text-black hover:text-blue-600'
+                                                }`}
+                                            >
+                                                <span>{item.label}</span>
+                                            </Link>
 
-                                        {/* Blue underline */}
-                                        <div className={`absolute -bottom-[9px] left-0 right-0 h-0.5 transition-all duration-200 ${
-                                             activeDropdown === item.id
-                                                ? 'bg-blue-600 scale-x-100'
-                                                : 'bg-blue-600 scale-x-0 group-hover:scale-x-100'
-                                        }`}></div>
-                                    </div>
-                                </React.Fragment>
-                            ))}
+                                            {/* Blue underline */}
+                                            <div className={`absolute -bottom-[9px] left-0 right-0 h-0.5 transition-all duration-200 ${
+                                                activeDropdown === item.id
+                                                    ? 'bg-blue-600 scale-x-100'
+                                                    : 'bg-blue-600 scale-x-0 group-hover:scale-x-100'
+                                            }`}></div>
+                                        </div>
+                                    </React.Fragment>
+                                ))
+                            )}
                         </nav>
                     </div>
 
-                    {/* Mega Dropdown - Improved Layout Based on Image */}
+                    {/* Mega Dropdown */}
                     {activeDropdown && getCurrentCategory(activeDropdown) && (
                         <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-full max-w-7xl bg-white shadow-2xl border-t border-gray-200 z-50 rounded-b-lg">
                             <div className="flex">
-                                {/* Categories Section - Tighter spacing like the image */}
+                                {/* Categories Section */}
                                 <div className="flex-1 px-8 py-6">
                                     <div className={`grid gap-16 ${(() => {
                                         const subCatCount = getCurrentCategory(activeDropdown)?.subcategories.length || 0;
@@ -501,7 +463,7 @@ const Header: React.FC<HeaderProps> = ({
                                     </div>
                                 </div>
 
-                                {/* Product Images Section - 2x3 grid like the image */}
+                                {/* Product Images Section */}
                                 <div className="w-[500px] p-6 bg-white">
                                     <div className="grid grid-cols-2 grid-rows-3 gap-3 h-full">
                                         {/* Large product images with realistic placeholders */}
@@ -560,7 +522,7 @@ const Header: React.FC<HeaderProps> = ({
                 </div>
             </div>
 
-            {/* Mobile Header - Same as before */}
+            {/* Mobile Header */}
             <div className="md:hidden">
                 {/* Mobile Search */}
                 <div className="p-4">
@@ -570,7 +532,7 @@ const Header: React.FC<HeaderProps> = ({
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder={searchPlaceholder}
+                                placeholder={defaultSearchPlaceholder}
                                 className="w-full pl-4 pr-12 h-10 border border-border rounded-lg font-rubik text-body-description focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                             />
                             <button
@@ -630,23 +592,34 @@ const Header: React.FC<HeaderProps> = ({
                         <div className="fixed inset-0 bg-black bg-opacity-50" onClick={toggleMobileMenu}></div>
                         <div className="fixed top-0 left-0 bottom-0 w-80 bg-white overflow-y-auto">
                             <div className="flex items-center justify-between p-4 border-b border-border">
-                                <h2 className="font-rubik text-h3 text-black">Menu</h2>
+                                <h2 className="font-rubik text-h3 text-black">{t('menu')}</h2>
                                 <button onClick={toggleMobileMenu} className="p-2 hover:bg-blue-shade-1 rounded-lg">
                                     <X className="h-6 w-6 text-black" />
                                 </button>
                             </div>
 
                             <nav className="py-4">
-                                {navigationItems.map((item) => (
-                                    <Link
-                                        key={item.id}
-                                        href={item.href}
-                                        onClick={toggleMobileMenu}
-                                        className="block px-4 py-3 font-rubik text-body-description text-black hover:bg-blue-shade-1 transition-colors"
-                                    >
-                                        {item.label}
-                                    </Link>
-                                ))}
+                                {catalogsLoading ? (
+                                    // Loading skeleton for mobile menu
+                                    <div className="space-y-3 px-4">
+                                        {[...Array(8)].map((_, index) => (
+                                            <div key={index} className="h-4 w-32 bg-gray-200 rounded animate-pulse"></div>
+                                        ))}
+                                    </div>
+                                ) : catalogsError ? (
+                                    <div className="px-4 text-red-500 text-sm">{t('navigation_error')}</div>
+                                ) : (
+                                    navigationItems.map((item) => (
+                                        <Link
+                                            key={item.id}
+                                            href={item.href}
+                                            onClick={toggleMobileMenu}
+                                            className="block px-4 py-3 font-rubik text-body-description text-black hover:bg-blue-shade-1 transition-colors"
+                                        >
+                                            {item.label}
+                                        </Link>
+                                    ))
+                                )}
                             </nav>
 
                             <div className="border-t border-border py-4">
@@ -657,7 +630,7 @@ const Header: React.FC<HeaderProps> = ({
                                         onClick={toggleMobileMenu}
                                         className="block px-4 py-3 font-rubik text-small text-passive hover:bg-blue-shade-1 transition-colors"
                                     >
-                                        {item.label}
+                                        {t(item.label)}
                                     </Link>
                                 ))}
                             </div>
