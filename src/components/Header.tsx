@@ -1,20 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
-import {Menu, X, ChevronDown, LogOut, User, ShoppingCart} from 'lucide-react';
+import {Menu, X, ChevronDown, LogOut, User, ShoppingCart, LayoutGridIcon, Heart} from 'lucide-react';
 import {PhoneIcon} from "@/components/icons/PhoneIcon";
 import {SearchIcon} from "@/components/icons/SearchIcon";
 import {PersonIcon} from "@/components/icons/PersonIcon";
 import {HeartIcon} from "@/components/icons/HeartIcon";
 import {BoxIcon} from "@/components/icons/BoxIcon";
-import {CartIcon} from "@/components/icons/CartIcon";
 import {BagIcon} from "@/components/icons/BagIcon";
 import {HouseIcon} from "@/components/icons/HouseIcon";
-import {GridIcon} from "@/components/icons/GridIcon";
 import {IconWrapper, RoundedIconWrapper} from "@/components/icons/IconWrapper";
 import Image, {StaticImageData} from "next/image";
 import logo from "@/assets/logo.png"
 import {useLogin} from "@/hooks/useLogin";
 import {useClientAuth} from "@/contexts/auth-provider";
-import {Link} from "@/i18n/navigation";
+import {Link, usePathname} from "@/i18n/navigation";
 import {useCatalogs} from "@/hooks/useCatalogs";
 import {transformCatalogsToNavigation} from "@/lib/utils/catalogUtils";
 import {useTranslations, useLocale} from "next-intl";
@@ -65,6 +63,7 @@ const Header: React.FC<HeaderProps> = ({
                                        }) => {
     const t = useTranslations('header');
     const locale = useLocale();
+    const pathname = usePathname();
 
     const [searchQuery, setSearchQuery] = useState("");
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -161,7 +160,7 @@ const Header: React.FC<HeaderProps> = ({
         };
     };
 
-    const currentLanguage = languageOptions.find(lang => lang.code === selectedLanguage);
+    const currentLanguage = languageOptions.find(lang => lang.code === locale);
 
     // Format phone number for display
     const formatPhoneNumber = (phone: string) => {
@@ -550,32 +549,46 @@ const Header: React.FC<HeaderProps> = ({
                     <div className="flex items-center justify-around h-16">
                         <IconWrapper>
                             <Link href="/" className="flex flex-col items-center space-y-1 p-2">
-                                <HouseIcon width={24} height={24} />
+                                <HouseIcon
+                                    width={24}
+                                    height={24}
+                                    color={pathname == '/' ? "#0762C8" : "#A0A3BD"}
+                                />
                             </Link>
                         </IconWrapper>
 
-                        <IconWrapper>
-                            <Link href="/categories" className="flex flex-col items-center space-y-1 p-2">
-                                <GridIcon width={21} height={21} />
-                            </Link>
-                        </IconWrapper>
+                        <Link href="/category" className="flex flex-col items-center space-y-1 p-2">
+                            <LayoutGridIcon
+                                width={24}
+                                height={24}
+                                color={pathname == '/category' ? "#0762C8" : "#A0A3BD"}
+                            />
+                        </Link>
 
-                        <IconWrapper>
-                            <Link href="/cart" className="flex flex-col items-center space-y-1 p-2">
-                                <ShoppingCart width={23} height={23} color={"#A0A3BD"}/>
-                            </Link>
-                        </IconWrapper>
+                        <Link href="/cart" className="flex flex-col items-center space-y-1 p-2">
+                            <ShoppingCart
+                                width={24}
+                                height={24}
+                                color={pathname == '/cart' ? "#0762C8" : "#A0A3BD"}
+                            />
+                        </Link>
 
-                        <IconWrapper>
-                            <Link href="/wishlist" className="flex flex-col items-center space-y-1 p-2">
-                                <HeartIcon width={22} height={20} color="#A0A3BD" />
-                            </Link>
-                        </IconWrapper>
+                        <Link href="/favorite" className="flex flex-col items-center space-y-1 p-2">
+                            <Heart
+                                width={24}
+                                height={24}
+                                color={pathname == '/favorite' ? "#0762C8" : "#A0A3BD"}
+                            />
+                        </Link>
 
                         <IconWrapper>
                             {isAuthenticated ? (
                                 <Link href="/profile" className="flex flex-col items-center space-y-1 p-2">
-                                    <PersonIcon width={21} height={21} color="#A0A3BD" />
+                                    <PersonIcon
+                                        width={21}
+                                        height={21}
+                                        color={pathname == '/profile' ? "#0762C8" : "#A0A3BD"}
+                                    />
                                 </Link>
                             ) : (
                                 <button onClick={openLoginModal} className="flex flex-col items-center space-y-1 p-2">
@@ -585,58 +598,6 @@ const Header: React.FC<HeaderProps> = ({
                         </IconWrapper>
                     </div>
                 </div>
-
-                {/* Mobile Menu Overlay */}
-                {isMobileMenuOpen && (
-                    <div className="fixed inset-0 z-50 lg:hidden">
-                        <div className="fixed inset-0 bg-black bg-opacity-50" onClick={toggleMobileMenu}></div>
-                        <div className="fixed top-0 left-0 bottom-0 w-80 bg-white overflow-y-auto">
-                            <div className="flex items-center justify-between p-4 border-b border-border">
-                                <h2 className="font-rubik text-h3 text-black">{t('menu')}</h2>
-                                <button onClick={toggleMobileMenu} className="p-2 hover:bg-blue-shade-1 rounded-lg">
-                                    <X className="h-6 w-6 text-black" />
-                                </button>
-                            </div>
-
-                            <nav className="py-4">
-                                {catalogsLoading ? (
-                                    // Loading skeleton for mobile menu
-                                    <div className="space-y-3 px-4">
-                                        {[...Array(8)].map((_, index) => (
-                                            <div key={index} className="h-4 w-32 bg-gray-200 rounded animate-pulse"></div>
-                                        ))}
-                                    </div>
-                                ) : catalogsError ? (
-                                    <div className="px-4 text-red-500 text-sm">{t('navigation_error')}</div>
-                                ) : (
-                                    navigationItems.map((item) => (
-                                        <Link
-                                            key={item.id}
-                                            href={item.href}
-                                            onClick={toggleMobileMenu}
-                                            className="block px-4 py-3 font-rubik text-body-description text-black hover:bg-blue-shade-1 transition-colors"
-                                        >
-                                            {item.label}
-                                        </Link>
-                                    ))
-                                )}
-                            </nav>
-
-                            <div className="border-t border-border py-4">
-                                {topMenuItems.map((item, index) => (
-                                    <Link
-                                        key={index}
-                                        href={item.href}
-                                        onClick={toggleMobileMenu}
-                                        className="block px-4 py-3 font-rubik text-small text-passive hover:bg-blue-shade-1 transition-colors"
-                                    >
-                                        {t(item.label)}
-                                    </Link>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                )}
             </div>
         </header>
     );
