@@ -1,21 +1,23 @@
 import {LocalizedText, SupportedLocales} from "@/types/types";
 
-export interface Photo {
-    path: string;
-    object_type: string;
+export interface ImageI {
+    id: number;
+    isPrimary: boolean;
+    order: number;
+    url: string;
 }
 
 export interface Product {
     id: string;
     variantId: string;
     name: LocalizedText;
-    description: string;
+    description: LocalizedText;
     slug: string | null;
     basePrice: string;
     discountPrice?: string;
     discountPercentage?: number;
     currency: string;
-    images: Photo[];
+    image: ImageI;
     brand?: string;
     rating?: number;
     reviewCount?: number;
@@ -58,6 +60,11 @@ export interface Market {
     isVerified?: boolean;
 }
 
+export interface MarketShort {
+    id: number;
+    name: string;
+}
+
 export interface Banner {
     id: number;
     name: string;
@@ -70,7 +77,7 @@ export interface Banner {
 
 export interface HomeSection {
     // title: LocalizedText;
-    title: string;
+    title: LocalizedText;
     slug: string;
     allBtn: boolean;
     type: 'specially_for_you' | 'popular_categories' | 'most_viewed' | 'brands' | 'markets' | 'cheap_products';

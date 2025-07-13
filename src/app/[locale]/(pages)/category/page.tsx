@@ -252,7 +252,6 @@ const CategoryPage = () => {
         order: subcategory.order
     })) : [];
 
-    // Language toggle function (if needed for manual switching)
     const getLocalizedLabel = (key: string) => {
         const labels: Record<string, Record<string, string>> = {
             categories: {

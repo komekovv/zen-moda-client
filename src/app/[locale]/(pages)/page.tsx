@@ -83,7 +83,7 @@ export default function Home() {
     }
 
     const renderSection = (section: HomeSection, index: number) => {
-        const sectionTitle = section.title;
+        const sectionTitle = getLocalizedText(section.title, locale);
         const marginClass = index === 0 ? "mb-8 mt-4" : "mb-8 mt-12";
 
         switch (section.type) {
@@ -112,7 +112,7 @@ export default function Home() {
                                             originalPrice={product.discountPrice}
                                             currentPrice={product.basePrice}
                                             discount={product.discountPrice}
-                                            image={product.images[0]?.path || ''}
+                                            image={product.image.url || ''}
                                             isOnSale={product.isSale}
                                             rating={product.rating}
                                             reviewCount={product.reviewCount}
@@ -169,7 +169,7 @@ export default function Home() {
                                         originalPrice={product.discountPrice}
                                         currentPrice={product.basePrice}
                                         discount={product.discountPrice}
-                                        image={product.images[0]?.path || ''}
+                                        image={product.image.url || ''}
                                         isOnSale={product.isSale}
                                         rating={product.rating}
                                         reviewCount={product.reviewCount}
@@ -341,7 +341,7 @@ export default function Home() {
                                             originalPrice={product.discountPrice}
                                             currentPrice={product.basePrice}
                                             discount={product.discountPrice}
-                                            image={product.images[0]?.path || ''}
+                                            image={product.image.url || ''}
                                             isOnSale={product.isSale}
                                             rating={product.rating}
                                             reviewCount={product.reviewCount}
