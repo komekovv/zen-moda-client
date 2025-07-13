@@ -9,25 +9,28 @@ export interface ImageI {
 
 export interface Product {
     id: string;
-    variantId: string;
+    variationId?: string;
     name: LocalizedText;
     description: LocalizedText;
     slug: string | null;
     basePrice: string;
     discountPrice?: string;
-    discountPercentage?: number;
+    discountPercentage: number;
     currency: string;
-    image: ImageI;
+    stock?: number;
+    rating: number;
+    reviewCount: number;
+    viewCount: number;
     brand?: string;
-    rating?: number;
-    reviewCount?: number;
-    isNew?: boolean;
-    isFeatured?: boolean;
+    isNew: boolean;
+    isFeatured: boolean;
     isRecommended?: boolean;
-    isInWishlist?: boolean;
+    isInWishlist: boolean;
     isInCart?: boolean;
     isInComparison?: boolean;
-    isSale?: boolean;
+    store: MarketShort;
+    image: ImageI;
+    saleEndDate?: string;
 }
 
 export interface Category {

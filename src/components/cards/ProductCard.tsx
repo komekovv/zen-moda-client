@@ -1,24 +1,39 @@
 'use client'
-import React, { useState } from 'react';
-import { Heart } from 'lucide-react';
+import React, {useState} from 'react';
+import {Heart} from 'lucide-react';
 import Image from "next/image";
-import Link from "next/link";
-import {ImageI, LocalizedText} from "@/types/types";
+import { LocalizedText} from "@/types/types";
 import {StaticImport} from "next/dist/shared/lib/get-img-props";
 import Rating from "@/components/ui/Rating";
+import {MarketShort} from "@/api/queryTypes/Home";
+import {Link} from "@/i18n/navigation";
 
 interface ProductCardProps {
     id: string;
-    title: string;
+    variationId?: string;
+    name: string;
+    description?: string;
     image: string | StaticImport;
-    currentPrice: string;
-    originalPrice?: string;
-    discount?: string;
-    rating?: number;
-    reviewCount?: number;
+    basePrice: string;
+    discountPrice?: string;
+    discountPercentage: number;
+    currency: string;
+    rating: number;
+    reviewCount: number;
+    viewCount: number;
+    brand?: string;
+    isNew: boolean;
+    isFeatured: boolean;
+    isRecommended?: boolean;
+    isInCart?: boolean;
+    isInComparison?: boolean;
+    isInWishlist: boolean;
+    store: MarketShort;
+    saleEndDate?: string;
+    stock?: number;
+
     isOnSale?: boolean;
-    saleEndTime?: Date;
-    isFavorite?: boolean;
+
     onFavoriteToggle?: (id: string) => void;
     onCardClick?: (id: string) => void;
     className?: string;
@@ -32,15 +47,15 @@ interface TimerProps {
 }
 
 interface DiscountBadgeProps {
-    discount: string;
+    discountPercentage: number;
 }
 
-const Timer: React.FC<TimerProps> = ({ endTime, onExpire }) => {
+const Timer: React.FC<TimerProps> = ({endTime, onExpire}) => {
     const [timeLeft, setTimeLeft] = React.useState<{
         hours: number;
         minutes: number;
         seconds: number;
-    }>({ hours: 0, minutes: 0, seconds: 0 });
+    }>({hours: 0, minutes: 0, seconds: 0});
 
     React.useEffect(() => {
         const calculateTimeLeft = () => {
@@ -53,9 +68,9 @@ const Timer: React.FC<TimerProps> = ({ endTime, onExpire }) => {
                 const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
-                setTimeLeft({ hours, minutes, seconds });
+                setTimeLeft({hours, minutes, seconds});
             } else {
-                setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
+                setTimeLeft({hours: 0, minutes: 0, seconds: 0});
                 onExpire?.();
             }
         };
@@ -77,33 +92,46 @@ const Timer: React.FC<TimerProps> = ({ endTime, onExpire }) => {
     );
 };
 
-const DiscountBadge: React.FC<DiscountBadgeProps> = ({ discount }) => {
+const DiscountBadge: React.FC<DiscountBadgeProps> = ({discountPercentage}) => {
     return (
         <div className="absolute bottom-0 left-0 bg-sale text-white px-2 py-1 rounded text-xs font-bold">
-            -{discount}%
+            -{discountPercentage}%
         </div>
     );
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({
                                                      id,
-                                                     title,
+                                                     variationId,
+                                                     name,
+                                                     description,
                                                      image,
-                                                     currentPrice,
-                                                     originalPrice,
-                                                     discount,
+                                                     basePrice,
+                                                     discountPrice,
+                                                     discountPercentage,
+                                                     currency = "TMT",
                                                      rating = 0,
                                                      reviewCount,
+                                                     viewCount,
+                                                     brand,
+                                                     isNew,
+                                                     isFeatured,
+                                                     isRecommended,
+                                                     isInCart,
+                                                     isInComparison,
+                                                     isInWishlist = false,
+                                                     store,
+                                                     saleEndDate,
+
                                                      isOnSale = false,
-                                                     saleEndTime,
-                                                     isFavorite = false,
+
                                                      onFavoriteToggle,
                                                      onCardClick,
                                                      className = '',
                                                      forMain = false,
                                                      forStore = false
                                                  }) => {
-    const [favorite, setFavorite] = useState(isFavorite);
+    const [favorite, setFavorite] = useState(isInWishlist);
 
     const handleFavoriteClick = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -125,7 +153,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 <div className="relative overflow-hidden rounded bg-blue-shade-1 w-full h-full">
                     <Image
                         src={image}
-                        alt={title}
+                        // alt={typeof name === "string" ? name : name.tk}
+                        alt={"product image"}
                         width={64}
                         height={64}
                         className="w-full h-full object-cover"
@@ -137,12 +166,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
         );
 
         if (onCardClick) {
-            return <StoreImageContent />;
+            return <StoreImageContent/>;
         }
 
         return (
             <Link href={`/product/${id}`} className="block">
-                <StoreImageContent />
+                <StoreImageContent/>
             </Link>
         );
     }
@@ -159,7 +188,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             }`}>
                 <Image
                     src={image}
-                    alt={title}
+                    alt={"product image"}
                     width={forMain ? 154 : 300}
                     height={forMain ? 200 : 300}
                     className="w-full h-full object-cover"
@@ -167,14 +196,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     draggable={false}
                 />
 
-                {isOnSale && saleEndTime && (
-                    <Timer
-                        endTime={saleEndTime}
-                        onExpire={() => console.log('Sale expired for product:', id)}
-                    />
-                )}
+                {/*{isOnSale && saleEndDate && (*/}
+                {/*    <Timer*/}
+                {/*        endTime={saleEndDate}*/}
+                {/*        onExpire={() => console.log('Sale expired for product:', id)}*/}
+                {/*    />*/}
+                {/*)}*/}
 
-                {discount && <DiscountBadge discount={discount} />}
+                {discountPercentage && <DiscountBadge discountPercentage={discountPercentage}/>}
 
                 <button
                     onClick={handleFavoriteClick}
@@ -192,31 +221,31 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <div className="space-y-1">
                 <div className="flex items-center gap-2">
                     <span className="text-body-price text-sale font-rubik">
-                        {currentPrice}
+                        {discountPrice ? discountPrice : basePrice} {currency}
                     </span>
-                    {originalPrice && originalPrice > currentPrice && (
+                    {discountPrice && (
                         <span className="text-body-description text-passive line-through font-rubik">
-                            {currentPrice}
+                            {basePrice} {currency}
                         </span>
                     )}
                 </div>
 
                 <h3 className="text-black text-body-description font-rubik line-clamp-2 leading-relaxed">
-                    {title}
+                    <span className={'font-bold'}>{store?.name}</span> {name}
                 </h3>
 
-                <Rating rating={rating} reviewCount={reviewCount} />
+                <Rating rating={rating} reviewCount={reviewCount}/>
             </div>
         </div>
     );
 
     if (onCardClick) {
-        return <CardContent />;
+        return <CardContent/>;
     }
 
     return (
         <Link href={`/product/${id}`} className="block">
-            <CardContent />
+            <CardContent/>
         </Link>
     );
 };

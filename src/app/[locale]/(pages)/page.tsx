@@ -109,16 +109,28 @@ export default function Home() {
                                     <SwiperSlide key={product.id}>
                                         <ProductCard
                                             id={product.id}
-                                            originalPrice={product.discountPrice}
-                                            currentPrice={product.basePrice}
-                                            discount={product.discountPrice}
+                                            name={getLocalizedText(product.name, locale)}
+                                            description={getLocalizedText(product.description, locale)}
                                             image={product.image.url || ''}
-                                            isOnSale={product.isSale}
+                                            basePrice={product.basePrice}
+                                            discountPrice={product.discountPrice}
+                                            discountPercentage={product.discountPercentage}
                                             rating={product.rating}
                                             reviewCount={product.reviewCount}
-                                            isFavorite={product.isInWishlist}
+                                            viewCount={product.viewCount}
+                                            brand={product.brand}
+                                            isNew={product.isNew}
+                                            isFeatured={product.isFeatured}
+                                            isRecommended={product.isRecommended}
+                                            isInCart={product.isInCart}
+                                            isInComparison={product.isInComparison}
+                                            isInWishlist={product.isInWishlist}
+                                            saleEndDate={product.saleEndDate}
+                                            store={product.store}
+                                            currency={"TMT"}
+
+                                            isOnSale={true}
                                             onFavoriteToggle={handleFavoriteToggle}
-                                            title={getLocalizedText(product.name, locale)}
                                         />
                                     </SwiperSlide>
                                 ))}
@@ -166,16 +178,28 @@ export default function Home() {
                                 {section.products.map((product) => (
                                     <ProductCard
                                         id={product.id}
-                                        originalPrice={product.discountPrice}
-                                        currentPrice={product.basePrice}
-                                        discount={product.discountPrice}
+                                        name={getLocalizedText(product.name, locale)}
+                                        description={getLocalizedText(product.description, locale)}
                                         image={product.image.url || ''}
-                                        isOnSale={product.isSale}
+                                        basePrice={product.basePrice}
+                                        discountPrice={product.discountPrice}
+                                        discountPercentage={product.discountPercentage}
                                         rating={product.rating}
                                         reviewCount={product.reviewCount}
-                                        isFavorite={product.isInWishlist}
+                                        viewCount={product.viewCount}
+                                        brand={product.brand}
+                                        isNew={product.isNew}
+                                        isFeatured={product.isFeatured}
+                                        isRecommended={product.isRecommended}
+                                        isInCart={product.isInCart}
+                                        isInComparison={product.isInComparison}
+                                        isInWishlist={product.isInWishlist}
+                                        saleEndDate={product.saleEndDate}
+                                        store={product.store}
+                                        currency={"TMT"}
+
+                                        isOnSale={true}
                                         onFavoriteToggle={handleFavoriteToggle}
-                                        title={getLocalizedText(product.name, locale)}
                                         className="w-full"
                                     />
                                 ))}
@@ -200,7 +224,7 @@ export default function Home() {
                                 autoplay={false}
                                 breakpoints={{
                                     320: { slidesPerView: 2.5, spaceBetween: 12 },
-                                    640: { slidesPerView: 2.5, spaceBetween: 16 },
+                                    640: { slidesPerView: 3, spaceBetween: 16 },
                                     768: { slidesPerView: 3.2, spaceBetween: 16 },
                                     1024: { slidesPerView: 4.2, spaceBetween: 20 },
                                     1280: { slidesPerView: 5, spaceBetween: 20 },
@@ -210,7 +234,7 @@ export default function Home() {
                             >
                                 {section.brands.map((brand, brandIndex) => (
                                     <SwiperSlide key={brand.id}
-                                                 className="!w-auto min-w-[140px] sm:min-w-[160px] md:min-w-[180px] lg:min-w-[200px]">
+                                                 >
                                         <BrandCard
                                             key={`${brand.id}-${brandIndex}`}
                                             brand={{
@@ -338,16 +362,28 @@ export default function Home() {
                                     {section.products.map((product) => (
                                         <ProductCard
                                             id={product.id}
-                                            originalPrice={product.discountPrice}
-                                            currentPrice={product.basePrice}
-                                            discount={product.discountPrice}
+                                            name={getLocalizedText(product.name, locale)}
+                                            description={getLocalizedText(product.description, locale)}
                                             image={product.image.url || ''}
-                                            isOnSale={product.isSale}
+                                            basePrice={product.basePrice}
+                                            discountPrice={product.discountPrice}
+                                            discountPercentage={product.discountPercentage}
                                             rating={product.rating}
                                             reviewCount={product.reviewCount}
-                                            isFavorite={product.isInWishlist}
+                                            viewCount={product.viewCount}
+                                            brand={product.brand}
+                                            isNew={product.isNew}
+                                            isFeatured={product.isFeatured}
+                                            isRecommended={product.isRecommended}
+                                            isInCart={product.isInCart}
+                                            isInComparison={product.isInComparison}
+                                            isInWishlist={product.isInWishlist}
+                                            saleEndDate={product.saleEndDate}
+                                            store={product.store}
+                                            currency={"TMT"}
+
+                                            isOnSale={true}
                                             onFavoriteToggle={handleFavoriteToggle}
-                                            title={getLocalizedText(product.name, locale)}
                                             className="w-full"
                                         />
                                     ))}

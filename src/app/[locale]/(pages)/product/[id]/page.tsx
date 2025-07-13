@@ -1,6 +1,6 @@
 'use client'
 import React from 'react';
-import { notFound } from 'next/navigation';
+import {notFound} from 'next/navigation';
 import ProductImageGallery from '@/components/product/ProductImageGallery';
 import ProductInfo from '@/components/product/ProductInfo';
 import ProductSpecifications from '@/components/product/ProductSpecifications';
@@ -22,7 +22,7 @@ interface ProductPageProps {
     };
 }
 
-export default function ProductPage({ params }: ProductPageProps) {
+export default function ProductPage({params}: ProductPageProps) {
     const t = useTranslations('product_detail');
     const locale = useLocale();
 
@@ -163,14 +163,14 @@ export default function ProductPage({ params }: ProductPageProps) {
             bibendum. Nullam vel magna vel mauris bibendum vel mauris.`
         },
         specifications: [
-            { key: "material", value: "Dəri" },
-            { key: "brand", value: "Adidas" },
-            { key: "season", value: "Dörtyıl" },
-            { key: "color", value: "Okydy" },
-            { key: "size", value: "40-45" },
-            { key: "weight", value: "Smile of Moddy" },
-            { key: "country", value: "Türkiye" },
-            { key: "warranty", value: "1 yıl" }
+            {key: "material", value: "Dəri"},
+            {key: "brand", value: "Adidas"},
+            {key: "season", value: "Dörtyıl"},
+            {key: "color", value: "Okydy"},
+            {key: "size", value: "40-45"},
+            {key: "weight", value: "Smile of Moddy"},
+            {key: "country", value: "Türkiye"},
+            {key: "warranty", value: "1 yıl"}
         ],
         store: {
             id: "samsung-store",
@@ -207,65 +207,161 @@ export default function ProductPage({ params }: ProductPageProps) {
     const similarProducts = [
         {
             id: "similar-1",
-            title: "XIAOMI Meja Bluetooth Thermometer 2 Wireless...",
+            variationId: "similar-1",
+            name: {
+                tk: "XIAOMI Meja Bluetooth Thermometer 2 Wireless...",
+                ru: "XIAOMI Meja Bluetooth Thermometer 2 Wireless...",
+            },
+            description: {
+                tk: '',
+                ru: '',
+            },
             image: Prod1,
-            currentPrice: 646,
-            originalPrice: 846,
-            discount: 20,
+            basePrice: 846,
+            discountPrice: 646,
+            discountPercentage: 20,
+            currency: 'TMT',
+            stock: 100,
             rating: 4.5,
             reviewCount: 234,
+            viewCount: 0,
+            brand: '',
+            isNew: true,
+            isFeatured: false,
+            isRecommended: false,
+            isInCart: false,
+            isInComparison: false,
+            isInWishlist: false,
+            store: {id: '1', name: 'Polo'},
+            saleEndDate: new Date(Date.now() + 24 * 60 * 60 * 1000),
             isOnSale: true,
-            saleEndTime: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours from now
         },
         {
             id: "similar-2",
-            title: "XIAOMI Meja Bluetooth Thermometer 2 Wireless...",
+            variationId: "similar-2",
+            name: {
+                tk: "XIAOMI Meja Bluetooth Thermometer 2 Wireless...",
+                ru: "XIAOMI Meja Bluetooth Thermometer 2 Wireless...",
+            },
+            description: {
+                tk: '',
+                ru: '',
+            },
             image: Prod2,
-            currentPrice: 646,
-            originalPrice: 846,
-            discount: 20,
+            basePrice: 846,
+            discountPrice: 646,
+            discountPercentage: 20,
+            currency: 'TMT',
+            stock: 100,
             rating: 4.3,
             reviewCount: 191,
+            viewCount: 0,
+            brand: '',
+            isNew: true,
+            isFeatured: false,
+            isRecommended: false,
+            isInCart: false,
+            isInComparison: false,
+            isInWishlist: false,
+            store: {id: '1', name: 'Polo'},
+            saleEndDate: new Date(Date.now() + 12 * 60 * 60 * 1000),
             isOnSale: true,
-            saleEndTime: new Date(Date.now() + 12 * 60 * 60 * 1000) // 12 hours from now
         },
         {
             id: "similar-3",
-            title: "XIAOMI Meja Bluetooth Thermometer 2 Wireless...",
+            variationId: "similar-3",
+            name: {
+                tk: "XIAOMI Meja Bluetooth Thermometer 2 Wireless...",
+                ru: "XIAOMI Meja Bluetooth Thermometer 2 Wireless...",
+            },
+            description: {
+                tk: '',
+                ru: '',
+            },
             image: Prod3,
-            currentPrice: 646,
-            originalPrice: 846,
-            discount: 20,
+            basePrice: 846,
+            discountPrice: 646,
+            discountPercentage: 20,
+            currency: 'TMT',
+            stock: 100,
             rating: 4.7,
             reviewCount: 156,
+            viewCount: 0,
+            brand: '',
+            isNew: true,
+            isFeatured: false,
+            isRecommended: false,
+            isInCart: false,
+            isInComparison: false,
+            isInWishlist: false,
+            store: {id: '1', name: 'Polo'},
+            saleEndDate: new Date(Date.now() + 8 * 60 * 60 * 1000),
             isOnSale: true,
-            saleEndTime: new Date(Date.now() + 8 * 60 * 60 * 1000) // 8 hours from now
         },
         {
             id: "similar-4",
-            title: "XIAOMI Meja Bluetooth Thermometer 2 Wireless...",
+            variationId: "similar-4",
+            name: {
+                tk: "XIAOMI Meja Bluetooth Thermometer 2 Wireless...",
+                ru: "XIAOMI Meja Bluetooth Thermometer 2 Wireless...",
+            },
+            description: {
+                tk: '',
+                ru: '',
+            },
             image: Prod4,
-            currentPrice: 646,
-            originalPrice: 846,
-            discount: 20,
+            basePrice: 846,
+            discountPrice: 646,
+            discountPercentage: 20,
+            currency: 'TMT',
+            stock: 100,
             rating: 4.1,
             reviewCount: 87,
+            viewCount: 0,
+            brand: '',
+            isNew: true,
+            isFeatured: false,
+            isRecommended: false,
+            isInCart: false,
+            isInComparison: false,
+            isInWishlist: false,
+            store: {id: '1', name: 'Polo'},
+            saleEndDate: new Date(Date.now() + 18 * 60 * 60 * 1000),
             isOnSale: true,
-            saleEndTime: new Date(Date.now() + 18 * 60 * 60 * 1000) // 18 hours from now
         },
         {
             id: "similar-5",
-            title: "XIAOMI Meja Bluetooth Thermometer 2 Wireless...",
+            variationId: "similar-5",
+            name: {
+                tk: "XIAOMI Meja Bluetooth Thermometer 2 Wireless...",
+                ru: "XIAOMI Meja Bluetooth Thermometer 2 Wireless...",
+            },
+            description: {
+                tk: '',
+                ru: '',
+            },
             image: Prod5,
-            currentPrice: 646,
-            originalPrice: 846,
-            discount: 20,
+            basePrice: 846,
+            discountPrice: 646,
+            discountPercentage: 20,
+            currency: 'TMT',
+            stock: 100,
             rating: 4.6,
             reviewCount: 203,
+            viewCount: 0,
+            brand: '',
+            isNew: true,
+            isFeatured: false,
+            isRecommended: false,
+            isInCart: false,
+            isInComparison: false,
+            isInWishlist: false,
+            store: {id: '1', name: 'Polo'},
+            saleEndDate: new Date(Date.now() + 6 * 60 * 60 * 1000),
             isOnSale: true,
-            saleEndTime: new Date(Date.now() + 6 * 60 * 60 * 1000) // 6 hours from now
         }
     ];
+
 
     const localizedTitle = getLocalizedText(product.title, locale);
     const localizedDescription = getLocalizedText(product.description, locale);
@@ -291,25 +387,31 @@ export default function ProductPage({ params }: ProductPageProps) {
             <div className="container mx-auto px-4">
                 <div className="flex flex-col lg:flex-row gap-4 xl:gap-8 mb-12">
                     <div className="w-full lg:max-w-xl xl:max-w-3xl flex-shrink-0">
-                        <ProductImageGallery images={product.images} productName={localizedTitle} />
+                        <ProductImageGallery images={product.images} productName={localizedTitle}/>
                     </div>
 
                     <div className="flex-1">
-                        <ProductInfo product={product} />
+                        <ProductInfo product={product}/>
                     </div>
                 </div>
 
                 <div className="max-w-3xl">
-                    <ProductDescription description={localizedDescription} />
-                    <ProductSpecifications specifications={product.specifications} />
-                    <StoreInfo store={product.store} />
-                    <SimilarProducts products={similarProducts} />
-                    <AskQuestion />
+                    <ProductDescription description={localizedDescription}/>
+                    <ProductSpecifications specifications={product.specifications}/>
+                    <StoreInfo store={product.store}/>
+                    <SimilarProducts products={similarProducts}/>
+                    <AskQuestion/>
                     <ProductReviews
-                        product={{image: product.images[0].path, brand: product.brand, name: localizedTitle, rating: product.rating, reviewCount: product.reviewCount}}
+                        product={{
+                            image: product.images[0].path,
+                            brand: product.brand,
+                            name: localizedTitle,
+                            rating: product.rating,
+                            reviewCount: product.reviewCount
+                        }}
                         reviews={product.reviews}
                     />
-                    <ProductComplaint />
+                    <ProductComplaint/>
                 </div>
             </div>
         </div>

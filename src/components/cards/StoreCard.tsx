@@ -13,7 +13,6 @@ interface Product {
     currentPrice: number;
     originalPrice?: string;
     discount?: string;
-    rating?: number;
     reviewCount?: number;
     isOnSale?: boolean;
     saleEndTime?: Date;
@@ -92,35 +91,35 @@ const StoreCard: React.FC<StoreCardProps> = ({
             </div>
 
             {/* Product Images */}
-            <div className="flex justify-center gap-2">
-                {products?.slice(0, 3).map((product) => (
-                    <div
-                        key={product.id}
-                        data-product-click
-                        className="cursor-pointer"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            handleProductClick(product.id);
-                        }}
-                    >
-                        <ProductCard
-                            id={product.id}
-                            title={product.title}
-                            image={product.image as StaticImport}
-                            currentPrice={String(product.currentPrice)}
-                            originalPrice={product.originalPrice}
-                            discount={product.discount}
-                            rating={product.rating}
-                            reviewCount={product.reviewCount}
-                            isOnSale={product.isOnSale}
-                            saleEndTime={product.saleEndTime}
-                            isFavorite={product.isFavorite}
-                            forStore={true}
-                            onCardClick={() => handleProductClick(product.id)}
-                        />
-                    </div>
-                ))}
-            </div>
+            {/*<div className="flex justify-center gap-2">*/}
+            {/*    {products?.slice(0, 3).map((product) => (*/}
+            {/*        <div*/}
+            {/*            key={product.id}*/}
+            {/*            data-product-click*/}
+            {/*            className="cursor-pointer"*/}
+            {/*            onClick={(e) => {*/}
+            {/*                e.stopPropagation();*/}
+            {/*                handleProductClick(product.id);*/}
+            {/*            }}*/}
+            {/*        >*/}
+            {/*            <ProductCard*/}
+            {/*                id={product.id}*/}
+            {/*                title={product.title}*/}
+            {/*                image={product.image as StaticImport}*/}
+            {/*                currentPrice={String(product.currentPrice)}*/}
+            {/*                originalPrice={product.originalPrice}*/}
+            {/*                discount={product.discount}*/}
+            {/*                rating={0}*/}
+            {/*                reviewCount={0}*/}
+            {/*                isOnSale={product.isOnSale}*/}
+            {/*                saleEndTime={product.saleEndTime}*/}
+            {/*                isFavorite={product.isFavorite}*/}
+            {/*                forStore={true}*/}
+            {/*                onCardClick={() => handleProductClick(product.id)}*/}
+            {/*            />*/}
+            {/*        </div>*/}
+            {/*    ))}*/}
+            {/*</div>*/}
         </div>
     );
 

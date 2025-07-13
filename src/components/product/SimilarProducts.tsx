@@ -1,7 +1,8 @@
 'use client'
 import React from 'react';
-import { useTranslations } from 'next-intl';
+import {useLocale, useTranslations} from 'next-intl';
 import ProductCard from '@/components/cards/ProductCard';
+import {getLocalizedText} from "@/lib/utils/helpers";
 
 interface Product {
     id: string;
@@ -27,10 +28,14 @@ const SimilarProducts: React.FC<SimilarProductsProps> = ({
                                                              title
                                                          }) => {
     const t = useTranslations('product_detail');
+    const locale = useLocale();
 
     if (!products || products.length === 0) {
         return null;
     }
+    const handleFavoriteToggle = (productId: string) => {
+        console.log('Favorite toggled for product:', productId);
+    };
 
     return (
         <div className="mb-8">
@@ -41,18 +46,29 @@ const SimilarProducts: React.FC<SimilarProductsProps> = ({
             <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-4 lg:gap-12">
                 {products.map((product) => (
                     <ProductCard
-                        key={product.id}
                         id={product.id}
-                        title={product.title}
+                        name={getLocalizedText(product.name, locale)}
+                        description={getLocalizedText(product.description, locale)}
                         image={product.image}
-                        currentPrice={product.currentPrice}
-                        originalPrice={product.originalPrice}
-                        discount={product.discount}
+                        basePrice={product.basePrice}
+                        discountPrice={product.discountPrice}
+                        discountPercentage={product.discountPercentage}
                         rating={product.rating}
                         reviewCount={product.reviewCount}
-                        isOnSale={product.isOnSale}
-                        saleEndTime={product.saleEndTime}
-                        isFavorite={product.isFavorite}
+                        viewCount={product.viewCount}
+                        brand={product.brand}
+                        isNew={product.isNew}
+                        isFeatured={product.isFeatured}
+                        isRecommended={product.isRecommended}
+                        isInCart={product.isInCart}
+                        isInComparison={product.isInComparison}
+                        isInWishlist={product.isInWishlist}
+                        saleEndDate={product.saleEndDate}
+                        store={product.store}
+                        currency={"TMT"}
+
+                        isOnSale={true}
+                        onFavoriteToggle={handleFavoriteToggle}
                     />
                 ))}
             </div>
