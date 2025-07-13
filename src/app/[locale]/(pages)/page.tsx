@@ -111,7 +111,7 @@ export default function Home() {
                                             id={product.id}
                                             name={getLocalizedText(product.name, locale)}
                                             description={getLocalizedText(product.description, locale)}
-                                            image={product.image.url || ''}
+                                            image={product.photo.url || ''}
                                             basePrice={product.basePrice}
                                             discountPrice={product.discountPrice}
                                             discountPercentage={product.discountPercentage}
@@ -180,7 +180,7 @@ export default function Home() {
                                         id={product.id}
                                         name={getLocalizedText(product.name, locale)}
                                         description={getLocalizedText(product.description, locale)}
-                                        image={product.image.url || ''}
+                                        image={product.photo.url || ''}
                                         basePrice={product.basePrice}
                                         discountPrice={product.discountPrice}
                                         discountPercentage={product.discountPercentage}
@@ -364,7 +364,7 @@ export default function Home() {
                                             id={product.id}
                                             name={getLocalizedText(product.name, locale)}
                                             description={getLocalizedText(product.description, locale)}
-                                            image={product.image.url || ''}
+                                            image={product.photo.url || ''}
                                             basePrice={product.basePrice}
                                             discountPrice={product.discountPrice}
                                             discountPercentage={product.discountPercentage}

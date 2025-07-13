@@ -29,7 +29,7 @@ export interface Product {
     isInCart?: boolean;
     isInComparison?: boolean;
     store: MarketShort;
-    image: ImageI;
+    photo: ImageI;
     saleEndDate?: string;
 }
 
