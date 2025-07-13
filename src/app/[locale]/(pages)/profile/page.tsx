@@ -12,7 +12,7 @@ import {
     Loader2
 } from 'lucide-react';
 import { useClientAuth } from "@/contexts/auth-provider";
-import { useUpdateProfileMutation } from "@/hooks/useAuth";
+import {useUpdateProfileMutation, useUserProfile} from "@/hooks/useAuth";
 import { useTranslations } from 'next-intl';
 import {GenderType, UpdateProfileRequest} from '@/api/queryTypes/User';
 
@@ -39,6 +39,7 @@ export default function ProfilePage() {
     const fullnameRef = useRef<HTMLInputElement>(null);
     const genderRef = useRef<HTMLSelectElement>(null);
 
+
     // Initialize form values when user data is available
     useEffect(() => {
         if (user && fullnameRef.current && genderRef.current) {
@@ -46,6 +47,11 @@ export default function ProfilePage() {
             genderRef.current.value = user.gender || '';
         }
     }, [user]);
+
+    const {data: userData} = useUserProfile(user?.id || '', {
+        enabled: !!user?.id
+    });
+    console.log(userData)
 
     const profileMenuItems: ProfileMenuItem[] = [
         { id: 'profile', title: t('menu.profile'), icon: User, href: '/profile' },
@@ -238,8 +244,8 @@ export default function ProfilePage() {
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                     >
                         <option value="">{t('form.gender_select')}</option>
-                        <option value="male">{t('form.gender_male')}</option>
-                        <option value="female">{t('form.gender_female')}</option>
+                        <option value="MALE">{t('form.gender_male')}</option>
+                        <option value="FEMALE">{t('form.gender_female')}</option>
                     </select>
                 </div>
             </div>

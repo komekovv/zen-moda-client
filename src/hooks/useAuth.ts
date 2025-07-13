@@ -14,11 +14,6 @@ import {
 } from '@/api/queryTypes/User';
 import { AUTH_QUERY_KEYS } from '@/api/queryKeys';
 
-/**
- * React Query hooks for authentication
- * These hooks should only be used in React components
- */
-
 // Auth Mutations
 export const useLoginMutation = (
     options?: UseMutationOptions<LoginResponse, Error, LoginRequest>
@@ -67,11 +62,12 @@ export const useResendLoginSMSMutation = (
 
 // Auth Queries
 export const useUserProfile = (
+    userId: string,
     options?: Omit<UseQueryOptions<User>, 'queryKey' | 'queryFn'>
 ) => {
     return useQuery<User>({
         queryKey: AUTH_QUERY_KEYS.USER_PROFILE,
-        queryFn: () => apiService.privateGet<User>('/user/profile'),
+        queryFn: () => apiService.privateGet<User>(`/user/${userId}`),
         ...options,
     });
 };

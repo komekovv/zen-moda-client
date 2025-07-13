@@ -1,5 +1,5 @@
 export interface User {
-    id: number;
+    id: string;
     phone_number: string;
     fullname?: string;
     gender?: 'MALE' | 'FEMALE';
@@ -27,6 +27,7 @@ export interface VerifyOTPRequest {
 export interface VerifyOTPResponse {
     access_token: string;
     refresh_token: string;
+    userAlreadyExist?: boolean;
     user?: User;
 }
 

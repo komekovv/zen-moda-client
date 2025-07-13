@@ -14,6 +14,7 @@ import {
     useUpdateProfileMutation,
     useResendLoginSMSMutation
 } from '@/hooks/useAuth';
+import {GenderType} from "@/api/queryTypes/User";
 
 const phoneSchema = z.object({
     phone: z
@@ -105,15 +106,20 @@ const LoginModal: React.FC<LoginModalProps> = ({ onSuccess, onError, closeOnClic
 
     const verifyOTPMutation = useVerifyOTPMutation({
         onSuccess: async (data) => {
-            const { access_token, refresh_token, user } = data;
+            const { access_token, refresh_token, user, userAlreadyExist } = data;
 
-            if (!access_token || !refresh_token) {
-                throw new Error('Nädogry jogap');
-            }
+            console.log(userAlreadyExist)
 
-            setTokens({ access_token, refresh_token });
+            if (userAlreadyExist === false) {
+                setStep('profile');
+            } else if (user && user.id) {
 
-            if (user && user.id) {
+                if (!access_token || !refresh_token) {
+                    throw new Error('Nädogry jogap');
+                }
+
+                setTokens({ access_token, refresh_token });
+
                 await completeLogin(user, access_token, refresh_token);
             } else {
                 setStep('profile');
@@ -183,7 +189,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onSuccess, onError, closeOnClic
         setErrorMessage('');
         updateProfileMutation.mutate({
             fullname: data.fullname,
-            gender: data.gender
+            gender: data.gender as GenderType
         });
     };
 
