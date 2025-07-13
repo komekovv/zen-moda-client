@@ -38,6 +38,16 @@ export const authService = {
     /**
      * Update user profile
      */
+    completeProfile: async (data: UpdateProfileRequest): Promise<UpdateProfileResponse> => {
+        return api.post<UpdateProfileRequest, UpdateProfileResponse>({
+            url: '/auth/complete-registration',
+            data
+        });
+    },
+
+    /**
+     * Update user profile
+     */
     updateProfile: async (data: UpdateProfileRequest): Promise<UpdateProfileResponse> => {
         return api.put<UpdateProfileRequest, UpdateProfileResponse>({
             url: '/user/profile',

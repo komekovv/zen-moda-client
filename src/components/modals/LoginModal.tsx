@@ -12,7 +12,7 @@ import {
     useLoginMutation,
     useVerifyOTPMutation,
     useUpdateProfileMutation,
-    useResendLoginSMSMutation
+    useResendLoginSMSMutation, useCompleteProfileMutation
 } from '@/hooks/useAuth';
 import {GenderType} from "@/api/queryTypes/User";
 
@@ -41,7 +41,7 @@ const profileSchema = z.object({
         .string()
         .min(2, 'Adyňyz azyndan 2 harp bolmaly')
         .max(50, 'Adyňyz köp bolsa 50 harp bolmaly'),
-    gender: z.enum(['male', 'female'], {
+    gender: z.enum(['MALE', 'FEMALE'], {
         required_error: 'Jynsyňyzy saýlaň'
     })
 });
@@ -133,7 +133,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onSuccess, onError, closeOnClic
         }
     });
 
-    const updateProfileMutation = useUpdateProfileMutation({
+    const updateProfileMutation = useCompleteProfileMutation({
         onSuccess: async (data) => {
             const updatedUser = data.user;
 
@@ -189,7 +189,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ onSuccess, onError, closeOnClic
         setErrorMessage('');
         updateProfileMutation.mutate({
             fullname: data.fullname,
-            gender: data.gender as GenderType
+            gender: data.gender as GenderType,
+            phone_number: phoneNumber,
         });
     };
 
@@ -413,7 +414,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onSuccess, onError, closeOnClic
                                         <input
                                             {...profileForm.register('gender')}
                                             type="radio"
-                                            value="male"
+                                            value="MALE"
                                             className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                                         />
                                         <span className="ml-2 text-sm text-gray-700">Erkek</span>
@@ -422,7 +423,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onSuccess, onError, closeOnClic
                                         <input
                                             {...profileForm.register('gender')}
                                             type="radio"
-                                            value="female"
+                                            value="FEMALE"
                                             className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                                         />
                                         <span className="ml-2 text-sm text-gray-700">Aýal</span>

@@ -382,8 +382,8 @@ const Header: React.FC<HeaderProps> = ({
                         <nav className="flex items-center justify-between h-14 relative">
                             {catalogsLoading ? (
                                 // Loading skeleton for navigation
-                                <div className="flex items-center space-x-8 w-full">
-                                    {[...Array(6)].map((_, index) => (
+                                <div className="flex items-center justify-between space-x-8 w-full">
+                                    {[...Array(8)].map((_, index) => (
                                         <div key={index} className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
                                     ))}
                                 </div>

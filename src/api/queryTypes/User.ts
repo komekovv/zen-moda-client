@@ -31,11 +31,12 @@ export interface VerifyOTPResponse {
     user?: User;
 }
 
-export type GenderType = 'male' | 'female';
+export type GenderType = 'MALE' | 'FEMALE';
 
 export interface UpdateProfileRequest {
     fullname: string;
     gender: GenderType;
+    phone_number?: string;
 }
 
 export interface UpdateProfileResponse {

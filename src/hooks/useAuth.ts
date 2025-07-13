@@ -33,6 +33,15 @@ export const useVerifyOTPMutation = (
     });
 };
 
+export const useCompleteProfileMutation = (
+    options?: UseMutationOptions<UpdateProfileResponse, Error, UpdateProfileRequest>
+) => {
+    return useMutation<UpdateProfileResponse, Error, UpdateProfileRequest>({
+        mutationFn: authService.completeProfile,
+        ...options,
+    });
+};
+
 export const useUpdateProfileMutation = (
     options?: UseMutationOptions<UpdateProfileResponse, Error, UpdateProfileRequest>
 ) => {
