@@ -90,55 +90,81 @@ export default function Home() {
             case 'specially_for_you':
                 return (
                     <div key={section.slug} className={marginClass}>
-                        <h2 className="heading-main-page mb-8">{sectionTitle}</h2>
-                        {section.products && section.products.length > 0 ? (
+                        {section.products && section.products.length > 0 && (
+                            <>
+                                <h2 className="heading-main-page mb-8">{sectionTitle}</h2>
+                                <div className={`mb-4`}>
+                                    <Swiper
+                                        spaceBetween={20}
+                                        slidesPerView={6}
+                                        freeMode={true}
+                                        autoplay={false}
+                                        breakpoints={{
+                                            320: { slidesPerView: 2.5, spaceBetween: 15 },
+                                            640: { slidesPerView: 3, spaceBetween: 15 },
+                                            768: { slidesPerView: 3, spaceBetween: 20 },
+                                            1024: { slidesPerView: 6, spaceBetween: 20 }
+                                        }}
+                                        className="product-slider"
+                                    >
+                                        {section.products.map((product) => (
+                                            <SwiperSlide key={product.id}>
+                                                <ProductCard
+                                                    id={product.id}
+                                                    name={getLocalizedText(product.name, locale)}
+                                                    description={getLocalizedText(product.description, locale)}
+                                                    image={product.photo.url || ''}
+                                                    basePrice={product.basePrice}
+                                                    discountPrice={product.discountPrice}
+                                                    discountPercentage={product.discountPercentage}
+                                                    rating={product.rating}
+                                                    reviewCount={product.reviewCount}
+                                                    viewCount={product.viewCount}
+                                                    brand={product.brand}
+                                                    isNew={product.isNew}
+                                                    isFeatured={product.isFeatured}
+                                                    isRecommended={product.isRecommended}
+                                                    isInCart={product.isInCart}
+                                                    isInComparison={product.isInComparison}
+                                                    isInWishlist={product.isInWishlist}
+                                                    saleEndDate={product.saleEndDate}
+                                                    store={product.store}
+                                                    currency={"TMT"}
+
+                                                    isOnSale={true}
+                                                    onFavoriteToggle={handleFavoriteToggle}
+                                                />
+                                            </SwiperSlide>
+                                        ))}
+                                    </Swiper>
+                                </div>
+                            </>
+                        )}
+                        {section.banners && section.banners.length > 0 && (
                             <Swiper
-                                spaceBetween={20}
-                                slidesPerView={6}
+                                spaceBetween={16}
+                                slidesPerView="auto"
                                 freeMode={true}
                                 autoplay={false}
                                 breakpoints={{
-                                    320: { slidesPerView: 2.5, spaceBetween: 15 },
-                                    640: { slidesPerView: 3, spaceBetween: 15 },
-                                    768: { slidesPerView: 3, spaceBetween: 20 },
-                                    1024: { slidesPerView: 6, spaceBetween: 20 }
+                                    320: { slidesPerView: 1, spaceBetween: 12 },
+                                    640: { slidesPerView: 1.5, spaceBetween: 16 },
+                                    768: { slidesPerView: 3, spaceBetween: 16 }
                                 }}
-                                className="product-slider"
+                                className="banner-slider"
                             >
-                                {section.products.map((product) => (
-                                    <SwiperSlide key={product.id}>
-                                        <ProductCard
-                                            id={product.id}
-                                            name={getLocalizedText(product.name, locale)}
-                                            description={getLocalizedText(product.description, locale)}
-                                            image={product.photo.url || ''}
-                                            basePrice={product.basePrice}
-                                            discountPrice={product.discountPrice}
-                                            discountPercentage={product.discountPercentage}
-                                            rating={product.rating}
-                                            reviewCount={product.reviewCount}
-                                            viewCount={product.viewCount}
-                                            brand={product.brand}
-                                            isNew={product.isNew}
-                                            isFeatured={product.isFeatured}
-                                            isRecommended={product.isRecommended}
-                                            isInCart={product.isInCart}
-                                            isInComparison={product.isInComparison}
-                                            isInWishlist={product.isInWishlist}
-                                            saleEndDate={product.saleEndDate}
-                                            store={product.store}
-                                            currency={"TMT"}
-
-                                            isOnSale={true}
-                                            onFavoriteToggle={handleFavoriteToggle}
+                                {section.banners.map((banner) => (
+                                    <SwiperSlide key={banner.id}>
+                                        <Image
+                                            src={banner.photo}
+                                            alt={banner.name}
+                                            className={'w-full h-full rounded-lg'}
+                                            width={400}
+                                            height={400}
                                         />
                                     </SwiperSlide>
                                 ))}
                             </Swiper>
-                        ) : (
-                            <div className="text-center py-8 text-gray-500">
-                                {t('no_products_available')}
-                            </div>
                         )}
                     </div>
                 );
@@ -146,25 +172,50 @@ export default function Home() {
             case 'popular_categories':
                 return (
                     <div key={section.slug} className={marginClass}>
-                        <h2 className="heading-main-page mb-8">{sectionTitle}</h2>
-                        {section.categories?.data && section.categories.data.length > 0 ? (
-                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 2xl:grid-cols-10 gap-4 md:gap-6">
-                                {section.categories.data.map((category, categoryIndex) => (
-                                    <CategoryCard
-                                        key={`${category.catalogId}-${categoryIndex}`}
-                                        category={{
-                                            id: category.catalogId || categoryIndex.toString(),
-                                            name: getLocalizedText(category.categoryName, locale),
-                                            photo: category.photo|| '',
-                                        }}
-                                        className="w-full"
-                                    />
+                        {section.categories?.data && section.categories.data.length > 0 && (
+                            <>
+                                <h2 className="heading-main-page mb-8">{sectionTitle}</h2>
+
+                                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 2xl:grid-cols-10 gap-4 md:gap-6">
+                                    {section.categories.data.map((category, categoryIndex) => (
+                                        <CategoryCard
+                                            key={`${category.catalogId}-${categoryIndex}`}
+                                            category={{
+                                                id: category.catalogId || categoryIndex.toString(),
+                                                name: getLocalizedText(category.categoryName, locale),
+                                                photo: category.photo|| '',
+                                            }}
+                                            className="w-full"
+                                        />
+                                    ))}
+                                </div>
+                            </>
+                        )}
+                        {section.banners && section.banners.length > 0 && (
+                            <Swiper
+                                spaceBetween={16}
+                                slidesPerView="auto"
+                                freeMode={true}
+                                autoplay={false}
+                                breakpoints={{
+                                    320: { slidesPerView: 1, spaceBetween: 12 },
+                                    640: { slidesPerView: 1.5, spaceBetween: 16 },
+                                    768: { slidesPerView: 3, spaceBetween: 16 }
+                                }}
+                                className="banner-slider"
+                            >
+                                {section.banners.map((banner) => (
+                                    <SwiperSlide key={banner.id}>
+                                        <Image
+                                            src={banner.photo}
+                                            alt={banner.name}
+                                            className={'w-full h-full rounded-lg'}
+                                            width={400}
+                                            height={400}
+                                        />
+                                    </SwiperSlide>
                                 ))}
-                            </div>
-                        ) : (
-                            <div className="text-center py-8 text-gray-500">
-                                {t('no_categories_available')}
-                            </div>
+                            </Swiper>
                         )}
                     </div>
                 );
@@ -172,192 +223,9 @@ export default function Home() {
             case 'most_viewed':
                 return (
                     <div key={section.slug} className={marginClass}>
-                        <h2 className="heading-main-page mb-8">{sectionTitle}</h2>
-                        {section.products && section.products.length > 0 ? (
-                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
-                                {section.products.map((product) => (
-                                    <ProductCard
-                                        id={product.id}
-                                        name={getLocalizedText(product.name, locale)}
-                                        description={getLocalizedText(product.description, locale)}
-                                        image={product.photo.url || ''}
-                                        basePrice={product.basePrice}
-                                        discountPrice={product.discountPrice}
-                                        discountPercentage={product.discountPercentage}
-                                        rating={product.rating}
-                                        reviewCount={product.reviewCount}
-                                        viewCount={product.viewCount}
-                                        brand={product.brand}
-                                        isNew={product.isNew}
-                                        isFeatured={product.isFeatured}
-                                        isRecommended={product.isRecommended}
-                                        isInCart={product.isInCart}
-                                        isInComparison={product.isInComparison}
-                                        isInWishlist={product.isInWishlist}
-                                        saleEndDate={product.saleEndDate}
-                                        store={product.store}
-                                        currency={"TMT"}
-
-                                        isOnSale={true}
-                                        onFavoriteToggle={handleFavoriteToggle}
-                                        className="w-full"
-                                    />
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="text-center py-8 text-gray-500">
-                                {t('no_products_available')}
-                            </div>
-                        )}
-                    </div>
-                );
-
-            case 'brands':
-                return (
-                    <div key={section.slug} className={marginClass}>
-                        <h2 className="heading-main-page mb-8">{sectionTitle}</h2>
-                        {section.brands && section.brands.length > 0 ? (
-                            <Swiper
-                                spaceBetween={16}
-                                slidesPerView="auto"
-                                freeMode={true}
-                                autoplay={false}
-                                breakpoints={{
-                                    320: { slidesPerView: 2.5, spaceBetween: 12 },
-                                    640: { slidesPerView: 3, spaceBetween: 16 },
-                                    768: { slidesPerView: 3.2, spaceBetween: 16 },
-                                    1024: { slidesPerView: 4.2, spaceBetween: 20 },
-                                    1280: { slidesPerView: 5, spaceBetween: 20 },
-                                    1536: { slidesPerView: 5.5, spaceBetween: 24 }
-                                }}
-                                className="brand-slider"
-                            >
-                                {section.brands.map((brand, brandIndex) => (
-                                    <SwiperSlide key={brand.id}
-                                                 >
-                                        <BrandCard
-                                            key={`${brand.id}-${brandIndex}`}
-                                            brand={{
-                                                id: brand.id,
-                                                name: brand.name,
-                                                photo: brand.photo || '',
-                                            }}
-                                        />
-                                    </SwiperSlide>
-                                ))}
-                            </Swiper>
-                        ) : (
-                            <div className="text-center py-8 text-gray-500">
-                                {t('no_brands_available')}
-                            </div>
-                        )}
-                    </div>
-                );
-
-            case 'markets':
-                return (
-                    <div key={section.slug} className={marginClass}>
-                        <h2 className="heading-main-page mb-8">{sectionTitle}</h2>
-                        {section.markets && section.markets.length > 0 ? (
+                        {section.products && section.products.length > 0 && (
                             <>
-                                <div className="mb-4">
-                                    <Swiper
-                                        spaceBetween={16}
-                                        slidesPerView="auto"
-                                        freeMode={true}
-                                        autoplay={false}
-                                        breakpoints={{
-                                            320: { slidesPerView: 1.5, spaceBetween: 12 },
-                                            640: { slidesPerView: 2.5, spaceBetween: 16 },
-                                            768: { slidesPerView: 3, spaceBetween: 16 },
-                                            1024: { slidesPerView: 4, spaceBetween: 15 },
-                                            1280: { slidesPerView: 5, spaceBetween: 15 }
-                                        }}
-                                        className="store-slider"
-                                    >
-                                        {section.markets.map((market) => (
-                                            <SwiperSlide key={market.id}>
-                                                <StoreCard
-                                                    id={market.id}
-                                                    isVerified={market.isVerified ?? false}
-                                                    description={market.description}
-                                                    image={market.logoURL || ''}
-                                                    products={[]}
-                                                    title={market.name}
-                                                />
-                                            </SwiperSlide>
-                                        ))}
-                                    </Swiper>
-                                </div>
-                                {section.banners && section.banners.length > 0 && (
-                                    <Swiper
-                                        spaceBetween={16}
-                                        slidesPerView="auto"
-                                        freeMode={true}
-                                        autoplay={false}
-                                        breakpoints={{
-                                            320: { slidesPerView: 1, spaceBetween: 12 },
-                                            640: { slidesPerView: 1.5, spaceBetween: 16 },
-                                            768: { slidesPerView: 3, spaceBetween: 16 }
-                                        }}
-                                        className="banner-slider"
-                                    >
-                                        {section.banners.map((banner) => (
-                                            <SwiperSlide key={banner.id}>
-                                                <Image
-                                                    src={banner.photos}
-                                                    alt={banner.name}
-                                                    className={'rounded-lg'}
-                                                    width={400}
-                                                    height={200}
-                                                />
-                                            </SwiperSlide>
-                                        ))}
-                                    </Swiper>
-                                )}
-                            </>
-                        ) : (
-                            <div className="text-center py-8 text-gray-500">
-                                {t('no_markets_available')}
-                            </div>
-                        )}
-                    </div>
-                );
-
-            case 'cheap_products':
-                return (
-                    <div key={section.slug} className={marginClass}>
-                        <h2 className="heading-main-page mb-8">{sectionTitle}</h2>
-                        {section.products && section.products.length > 0 ? (
-                            <>
-                                {/* Banners for cheap products section */}
-                                {section.banners && section.banners.length > 0 && (
-                                    <div className="mb-4">
-                                        <Swiper
-                                            spaceBetween={16}
-                                            slidesPerView="auto"
-                                            freeMode={true}
-                                            autoplay={false}
-                                            breakpoints={{
-                                                320: { slidesPerView: 1, spaceBetween: 12 },
-                                                640: { slidesPerView: 1.5, spaceBetween: 16 },
-                                                768: { slidesPerView: 3, spaceBetween: 16 }
-                                            }}
-                                        >
-                                            {section.banners.map((banner) => (
-                                                <SwiperSlide key={banner.id}>
-                                                    <Image
-                                                        src={banner.photos}
-                                                        alt={banner.name}
-                                                        className={'rounded-lg'}
-                                                        width={400}
-                                                        height={200}
-                                                    />
-                                                </SwiperSlide>
-                                            ))}
-                                        </Swiper>
-                                    </div>
-                                )}
+                                <h2 className="heading-main-page mb-8">{sectionTitle}</h2>
                                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
                                     {section.products.map((product) => (
                                         <ProductCard
@@ -389,9 +257,207 @@ export default function Home() {
                                     ))}
                                 </div>
                             </>
-                        ) : (
-                            <div className="text-center py-8 text-gray-500">
-                                {t('no_products_available')}
+                        )}
+                        {section.banners && section.banners.length > 0 && (
+                            <Swiper
+                                spaceBetween={16}
+                                slidesPerView="auto"
+                                freeMode={true}
+                                autoplay={false}
+                                breakpoints={{
+                                    320: { slidesPerView: 1, spaceBetween: 12 },
+                                    640: { slidesPerView: 1.5, spaceBetween: 16 },
+                                    768: { slidesPerView: 3, spaceBetween: 16 }
+                                }}
+                                className="banner-slider"
+                            >
+                                {section.banners.map((banner) => (
+                                    <SwiperSlide key={banner.id}>
+                                        <Image
+                                            src={banner.photo}
+                                            alt={banner.name}
+                                            className={'w-full h-full rounded-lg'}
+                                            width={400}
+                                            height={400}
+                                        />
+                                    </SwiperSlide>
+                                ))}
+                            </Swiper>
+                        )}
+                    </div>
+                );
+
+            case 'brands':
+                return (
+                    <div key={section.slug} className={marginClass}>
+                        {section.brands && section.brands.length > 0 && (
+                            <>
+                                <h2 className="heading-main-page mb-8">{sectionTitle}</h2>
+                                <div className={'mb-4'}>
+                                    <Swiper
+                                        spaceBetween={16}
+                                        slidesPerView="auto"
+                                        freeMode={true}
+                                        autoplay={false}
+                                        breakpoints={{
+                                            320: { slidesPerView: 2.5, spaceBetween: 12 },
+                                            640: { slidesPerView: 3, spaceBetween: 16 },
+                                            768: { slidesPerView: 3.2, spaceBetween: 16 },
+                                            1024: { slidesPerView: 4.2, spaceBetween: 20 },
+                                            1280: { slidesPerView: 5, spaceBetween: 20 },
+                                            1536: { slidesPerView: 5.5, spaceBetween: 24 }
+                                        }}
+                                        className="brand-slider"
+                                    >
+                                        {section.brands.map((brand, brandIndex) => (
+                                            <SwiperSlide key={brand.id}
+                                                         >
+                                                <BrandCard
+                                                    key={`${brand.id}-${brandIndex}`}
+                                                    brand={{
+                                                        id: brand.id,
+                                                        name: brand.name,
+                                                        photo: brand.photo || '',
+                                                    }}
+                                                />
+                                            </SwiperSlide>
+                                        ))}
+                                    </Swiper>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                );
+
+            case 'markets':
+                return (
+                    <div key={section.slug} className={marginClass}>
+                        {section.markets && section.markets.length > 0 && (
+                            <>
+                                <h2 className="heading-main-page mb-8">{sectionTitle}</h2>
+                                <div className="mb-4">
+                                    <Swiper
+                                        spaceBetween={16}
+                                        slidesPerView="auto"
+                                        freeMode={true}
+                                        autoplay={false}
+                                        breakpoints={{
+                                            320: { slidesPerView: 1.5, spaceBetween: 12 },
+                                            640: { slidesPerView: 2.5, spaceBetween: 16 },
+                                            768: { slidesPerView: 3, spaceBetween: 16 },
+                                            1024: { slidesPerView: 4, spaceBetween: 15 },
+                                            1280: { slidesPerView: 5, spaceBetween: 15 }
+                                        }}
+                                        className="store-slider"
+                                    >
+                                        {section.markets.map((market) => (
+                                            <SwiperSlide key={market.id}>
+                                                <StoreCard
+                                                    id={market.id}
+                                                    isVerified={market.isVerified ?? false}
+                                                    description={market.description}
+                                                    image={market.logoURL || ''}
+                                                    products={[]}
+                                                    title={market.name}
+                                                />
+                                            </SwiperSlide>
+                                        ))}
+                                    </Swiper>
+                                </div>
+                            </>
+                        )}
+                        {section.banners && section.banners.length > 0 && (
+                            <Swiper
+                                spaceBetween={16}
+                                slidesPerView="auto"
+                                freeMode={true}
+                                autoplay={false}
+                                breakpoints={{
+                                    320: { slidesPerView: 1, spaceBetween: 12 },
+                                    640: { slidesPerView: 1.5, spaceBetween: 16 },
+                                    768: { slidesPerView: 3, spaceBetween: 16 }
+                                }}
+                                className="banner-slider"
+                            >
+                                {section.banners.map((banner) => (
+                                    <SwiperSlide key={banner.id}>
+                                        <Image
+                                            src={banner.photo}
+                                            alt={banner.name}
+                                            className={'rounded-lg'}
+                                            width={400}
+                                            height={200}
+                                        />
+                                    </SwiperSlide>
+                                ))}
+                            </Swiper>
+                        )}
+                    </div>
+                );
+
+            case 'cheap_products':
+                return (
+                    <div key={section.slug} className={marginClass}>
+                        {section.products && section.products.length > 0 && (
+                            <>
+                                <h2 className="heading-main-page mb-8">{sectionTitle}</h2>
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
+                                    {section.products.map((product) => (
+                                        <ProductCard
+                                            id={product.id}
+                                            name={getLocalizedText(product.name, locale)}
+                                            description={getLocalizedText(product.description, locale)}
+                                            image={product.photo.url || ''}
+                                            basePrice={product.basePrice}
+                                            discountPrice={product.discountPrice}
+                                            discountPercentage={product.discountPercentage}
+                                            rating={product.rating}
+                                            reviewCount={product.reviewCount}
+                                            viewCount={product.viewCount}
+                                            brand={product.brand}
+                                            isNew={product.isNew}
+                                            isFeatured={product.isFeatured}
+                                            isRecommended={product.isRecommended}
+                                            isInCart={product.isInCart}
+                                            isInComparison={product.isInComparison}
+                                            isInWishlist={product.isInWishlist}
+                                            saleEndDate={product.saleEndDate}
+                                            store={product.store}
+                                            currency={"TMT"}
+
+                                            isOnSale={true}
+                                            onFavoriteToggle={handleFavoriteToggle}
+                                            className="w-full"
+                                        />
+                                    ))}
+                                </div>
+                            </>
+                        )}
+                        {section.banners && section.banners.length > 0 && (
+                            <div className="mb-4">
+                                <Swiper
+                                    spaceBetween={16}
+                                    slidesPerView="auto"
+                                    freeMode={true}
+                                    autoplay={false}
+                                    breakpoints={{
+                                        320: { slidesPerView: 1, spaceBetween: 12 },
+                                        640: { slidesPerView: 1.5, spaceBetween: 16 },
+                                        768: { slidesPerView: 3, spaceBetween: 16 }
+                                    }}
+                                >
+                                    {section.banners.map((banner) => (
+                                        <SwiperSlide key={banner.id}>
+                                            <Image
+                                                src={banner.photo}
+                                                alt={banner.name}
+                                                className={'rounded-lg'}
+                                                width={400}
+                                                height={200}
+                                            />
+                                        </SwiperSlide>
+                                    ))}
+                                </Swiper>
                             </div>
                         )}
                     </div>

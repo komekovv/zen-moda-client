@@ -71,11 +71,12 @@ export interface MarketShort {
 export interface Banner {
     id: number;
     name: string;
-    description: string;
-    photos: string;
+    photo: string;
     priority: number;
     link?: string;
-    type?: string;
+    itemId: string;
+    targetType: string;
+    type: string;
 }
 
 export interface HomeSection {
