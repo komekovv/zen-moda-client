@@ -18,75 +18,64 @@ interface CartItem {
     isFavorite: boolean;
 }
 
-interface CartPageProps {
-    cartItems?: CartItem[];
-    onUpdateQuantity?: (itemId: string, quantity: number) => void;
-    onRemoveItem?: (itemId: string) => void;
-    onToggleFavorite?: (itemId: string) => void;
-    onCheckout?: () => void;
-}
-
-export default function ShoppingCartPage({
-                                                       cartItems = [
-                                                           {
-                                                               id: '1',
-                                                               storeId: 'apple',
-                                                               storeName: 'Apple',
-                                                               image: '/xiaomi-bluetooth.jpg',
-                                                               name: 'XIAOMI Mijia Bluetooth of the Ther...',
-                                                               size: 'XS',
-                                                               originalPrice: 2455,
-                                                               discountedPrice: 2455,
-                                                               quantity: 100,
-                                                               deliveryTime: '1 - 3 gün',
-                                                               isFavorite: false
-                                                           },
-                                                           {
-                                                               id: '2',
-                                                               storeId: 'samsung',
-                                                               storeName: 'Samsung',
-                                                               image: '/xiaomi-bluetooth.jpg',
-                                                               name: 'XIAOMI Mijia Bluetooth of the Ther...',
-                                                               size: 'XS',
-                                                               originalPrice: 2455,
-                                                               discountedPrice: 2455,
-                                                               quantity: 1,
-                                                               deliveryTime: '1 - 3 gün',
-                                                               isFavorite: false
-                                                           },
-                                                           {
-                                                               id: '3',
-                                                               storeId: 'apple',
-                                                               storeName: 'Apple',
-                                                               image: '/xiaomi-bluetooth.jpg',
-                                                               name: 'XIAOMI Mijia Bluetooth of the Ther...',
-                                                               size: 'XS',
-                                                               originalPrice: 2455,
-                                                               discountedPrice: 2455,
-                                                               quantity: 1,
-                                                               deliveryTime: '1 - 3 gün',
-                                                               isFavorite: false
-                                                           },
-                                                           {
-                                                               id: '4',
-                                                               storeId: 'apple',
-                                                               storeName: 'Apple',
-                                                               image: '/xiaomi-bluetooth.jpg',
-                                                               name: 'XIAOMI Mijia Bluetooth of the Ther...',
-                                                               size: 'XS',
-                                                               originalPrice: 2455,
-                                                               discountedPrice: 2455,
-                                                               quantity: 100,
-                                                               deliveryTime: '1 - 3 gün',
-                                                               isFavorite: false
-                                                           }
-                                                       ],
-                                                       onUpdateQuantity,
-                                                       onRemoveItem,
-                                                       onToggleFavorite,
-                                                       onCheckout
-                                                   }) {
-    const [items, setItems] = useState(cartItems);
+export default function ShoppingCartPage() {
+    // Initial cart items - in a real app, this would come from a context or API
+    const initialCartItems: CartItem[] = [
+        {
+            id: '1',
+            storeId: 'apple',
+            storeName: 'Apple',
+            image: '/xiaomi-bluetooth.jpg',
+            name: 'XIAOMI Mijia Bluetooth of the Ther...',
+            size: 'XS',
+            originalPrice: 2455,
+            discountedPrice: 2455,
+            quantity: 100,
+            deliveryTime: '1 - 3 gün',
+            isFavorite: false
+        },
+        {
+            id: '2',
+            storeId: 'samsung',
+            storeName: 'Samsung',
+            image: '/xiaomi-bluetooth.jpg',
+            name: 'XIAOMI Mijia Bluetooth of the Ther...',
+            size: 'XS',
+            originalPrice: 2455,
+            discountedPrice: 2455,
+            quantity: 1,
+            deliveryTime: '1 - 3 gün',
+            isFavorite: false
+        },
+        {
+            id: '3',
+            storeId: 'apple',
+            storeName: 'Apple',
+            image: '/xiaomi-bluetooth.jpg',
+            name: 'XIAOMI Mijia Bluetooth of the Ther...',
+            size: 'XS',
+            originalPrice: 2455,
+            discountedPrice: 2455,
+            quantity: 1,
+            deliveryTime: '1 - 3 gün',
+            isFavorite: false
+        },
+        {
+            id: '4',
+            storeId: 'apple',
+            storeName: 'Apple',
+            image: '/xiaomi-bluetooth.jpg',
+            name: 'XIAOMI Mijia Bluetooth of the Ther...',
+            size: 'XS',
+            originalPrice: 2455,
+            discountedPrice: 2455,
+            quantity: 100,
+            deliveryTime: '1 - 3 gün',
+            isFavorite: false
+        }
+    ];
+    
+    const [items, setItems] = useState(initialCartItems);
 
     const handleQuantityChange = (itemId: string, newQuantity: number) => {
         if (newQuantity < 1) return;
@@ -96,12 +85,14 @@ export default function ShoppingCartPage({
                 item.id === itemId ? {...item, quantity: newQuantity} : item
             )
         );
-        onUpdateQuantity?.(itemId, newQuantity);
+        // In a real app, you would call an API or update context here
+        console.log('Quantity updated:', itemId, newQuantity);
     };
 
     const handleRemoveItem = (itemId: string) => {
         setItems(prevItems => prevItems.filter(item => item.id !== itemId));
-        onRemoveItem?.(itemId);
+        // In a real app, you would call an API or update context here
+        console.log('Item removed:', itemId);
     };
 
     const handleToggleFavorite = (itemId: string) => {
@@ -110,7 +101,8 @@ export default function ShoppingCartPage({
                 item.id === itemId ? {...item, isFavorite: !item.isFavorite} : item
             )
         );
-        onToggleFavorite?.(itemId);
+        // In a real app, you would call an API or update context here
+        console.log('Favorite toggled:', itemId);
     };
 
     const calculateSubtotal = () => {
@@ -286,7 +278,10 @@ export default function ShoppingCartPage({
                         </div>
 
                         <button
-                            onClick={onCheckout}
+                            onClick={() => {
+                                // In a real app, this would handle checkout logic
+                                console.log('Checkout clicked');
+                            }}
                             className="w-full bg-[#0762C8] text-white py-3 rounded-lg font-medium"
                         >
                             Sebeti tassykla

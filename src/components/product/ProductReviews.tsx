@@ -79,12 +79,12 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
             </div>
 
             <div className="space-y-6">
-                {reviews?.data?.length > 0 ? (
+                {reviews?.data && reviews.data.length > 0 ? (
                     reviews.data.map((review) => (
                         <div key={review.id} className="border-b border-[#E5E5E5] last:border-b-0 pb-6 last:pb-0">
                             <div className="mb-3">
                                 <Rating
-                                    rating={review.rate as number}
+                                    rating={review.rate}
                                     maxRating={5}
                                 />
                             </div>

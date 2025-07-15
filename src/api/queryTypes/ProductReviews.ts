@@ -9,7 +9,7 @@ export interface ProductReviewResponse {
     content: string;
     createdAt: string;
     username: string;
-    rate: string;
+    rate: number;
 }
 
 export interface ProductReviewTotals {

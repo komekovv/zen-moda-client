@@ -11,12 +11,12 @@ export const productService = {
     },
 
     getProductQuestions: async (productId: string): Promise<ListResponse<ProductQuestionResponse>> => {
-        return api.publicGet<ListResponse<ProductQuestionResponse>>({url: `/product/${productId}/questions`});
+        return api.publicGet<ListResponse<ProductQuestionResponse>>({url: `/product-question/${productId}`});
     },
 
     postProductQuestions: async (productId: string, data: ProductQuestionRequest): Promise<ProductQuestionResponse> => {
         return api.post<ProductQuestionRequest, ProductQuestionResponse>({
-            url: `/product/${productId}/questions`,
+            url: `/product-question/${productId}`,
             data
         });
     },

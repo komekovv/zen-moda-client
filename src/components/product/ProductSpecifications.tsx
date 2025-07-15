@@ -2,8 +2,8 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 
-interface Specification {
-    key: string;
+export interface Specification {
+    label: string;
     value: string;
 }
 
@@ -26,11 +26,11 @@ const ProductSpecifications: React.FC<ProductSpecificationsProps> = ({
 
     const renderSpecificationRow = (spec: Specification, index: number) => (
         <div
-            key={spec.key}
+            key={spec.label}
             className="flex py-2"
         >
             <div className="text-body-description text-passive font-rubik ">
-                {getSpecificationLabel(spec.key)}
+                {getSpecificationLabel(spec.label)}
             </div>
             <div className="flex-1 border-b border-accent-2 border-dashed min-w-[20px] mx-2"></div>
             <div className="text-body-description text-black font-rubik flex-shrink-0 w-32">

@@ -3,7 +3,7 @@ import React from 'react';
 import {notFound} from 'next/navigation';
 import ProductImageGallery from '@/components/product/ProductImageGallery';
 import ProductInfo from '@/components/product/ProductInfo';
-import ProductSpecifications from '@/components/product/ProductSpecifications';
+import ProductSpecifications, {Specification} from '@/components/product/ProductSpecifications';
 import ProductReviews from '@/components/product/ProductReviews';
 import ProductDescription from '@/components/product/ProductDescription';
 import StoreInfo from '@/components/product/StoreInfo';
@@ -16,6 +16,9 @@ import AskQuestion from "@/components/product/AskQuestion";
 import ProductComplaint from "@/components/product/ProductComplaint";
 import {getLocalizedText} from "@/lib/utils/helpers";
 import {usePostQuestionMutation, useProductQuestions, useProductReviews, useProductDetail} from "@/hooks/useProduct";
+import {ProductQuestionResponse} from "@/api/queryTypes/ProductQuestion";
+import {ProductReviewListResponse} from "@/api/queryTypes/ProductReviews";
+import {ListResponse} from "@/api/queryTypes/Common";
 
 interface ProductPageProps {
     params: {
@@ -28,7 +31,6 @@ export default function ProductPage({params}: ProductPageProps) {
     const locale = useLocale();
     const productId = params.id;
 
-    // API calls
     const {
         data: productData,
         error: productError,
@@ -72,15 +74,12 @@ export default function ProductPage({params}: ProductPageProps) {
         );
     }
 
-    // Error state
     if (productError || !productData) {
         notFound();
     }
 
-    // Use API data directly
     const { product, colors, sizes } = productData;
 
-    // Mock similar products (you might want to add an API endpoint for this)
     const similarProducts = [
         {
             id: "similar-1",
@@ -322,7 +321,7 @@ export default function ProductPage({params}: ProductPageProps) {
 
                 <div className="max-w-3xl">
                     <ProductDescription description={localizedDescription}/>
-                    <ProductSpecifications specifications={product.specifications}/>
+                    <ProductSpecifications specifications={product.specifications as Specification[]}/>
                     <StoreInfo 
                         store={{
                             id: product.market.id,
@@ -334,7 +333,8 @@ export default function ProductPage({params}: ProductPageProps) {
                     />
                     <SimilarProducts products={similarProducts}/>
                     <AskQuestion
-                        questions={questionsData}
+                        productId={productId}
+                        questions={questionsData as ListResponse<ProductQuestionResponse>}
                         error={questionsError}
                         loading={questionsLoading}
                     />
@@ -346,7 +346,7 @@ export default function ProductPage({params}: ProductPageProps) {
                             rating: product.rating,
                             reviewCount: product.reviewCount
                         }}
-                        reviews={reviewsData}
+                        reviews={reviewsData as ProductReviewListResponse}
                         error={reviewsError}
                         loading={reviewsLoading}
                     />

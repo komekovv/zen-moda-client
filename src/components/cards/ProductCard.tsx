@@ -5,7 +5,7 @@ import Image from "next/image";
 import { LocalizedText} from "@/types/types";
 import {StaticImport} from "next/dist/shared/lib/get-img-props";
 import Rating from "@/components/ui/Rating";
-import {MarketShort} from "@/api/queryTypes/Home";
+import {StoreShort} from "@/api/queryTypes/Home";
 import {Link} from "@/i18n/navigation";
 
 interface ProductCardProps {
@@ -28,7 +28,7 @@ interface ProductCardProps {
     isInCart?: boolean;
     isInComparison?: boolean;
     isInWishlist: boolean;
-    store: MarketShort;
+    store: StoreShort;
     saleEndDate?: string;
     stock?: number;
 
