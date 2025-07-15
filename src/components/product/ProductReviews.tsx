@@ -2,14 +2,7 @@ import React from 'react';
 import Rating from '@/components/ui/Rating';
 import {StaticImport} from "next/dist/shared/lib/get-img-props";
 import Image from "next/image";
-
-interface Review {
-    id: string;
-    user: string;
-    rating: number;
-    comment: string;
-    date: string;
-}
+import {ProductReviewListResponse} from "@/api/queryTypes/ProductReviews";
 
 interface ProductInfo {
     image: string | StaticImport;
@@ -21,8 +14,9 @@ interface ProductInfo {
 
 interface ProductReviewsProps {
     product: ProductInfo;
-    reviews: Review[];
-    totalReviews?: number;
+    reviews?: ProductReviewListResponse;
+    error?: any;
+    loading?: boolean;
     onViewAll?: () => void;
 }
 
@@ -34,30 +28,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
                                                                rating: 4.3,
                                                                reviewCount: 213
                                                            },
-                                                           reviews = [
-                                                               {
-                                                                   id: '1',
-                                                                   rating: 5,
-                                                                   comment: 'Diam, nisl iaculis arcu vitae egestas dolor magna risus neque suscipit magnis neque quis velit a odi morbi enim, urna adipiscing risus orci magna magna',
-                                                                   user: 'Aman Amanow',
-                                                                   date: '16.03.2021'
-                                                               },
-                                                               {
-                                                                   id: '2',
-                                                                   rating: 5,
-                                                                   comment: 'Diam, nisl iaculis arcu vitae egestas dolor magna risus neque suscipit magnis neque quis velit a odi morbi enim, urna adipiscing risus orci magna magna',
-                                                                   user: 'Aman Amanow',
-                                                                   date: '16.03.2021'
-                                                               },
-                                                               {
-                                                                   id: '3',
-                                                                   rating: 5,
-                                                                   comment: 'Diam, nisl iaculis arcu vitae egestas dolor magna risus neque suscipit magnis neque quis velit a odi morbi enim, urna adipiscing risus orci magna magna',
-                                                                   user: 'Aman Amanow',
-                                                                   date: '16.03.2021'
-                                                               }
-                                                           ],
-                                                           totalReviews = 213,
+                                                           reviews,
                                                            onViewAll
                                                        }) => {
     return (
@@ -68,7 +39,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
                     className="text-[#A0A3BD] text-sm"
                     onClick={onViewAll}
                 >
-                    Hemmesini gör ({totalReviews})
+                    Hemmesini gör ({reviews?.totals?.totalCount || 0})
                 </button>
             </div>
 
@@ -108,29 +79,35 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
             </div>
 
             <div className="space-y-6">
-                {reviews.map((review) => (
-                    <div key={review.id} className="border-b border-[#E5E5E5] last:border-b-0 pb-6 last:pb-0">
-                        <div className="mb-3">
-                            <Rating
-                                rating={review.rating}
-                                maxRating={5}
-                            />
-                        </div>
+                {reviews?.data?.length > 0 ? (
+                    reviews.data.map((review) => (
+                        <div key={review.id} className="border-b border-[#E5E5E5] last:border-b-0 pb-6 last:pb-0">
+                            <div className="mb-3">
+                                <Rating
+                                    rating={review.rate as number}
+                                    maxRating={5}
+                                />
+                            </div>
 
-                        <p className="text-[#161616] mb-4 leading-relaxed">
-                            {review.comment}
-                        </p>
+                            <p className="text-[#161616] mb-4 leading-relaxed">
+                                {review.content}
+                            </p>
 
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-[#161616] font-medium">
-                            {review.user}
-                          </span>
-                          <span className="text-[#A0A3BD]">
-                            {review.date}
-                          </span>
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-[#161616] font-medium">
+                                {review.username}
+                              </span>
+                              <span className="text-[#A0A3BD]">
+                                {review.createdAt}
+                              </span>
+                            </div>
                         </div>
+                    ))
+                ) : (
+                    <div className="text-center py-8 text-[#A0A3BD]">
+                        Henüz teswir ýok
                     </div>
-                ))}
+                )}
             </div>
         </div>
     );

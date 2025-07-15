@@ -9,12 +9,13 @@ import ProductDescription from '@/components/product/ProductDescription';
 import StoreInfo from '@/components/product/StoreInfo';
 import SimilarProducts from '@/components/product/SimilarProducts';
 import {useLocale, useTranslations} from 'next-intl';
-import {Detail1, Detail2, Detail3, Detail4, Prod1, Prod2, Prod3, Prod4, Prod5} from "@/assets/images/products";
+import {Prod1, Prod2, Prod3, Prod4, Prod5} from "@/assets/images/products";
 import {ChevronRightIcon} from "lucide-react";
 import {Link} from "@/i18n/navigation";
 import AskQuestion from "@/components/product/AskQuestion";
 import ProductComplaint from "@/components/product/ProductComplaint";
 import {getLocalizedText} from "@/lib/utils/helpers";
+import {usePostQuestionMutation, useProductQuestions, useProductReviews, useProductDetail} from "@/hooks/useProduct";
 
 interface ProductPageProps {
     params: {
@@ -25,185 +26,61 @@ interface ProductPageProps {
 export default function ProductPage({params}: ProductPageProps) {
     const t = useTranslations('product_detail');
     const locale = useLocale();
+    const productId = params.id;
 
-    const product = {
-        id: params.id,
-        title: {
-            tk: "Erkek sport aýýakgaby 565ASB - VR02",
-            ru: "Erkek sport aýýakgaby 565ASB - VR02"
-        },
-        brand: "Adidas",
-        code: "565ASB-VR02",
-        category: "Egin-eşik",
-        subcategory: "Aýýakgap",
-        currentPrice: 2458,
-        originalPrice: 3200,
-        discount: 23,
-        rating: 4.2,
-        reviewCount: 32,
-        isFavorite: false,
-        images: [
-            {
-                id: "1",
-                path: Detail2,
-                alt: "Adidas ayakkabı ana görünüm"
-            },
-            {
-                id: "2",
-                path: Detail1,
-                alt: "Adidas ayakkabı yan görünüm"
-            },
-            {
-                id: "3",
-                path: Detail3,
-                alt: "Adidas ayakkabı alt görünüm"
-            },
-            {
-                id: "4",
-                path: Detail4,
-                alt: "Adidas ayakkabı arka görünüm"
-            }
-        ],
-        sizes: [
-            {
-                id: "1",
-                size: "41",
-                available: true
-            },
-            {
-                id: "2",
-                size: "42",
-                available: true
-            },
-            {
-                id: "3",
-                size: "43",
-                available: false
-            },
-            {
-                id: "4",
-                size: "44",
-                available: true
-            },
-            {
-                id: "5",
-                size: "45",
-                available: true
-            },
-            {
-                id: "6",
-                size: "46",
-                available: true
-            },
-        ],
-        colors: [
-            {
-                id: "1",
-                name: {
-                    tk: "Ak",
-                    ru: "Ak"
-                },
-                code: "#FFFFFF",
-                image: Detail2,
-                available: true
-            },
-            {
-                id: "2",
-                name: {
-                    tk: "Gara",
-                    ru: "Gara"
-                },
-                code: "#808080",
-                image: Detail2,
-                available: true
-            },
-            {
-                id: "3",
-                name: {
-                    tk: "Sary",
-                    ru: "Sary"
-                },
-                code: "#000000",
-                image: Detail2,
-                available: false
-            },
-            {
-                id: "4",
-                name: {
-                    tk: "Yashyl",
-                    ru: "Yashyl"
-                },
-                code: "#0762C8",
-                image: Detail2,
-                available: true
-            },
-            {
-                id: "5",
-                name: {
-                    tk: "Gok",
-                    ru: "Gok"
-                },
-                code: "#FC185B",
-                image: Detail2,
-                available: true
-            }
-        ],
-        description: {
-            tk: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla consectetur, tortor vel vestibulum 
-            aliquet, magna nunc bibendum quam, vel mattis risus nunc et mauris. Vestibulum ante ipsum primis in 
-            faucibus orci luctus et ultrices posuere cubilia curae; Nullam bibendum quam vel nunc rhoncus vehicula. 
-            Ut tincidunt consectetur magna, non bibendum quam vel nunc rhoncus vehicula. Nam et mauris pellentesque, 
-            scelerisque mauris vel, scelerisque mauris. Donec aliquet lorem vel mauris bibendum, vel bibendum magna 
-            bibendum. Nullam vel magna vel mauris bibendum vel mauris.`,
-            ru: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla consectetur, tortor vel vestibulum 
-            aliquet, magna nunc bibendum quam, vel mattis risus nunc et mauris. Vestibulum ante ipsum primis in 
-            faucibus orci luctus et ultrices posuere cubilia curae; Nullam bibendum quam vel nunc rhoncus vehicula. 
-            Ut tincidunt consectetur magna, non bibendum quam vel nunc rhoncus vehicula. Nam et mauris pellentesque, 
-            scelerisque mauris vel, scelerisque mauris. Donec aliquet lorem vel mauris bibendum, vel bibendum magna 
-            bibendum. Nullam vel magna vel mauris bibendum vel mauris.`
-        },
-        specifications: [
-            {key: "material", value: "Dəri"},
-            {key: "brand", value: "Adidas"},
-            {key: "season", value: "Dörtyıl"},
-            {key: "color", value: "Okydy"},
-            {key: "size", value: "40-45"},
-            {key: "weight", value: "Smile of Moddy"},
-            {key: "country", value: "Türkiye"},
-            {key: "warranty", value: "1 yıl"}
-        ],
-        store: {
-            id: "samsung-store",
-            name: "Samsung",
-            logo: "/api/placeholder/64/64",
-            followerCount: 212,
-            description: "212 Üleulgyiv"
-        },
-        reviews: [
-            {
-                id: "1",
-                user: "Arсlan Amanov",
-                rating: 5,
-                date: "16.03.2021",
-                comment: "Gaty gowy haryt, hususan öz aýdymy aýdanym köp bilen işledim. Gowy gürrüň edýän hususan öz aýdymy aýdanym köp bilen berlen däl diýip",
-            },
-            {
-                id: "2",
-                user: "Arсlan Amanov",
-                rating: 4,
-                date: "16.03.2021",
-                comment: "Gaty gowy haryt, hususan öz aýdymy aýdanym köp bilen işledim. Gowy gürrüň edýän hususan öz aýdymy aýdanym köp bilen berlen däl diýip",
-            },
-            {
-                id: "3",
-                user: "Arсlan Amanov",
-                rating: 5,
-                date: "16.03.2021",
-                comment: "Gaty gowy haryt, hususan öz aýdymy aýdanym köp bilen işledim. Gowy gürrüň edýän hususan öz aýdymy aýdanym köp bilen berlen däl diýip",
-            }
-        ]
-    };
+    // API calls
+    const {
+        data: productData,
+        error: productError,
+        isLoading: productLoading
+    } = useProductDetail(productId);
 
+    const {
+        data: reviewsData,
+        error: reviewsError,
+        isLoading: reviewsLoading
+    } = useProductReviews(productId);
+
+    const {
+        data: questionsData,
+        error: questionsError,
+        isLoading: questionsLoading
+    } = useProductQuestions(productId);
+
+    // Loading state
+    if (productLoading) {
+        return (
+            <div className="max-w-7xl mx-auto bg-white mt-2">
+                <div className="container mx-auto px-4 py-8">
+                    <div className="animate-pulse">
+                        <div className="h-8 bg-gray-200 rounded mb-4"></div>
+                        <div className="flex flex-col lg:flex-row gap-8 mb-12">
+                            <div className="w-full lg:max-w-xl xl:max-w-3xl">
+                                <div className="h-96 bg-gray-200 rounded"></div>
+                            </div>
+                            <div className="flex-1">
+                                <div className="space-y-4">
+                                    <div className="h-8 bg-gray-200 rounded"></div>
+                                    <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+                                    <div className="h-10 bg-gray-200 rounded w-1/2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Error state
+    if (productError || !productData) {
+        notFound();
+    }
+
+    // Use API data directly
+    const { product, colors, sizes } = productData;
+
+    // Mock similar products (you might want to add an API endpoint for this)
     const similarProducts = [
         {
             id: "similar-1",
@@ -362,13 +239,8 @@ export default function ProductPage({params}: ProductPageProps) {
         }
     ];
 
-
-    const localizedTitle = getLocalizedText(product.title, locale);
-    const localizedDescription = getLocalizedText(product.description, locale);
-
-    if (!product) {
-        notFound();
-    }
+    const localizedTitle = getLocalizedText(product.names, locale);
+    const localizedDescription = getLocalizedText(product.descriptions, locale);
 
     return (
         <div className="max-w-7xl mx-auto bg-white mt-2">
@@ -376,9 +248,9 @@ export default function ProductPage({params}: ProductPageProps) {
                 <nav className="text-sm flex items-center gap-2">
                     <Link href={`/`} className="text-black">{t('breadcrumb.home')}</Link>
                     <ChevronRightIcon size={15}/>
-                    <span className="text-black">{product.category}</span>
+                    <span className="text-black">{getLocalizedText(product.category.name, locale)}</span>
                     <ChevronRightIcon size={15}/>
-                    <span className="text-black">{product.subcategory}</span>
+                    <span className="text-black">{getLocalizedText(product.subcategory.name, locale)}</span>
                     <ChevronRightIcon size={15}/>
                     <span className="text-primary font-medium">{t('breadcrumb.product')}</span>
                 </nav>
@@ -387,29 +259,96 @@ export default function ProductPage({params}: ProductPageProps) {
             <div className="container mx-auto px-4">
                 <div className="flex flex-col lg:flex-row gap-4 xl:gap-8 mb-12">
                     <div className="w-full lg:max-w-xl xl:max-w-3xl flex-shrink-0">
-                        <ProductImageGallery images={product.images} productName={localizedTitle}/>
+                        <ProductImageGallery 
+                            images={product.photos.map((photo, index) => ({
+                                id: index.toString(),
+                                path: photo.path,
+                                alt: localizedTitle
+                            }))} 
+                            productName={localizedTitle}
+                        />
                     </div>
 
                     <div className="flex-1">
-                        <ProductInfo product={product}/>
+                        <ProductInfo 
+                            product={{
+                                id: product.id,
+                                title: product.names,
+                                brand: product.brand.name,
+                                code: product.slug,
+                                category: getLocalizedText(product.category.name, locale),
+                                subcategory: getLocalizedText(product.subcategory.name, locale),
+                                currentPrice: parseFloat(product.discountPrice || product.basePrice),
+                                originalPrice: parseFloat(product.basePrice),
+                                discount: parseInt(product.discountPercentage),
+                                rating: product.rating,
+                                reviewCount: product.reviewCount,
+                                isFavorite: product.isInWishlist,
+                                images: product.photos.map((photo, index) => ({
+                                    id: index.toString(),
+                                    path: photo.path,
+                                    alt: localizedTitle
+                                })),
+                                sizes: sizes.map(size => ({
+                                    id: size.id,
+                                    size: size.name,
+                                    available: size.isAvailable
+                                })),
+                                colors: colors.map(color => ({
+                                    id: color.id,
+                                    name: color.name,
+                                    code: color.code,
+                                    image: color.photos[0]?.path || product.photos[0]?.path,
+                                    available: color.isAvailable
+                                })),
+                                description: product.descriptions,
+                                specifications: product.specifications.map(spec => ({
+                                    key: spec.label,
+                                    value: spec.value
+                                })),
+                                store: {
+                                    id: product.market.id,
+                                    name: product.market.name,
+                                    logo: product.market.photo,
+                                    followerCount: product.market.followerCount,
+                                    description: `${product.market.followerCount} Üýeleugy`
+                                },
+                                deliveryTime: product.deliveryTime,
+                                saleEndTime: product.saleEndTime
+                            }}
+                        />
                     </div>
                 </div>
 
                 <div className="max-w-3xl">
                     <ProductDescription description={localizedDescription}/>
                     <ProductSpecifications specifications={product.specifications}/>
-                    <StoreInfo store={product.store}/>
+                    <StoreInfo 
+                        store={{
+                            id: product.market.id,
+                            name: product.market.name,
+                            logo: product.market.photo,
+                            followerCount: product.market.followerCount,
+                            description: `${product.market.followerCount} Üýeleugy`
+                        }}
+                    />
                     <SimilarProducts products={similarProducts}/>
-                    <AskQuestion/>
+                    <AskQuestion
+                        questions={questionsData}
+                        error={questionsError}
+                        loading={questionsLoading}
+                    />
                     <ProductReviews
                         product={{
-                            image: product.images[0].path,
-                            brand: product.brand,
+                            image: product.photos[0]?.path || '',
+                            brand: product.brand.name,
                             name: localizedTitle,
                             rating: product.rating,
                             reviewCount: product.reviewCount
                         }}
-                        reviews={product.reviews}
+                        reviews={reviewsData}
+                        error={reviewsError}
+                        loading={reviewsLoading}
                     />
                     <ProductComplaint/>
                 </div>

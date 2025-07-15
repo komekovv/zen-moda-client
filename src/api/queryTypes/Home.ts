@@ -1,36 +1,11 @@
-import {LocalizedText, SupportedLocales} from "@/types/types";
+import {LocalizedText} from "@/types/types";
+import {ProductShortResponse} from "@/api/queryTypes/Product";
 
 export interface ImageI {
     id: number;
     isPrimary: boolean;
     order: number;
     url: string;
-}
-
-export interface Product {
-    id: string;
-    variationId?: string;
-    name: LocalizedText;
-    description: LocalizedText;
-    slug: string | null;
-    basePrice: string;
-    discountPrice?: string;
-    discountPercentage: number;
-    currency: string;
-    stock?: number;
-    rating: number;
-    reviewCount: number;
-    viewCount: number;
-    brand?: string;
-    isNew: boolean;
-    isFeatured: boolean;
-    isRecommended?: boolean;
-    isInWishlist: boolean;
-    isInCart?: boolean;
-    isInComparison?: boolean;
-    store: MarketShort;
-    photo: ImageI;
-    saleEndDate?: string;
 }
 
 export interface Category {
@@ -57,13 +32,13 @@ export interface Market {
     name: string;
     description: string;
     logoURL: string;
-    products: Product[];
+    products: ProductShortResponse[];
     rating?: number;
     productCount?: number;
     isVerified?: boolean;
 }
 
-export interface MarketShort {
+export interface StoreShort {
     id: number;
     name: string;
 }
@@ -80,12 +55,11 @@ export interface Banner {
 }
 
 export interface HomeSection {
-    // title: LocalizedText;
     title: LocalizedText;
     slug: string;
     allBtn: boolean;
     type: 'specially_for_you' | 'popular_categories' | 'most_viewed' | 'brands' | 'markets' | 'cheap_products';
-    products?: Product[];
+    products?: ProductShortResponse[];
     categories?: CategoriesData;
     brands?: Brand[];
     markets?: Market[];

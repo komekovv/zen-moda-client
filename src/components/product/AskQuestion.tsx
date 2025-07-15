@@ -1,62 +1,19 @@
+'use client'
 import React, { useState } from 'react';
 import { HelpCircle, User } from 'lucide-react';
-
-interface Question {
-    id: string;
-    question: string;
-    author: string;
-    date: string;
-    answer?: {
-        author: string;
-        content: string;
-        avatar?: string;
-    };
-}
+import {ProductQuestionResponse} from "@/api/queryTypes/ProductQuestion";
+import {usePostQuestionMutation} from "@/hooks/useProduct";
 
 interface AskQuestionProps {
-    questions?: Question[];
-    totalQuestions?: number;
+    questions: ListResponse<ProductQuestionResponse>;
+    error?: any;
+    loading?: boolean;
     onAskQuestion?: (question: string) => void;
     onViewAll?: () => void;
 }
 
 const AskQuestion: React.FC<AskQuestionProps> = ({
-                                                     questions = [
-                                                         {
-                                                             id: '1',
-                                                             question: 'Why black color is so expensive?',
-                                                             author: 'A*** B***',
-                                                             date: '25 Mart 2025 16:57',
-                                                             answer: {
-                                                                 author: 'Samsung',
-                                                                 content: 'Hello, thank you for your interest. When you add product to your favorites, you can be aware',
-                                                                 avatar: '/samsung-logo.png'
-                                                             }
-                                                         },
-                                                         {
-                                                             id: '2',
-                                                             question: 'Why black color is so expensive?',
-                                                             author: 'A*** B***',
-                                                             date: '25 Mart 2025 16:57',
-                                                             answer: {
-                                                                 author: 'Samsung',
-                                                                 content: 'Hello, thank you for your interest. When you add product to your favorites, you can be aware',
-                                                                 avatar: '/samsung-logo.png'
-                                                             }
-                                                         },
-                                                         {
-                                                             id: '3',
-                                                             question: 'Why black color is so expensive?',
-                                                             author: 'A*** B***',
-                                                             date: '25 Mart 2025 16:57',
-                                                             answer: {
-                                                                 author: 'Samsung',
-                                                                 content: 'Hello, thank you for your interest. When you add product to your favorites, you can be aware',
-                                                                 avatar: '/samsung-logo.png'
-                                                             }
-                                                         }
-                                                     ],
-                                                     totalQuestions = 213,
+                                                     questions,
                                                      onAskQuestion,
                                                      onViewAll
                                                  }) => {
@@ -80,7 +37,7 @@ const AskQuestion: React.FC<AskQuestionProps> = ({
                     className="text-[#A0A3BD] text-sm"
                     onClick={onViewAll}
                 >
-                    Hemmesini gör ({totalQuestions})
+                    Hemmesini gör ({questions?.totalCount ? questions?.totalCount : 0 })
                 </button>
             </div>
 
@@ -129,7 +86,7 @@ const AskQuestion: React.FC<AskQuestionProps> = ({
 
             {/* Questions List */}
             <div className="space-y-6">
-                {questions.map((question) => (
+                {questions?.data.map((question) => (
                     <div key={question.id} className="border border-[#E5E5E5] rounded-lg p-3">
                         {/* Question */}
                         <div className="mb-4">
@@ -137,7 +94,7 @@ const AskQuestion: React.FC<AskQuestionProps> = ({
                                 {question.question}
                             </h3>
                             <div className="text-[#A0A3BD] text-sm">
-                                {question.author} • {question.date}
+                                {question.username} • {question.createdAt}
                             </div>
                         </div>
 
@@ -146,10 +103,10 @@ const AskQuestion: React.FC<AskQuestionProps> = ({
                             <div className="bg-[#F8F9FA] rounded-lg p-4">
                                 <div className="flex items-center gap-3 mb-3">
                                     <div className="w-8 h-8 bg-[#E5E5E5] rounded-full flex items-center justify-center">
-                                        {question.answer.avatar ? (
+                                        {question.store.photo ? (
                                             <img
-                                                src={question.answer.avatar}
-                                                alt={question.answer.author}
+                                                src={question.store.photo}
+                                                alt={question.store.name}
                                                 className="w-8 h-8 rounded-full object-cover"
                                             />
                                         ) : (
@@ -157,11 +114,11 @@ const AskQuestion: React.FC<AskQuestionProps> = ({
                                         )}
                                     </div>
                                     <span className="text-[#161616] font-medium">
-                                        {question.answer.author}
+                                        {question.store.name}
                                     </span>
                                 </div>
                                 <p className="text-[#161616] leading-relaxed">
-                                    {question.answer.content}
+                                    {question.answer}
                                 </p>
                             </div>
                         )}
