@@ -247,9 +247,9 @@ export default function ProductPage({params}: ProductPageProps) {
                 <nav className="text-sm flex items-center gap-2">
                     <Link href={`/`} className="text-black">{t('breadcrumb.home')}</Link>
                     <ChevronRightIcon size={15}/>
-                    <span className="text-black">{getLocalizedText(product.category.name, locale)}</span>
+                    <span className="text-black">{getLocalizedText(product.category.categoryName, locale)}</span>
                     <ChevronRightIcon size={15}/>
-                    <span className="text-black">{getLocalizedText(product.subcategory.name, locale)}</span>
+                    {/*<span className="text-black">{getLocalizedText(product.subcategory.name, locale)}</span>*/}
                     <ChevronRightIcon size={15}/>
                     <span className="text-primary font-medium">{t('breadcrumb.product')}</span>
                 </nav>
@@ -276,7 +276,7 @@ export default function ProductPage({params}: ProductPageProps) {
                                 brand: product.brand.name,
                                 code: product.slug,
                                 category: getLocalizedText(product.category.name, locale),
-                                subcategory: getLocalizedText(product.subcategory.name, locale),
+                                // subcategory: getLocalizedText(product.subcategory.name, locale),
                                 currentPrice: parseFloat(product.discountPrice || product.basePrice),
                                 originalPrice: parseFloat(product.basePrice),
                                 discount: parseInt(product.discountPercentage),
