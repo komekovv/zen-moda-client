@@ -7,7 +7,7 @@ import {ListResponse} from "@/api/queryTypes/Common";
 export const productService = {
 
     getProductDetail: async (productId: string): Promise<ProductDetailResponse> => {
-        return api.publicGet<ProductDetailResponse>({url: `/product/${productId}`});
+        return api.publicGet<ProductDetailResponse>({url: `/product/${productId}/complete`});
     },
 
     getProductQuestions: async (productId: string): Promise<ListResponse<ProductQuestionResponse>> => {
@@ -22,7 +22,7 @@ export const productService = {
     },
 
     getProductReviews: async (productId: string): Promise<ProductReviewListResponse> => {
-        return api.publicGet<ProductReviewListResponse>({url: `/product/${productId}/reviews`});
+        return api.publicGet<ProductReviewListResponse>({url: `/reviews-detailed?productId=${productId}`});
     },
 
 };

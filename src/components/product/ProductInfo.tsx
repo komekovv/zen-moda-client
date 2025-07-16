@@ -8,37 +8,25 @@ import ProductActions from './ProductActions';
 import Rating from "@/components/ui/Rating";
 import {getLocalizedText} from "@/lib/utils/helpers";
 
-interface Product {
-    id: string;
-    title: string;
-    brand: string;
-    code: string;
-    currentPrice: number;
-    originalPrice?: number;
-    discount?: number;
-    rating: number;
-    reviewCount: number;
-    availability: 'in_stock' | 'limited' | 'out_of_stock';
-    sizes: string[];
-    colors: { name: string; hex: string; image?: string }[];
-    isFavorite?: boolean;
-    store: {
-        id: string;
-        name: string;
-        rating: number;
-    };
-    hasLowStock?: boolean;
-}
-
 interface ProductInfoProps {
     product: any;
+    selectedVariantId: string;
+    selectedColorId?: string;
+    selectedSizeId?: string;
+    onColorSelect?: (colorId: string) => void;
+    onSizeSelect?: (sizeId: string) => void;
 }
 
-const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
+const ProductInfo: React.FC<ProductInfoProps> = ({
+                                                     product,
+                                                     selectedVariantId,
+                                                     selectedColorId,
+                                                     selectedSizeId,
+                                                     onColorSelect,
+                                                     onSizeSelect
+                                                 }) => {
     const t = useTranslations('product_detail');
     const locale = useLocale();
-    const [selectedSize, setSelectedSize] = useState<string>('');
-    const [selectedColor, setSelectedColor] = useState<string>('');
     const [isFavorite, setIsFavorite] = useState(product.isFavorite || false);
 
     const handleFavoriteToggle = () => {
@@ -49,12 +37,22 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
     const handleShare = () => {
         if (navigator.share) {
             navigator.share({
-                title: product.title,
+                title: getLocalizedText(product.title, locale),
                 url: window.location.href,
             });
         }
     };
+
     const localizedTitle = getLocalizedText(product.title, locale);
+
+    // Calculate availability based on stock
+    const getAvailability = () => {
+        if (!product.stock || product.stock === 0) return 'out_of_stock';
+        if (product.stock < 10) return 'limited';
+        return 'in_stock';
+    };
+
+    const availability = getAvailability();
 
     return (
         <div className="space-y-6">
@@ -63,9 +61,14 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                     <h2 className="text-primary text-h2-mobile md:text-h2 font-bold font-rubik">
                         {product.brand}
                     </h2>
-                    {product.hasLowStock && (
+                    {availability === 'limited' && (
                         <span className="text-sale text-sm font-medium">
                             Gutarýar
+                        </span>
+                    )}
+                    {availability === 'out_of_stock' && (
+                        <span className="text-red-500 text-sm font-medium">
+                            Tükendi
                         </span>
                     )}
                 </div>
@@ -77,36 +80,51 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                 <div className="flex items-center gap-2 text-black">
                     <Truck className="w-5 h-5"/>
                     <span className="text-body-description">
-                      {t('info.delivery_time')} <span className="font-semibold"> 16.03.2021 - 18.03.2021</span>
+                      {t('info.delivery_time')} <span className="font-semibold">{product.deliveryTime || '16.03.2021 - 18.03.2021'}</span>
                     </span>
                 </div>
+
+                {/* Stock info */}
+                {/*{product.stock && (*/}
+                {/*    <div className="mt-2 text-body-description">*/}
+                {/*        <span className="text-black">Stok: </span>*/}
+                {/*        <span className={`font-medium ${product.stock < 10 ? 'text-warning' : 'text-green-600'}`}>*/}
+                {/*            {product.stock} adet*/}
+                {/*        </span>*/}
+                {/*    </div>*/}
+                {/*)}*/}
             </div>
 
             <div className="bg-white border border-border rounded-lg p-6">
                 <div className="flex items-center justify-between">
                     <div className="">
                         <div className={"flex items-center gap-4"}>
-                            <div className="bg-[#FC185B] text-white px-2 py-2 rounded-lg font-bold text-lg">
-                                {/*-{product.discountPercentage}%*/}
-                                -40%
-                            </div>
+                            {product.discount && product.discount > 0 && (
+                                <div className="bg-[#FC185B] text-white px-2 py-2 rounded-lg font-bold text-lg">
+                                    -{product.discount}%
+                                </div>
+                            )}
 
                             <div className="flex flex-col">
-                                <div className="text-passive text-body-description-mobile line-through">
-                                    {product.currentPrice} TMT
-                                </div>
+                                {product.originalPrice && product.originalPrice !== product.currentPrice && (
+                                    <div className="text-passive text-body-description-mobile line-through">
+                                        {product.originalPrice} TMT
+                                    </div>
+                                )}
                                 <div className="text-sale text-body-price font-bold">
                                     {product.currentPrice} TMT
                                 </div>
                             </div>
                         </div>
 
-                        <div className="mt-2 text-body-brand font-normal">
-                            <span className="text-black">Arzanladyş wagty: </span>
-                            <span className="text-warning font-rubik">
-                              {/*{product.countdownTime}*/} 01:23:59
-                            </span>
-                        </div>
+                        {product.saleEndTime && (
+                            <div className="mt-2 text-body-brand font-normal">
+                                <span className="text-black">Arzanladyş wagty: </span>
+                                <span className="text-warning font-rubik">
+                                  {product.saleEndTime}
+                                </span>
+                            </div>
+                        )}
                     </div>
 
                     <div className="h-16 w-px bg-border"></div>
@@ -123,29 +141,33 @@ const ProductInfo: React.FC<ProductInfoProps> = ({product}) => {
                 </div>
             </div>
 
-            {/* Color Selection */}
+            {/* Color and Size Selection */}
             <div className="bg-white border border-border rounded-lg p-6">
-                <ProductColorSelector
-                    colors={product.colors}
-                    selectedColor={selectedColor}
-                    onColorSelect={setSelectedColor}
-                />
+                {product.colors && product.colors.length > 0 && (
+                    <ProductColorSelector
+                        colors={product.colors}
+                        selectedColor={selectedColorId}
+                        onColorSelect={onColorSelect}
+                    />
+                )}
 
-                <ProductSizeSelector
-                    sizes={product.sizes}
-                    selectedSize={selectedSize}
-                    onSizeSelect={setSelectedSize}
-                />
+                {product.sizes && product.sizes.length > 0 && (
+                    <ProductSizeSelector
+                        sizes={product.sizes}
+                        selectedSize={selectedSizeId}
+                        onSizeSelect={onSizeSelect}
+                    />
+                )}
             </div>
-
 
             {/* Action Buttons */}
             <div className="flex items-center gap-3">
                 <ProductActions
                     productId={product.id}
-                    selectedSize={selectedSize}
-                    selectedColor={selectedColor}
-                    availability={product.availability}
+                    selectedVariantId={selectedVariantId}
+                    selectedSize={selectedSizeId || ''}
+                    selectedColor={selectedColorId || ''}
+                    availability={availability}
                 />
 
                 <button

@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     User,
     ShoppingBag,
@@ -12,9 +12,25 @@ import {
     Loader2
 } from 'lucide-react';
 import { useClientAuth } from "@/contexts/auth-provider";
-import {useUpdateProfileMutation, useUserProfile} from "@/hooks/useAuth";
+import {useUpdateProfileMutation, useUserProfile, useUpdateProfileWithCache} from "@/hooks/useAuth";
 import { useTranslations } from 'next-intl';
 import {GenderType, UpdateProfileRequest} from '@/api/queryTypes/User';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+
+// Zod schema for profile form validation
+const profileSchema = z.object({
+    fullname: z.string()
+        .min(2, 'Full name must be at least 2 characters')
+        .max(100, 'Full name must be less than 100 characters')
+        .trim(),
+    gender: z.enum(['MALE', 'FEMALE'], {
+        required_error: 'Please select a gender'
+    })
+});
+
+type ProfileFormData = z.infer<typeof profileSchema>;
 
 interface ProfileMenuItem {
     id: string;
@@ -31,27 +47,45 @@ interface TabItem {
 
 export default function ProfilePage() {
     const t = useTranslations('profile');
-    const { user } = useClientAuth();
+    const { user, updateUser } = useClientAuth();
     const [activeTab, setActiveTab] = useState<string>('profile');
     const [isEditing, setIsEditing] = useState<boolean>(false);
 
-    // Use refs for form inputs to avoid controlled component issues
-    const fullnameRef = useRef<HTMLInputElement>(null);
-    const genderRef = useRef<HTMLSelectElement>(null);
-
-
-    // Initialize form values when user data is available
-    useEffect(() => {
-        if (user && fullnameRef.current && genderRef.current) {
-            fullnameRef.current.value = user.fullname || '';
-            genderRef.current.value = user.gender || '';
-        }
-    }, [user]);
-
-    const {data: userData} = useUserProfile(user?.id || '', {
-        enabled: !!user?.id
+    // Fetch user profile data from API
+    const {data: userData, isLoading: isLoadingProfile, error: profileError, refetch} = useUserProfile(user?.id || '', {
+        enabled: !!user?.id,
+        refetchOnWindowFocus: false,
+        refetchOnMount: true
     });
-    console.log(userData)
+
+    // Use the current user data (prefer API data, fallback to auth context)
+    const currentUserData = userData?.user || user;
+
+    // React Hook Form setup
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors, isValid, isDirty },
+        watch
+    } = useForm<ProfileFormData>({
+        resolver: zodResolver(profileSchema),
+        defaultValues: {
+            fullname: '',
+            gender: 'MALE'
+        },
+        mode: 'onChange'
+    });
+
+    // Update form when user data changes
+    useEffect(() => {
+        if (currentUserData) {
+            reset({
+                fullname: currentUserData.fullname || '',
+                gender: (currentUserData.gender as GenderType) || 'MALE'
+            });
+        }
+    }, [currentUserData, reset]);
 
     const profileMenuItems: ProfileMenuItem[] = [
         { id: 'profile', title: t('menu.profile'), icon: User, href: '/profile' },
@@ -66,33 +100,44 @@ export default function ProfilePage() {
         { id: 'profile', label: t('tabs.profile') }
     ];
 
-    const updateProfileMutation = useUpdateProfileMutation({
+    const updateProfileMutation = useUpdateProfileWithCache({
         onSuccess: (response) => {
+            // Update the auth context with new user data
+            updateUser(response.user);
+            
+            // Reset form with new data
+            reset({
+                fullname: response.user.fullname || '',
+                gender: (response.user.gender as GenderType) || 'MALE'
+            });
+            
             setIsEditing(false);
-            // You might want to show a success toast here
             console.log(t('messages.profile_updated_success'));
         },
         onError: (error) => {
-            // Handle error - you might want to show an error toast
             console.error(t('messages.profile_update_error'), error);
+            // Reset form to original values on error
+            handleCancelEdit();
         }
     });
 
-    const handleSaveProfile = () => {
-        if (!user?.id || !fullnameRef.current || !genderRef.current) return;
+    const onSubmit = (data: ProfileFormData) => {
+        if (!user?.id) return;
 
         const updateRequest: UpdateProfileRequest = {
-            fullname: fullnameRef.current.value,
-            gender: genderRef.current.value as GenderType,
+            fullname: data.fullname.trim(),
+            gender: data.gender,
         };
 
         updateProfileMutation.mutate(updateRequest);
     };
 
     const handleCancelEdit = () => {
-        if (user && fullnameRef.current && genderRef.current) {
-            fullnameRef.current.value = user.fullname || '';
-            genderRef.current.value = user.gender || '';
+        if (currentUserData) {
+            reset({
+                fullname: currentUserData.fullname || '',
+                gender: (currentUserData.gender as GenderType) || 'MALE'
+            });
         }
         setIsEditing(false);
     };
@@ -114,8 +159,8 @@ export default function ProfilePage() {
                     </div>
                 </div>
                 <div>
-                    <h1 className="text-2xl font-bold">{user?.fullname || t('default.unnamed_user')}</h1>
-                    <p className="text-blue-100">{user?.phone_number || ''}</p>
+                    <h1 className="text-2xl font-bold">{currentUserData?.fullname || t('default.unnamed_user')}</h1>
+                    <p className="text-blue-100">{currentUserData?.phone_number || ''}</p>
                 </div>
             </div>
         </div>
@@ -190,11 +235,20 @@ export default function ProfilePage() {
         </div>
     );
 
+
+
     const ProfileForm: React.FC = () => (
-        <div className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="flex items-center justify-end">
                 <button
-                    onClick={() => setIsEditing(!isEditing)}
+                    type="button"
+                    onClick={() => {
+                        if (isEditing) {
+                            handleCancelEdit();
+                        } else {
+                            setIsEditing(true);
+                        }
+                    }}
                     disabled={updateProfileMutation.isPending}
                     className="flex items-center space-x-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -209,12 +263,15 @@ export default function ProfilePage() {
                         {t('form.full_name')}
                     </label>
                     <input
-                        ref={fullnameRef}
+                        {...register('fullname')}
                         type="text"
                         disabled={!isEditing}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                         placeholder={t('form.full_name_placeholder')}
                     />
+                    {errors.fullname && (
+                        <p className="mt-1 text-sm text-red-600">{errors.fullname.message}</p>
+                    )}
                 </div>
 
                 {/*<div>*/}
@@ -239,22 +296,24 @@ export default function ProfilePage() {
                         {t('form.gender')}
                     </label>
                     <select
-                        ref={genderRef}
+                        {...register('gender')}
                         disabled={!isEditing}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                     >
-                        <option value="">{t('form.gender_select')}</option>
                         <option value="MALE">{t('form.gender_male')}</option>
                         <option value="FEMALE">{t('form.gender_female')}</option>
                     </select>
+                    {errors.gender && (
+                        <p className="mt-1 text-sm text-red-600">{errors.gender.message}</p>
+                    )}
                 </div>
             </div>
 
             {isEditing && (
                 <div className="flex space-x-4 pt-4">
                     <button
-                        onClick={handleSaveProfile}
-                        disabled={updateProfileMutation.isPending}
+                        type="submit"
+                        disabled={updateProfileMutation.isPending || !isValid || !isDirty}
                         className="flex items-center space-x-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {updateProfileMutation.isPending && (
@@ -263,6 +322,7 @@ export default function ProfilePage() {
                         <span>{t('actions.save')}</span>
                     </button>
                     <button
+                        type="button"
                         onClick={handleCancelEdit}
                         disabled={updateProfileMutation.isPending}
                         className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -271,25 +331,33 @@ export default function ProfilePage() {
                     </button>
                 </div>
             )}
-
-            {/* Error display */}
-            {updateProfileMutation.isError && (
-                <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-red-600 text-sm">
-                        {t('messages.profile_update_error')}
-                    </p>
-                </div>
-            )}
-        </div>
+        </form>
     );
 
     // Loading state while user data is being fetched
-    if (!user) {
+    if (!user || isLoadingProfile) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="flex items-center space-x-2">
                     <Loader2 className="w-6 h-6 animate-spin text-primary" />
                     <span className="text-gray-600">{t('loading.user_data')}</span>
+                </div>
+            </div>
+        );
+    }
+
+    // Error state
+    if (profileError) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <p className="text-red-600 mb-4">{t('messages.profile_load_error')}</p>
+                    <button 
+                        onClick={() => refetch()}
+                        className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                        {t('actions.retry')}
+                    </button>
                 </div>
             </div>
         );
@@ -313,6 +381,24 @@ export default function ProfilePage() {
                             </h3>
                             <ProfileTabs/>
                             {activeTab === 'profile' && <ProfileForm/>}
+                            
+                            {/* Success message */}
+                            {updateProfileMutation.isSuccess && !isEditing && (
+                                <div className="p-4 bg-green-50 border border-green-200 rounded-lg mt-4">
+                                    <p className="text-green-600 text-sm">
+                                        {t('messages.profile_updated_success')}
+                                    </p>
+                                </div>
+                            )}
+
+                            {/* Error display */}
+                            {updateProfileMutation.isError && (
+                                <div className="p-4 bg-red-50 border border-red-200 rounded-lg mt-4">
+                                    <p className="text-red-600 text-sm">
+                                        {t('messages.profile_update_error')}
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

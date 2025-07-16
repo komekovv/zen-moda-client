@@ -4,7 +4,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import { useRouter, usePathname } from 'next/navigation';
 import axios from 'axios';
 import { useRefreshTokenMutation } from '@/hooks/useAuth';
-import { User, AuthState, AuthContextType } from '@/api/queryTypes/User';
+import { UserResponse, AuthState, AuthContextType } from '@/api/queryTypes/User';
 
 const initialState: AuthState = {
     isAuthenticated: false,
@@ -154,7 +154,7 @@ export function ClientAuthProvider({ children }: { children: ReactNode }) {
         }
     }, [authState.isAuthenticated, authState.loading, pathname, router]);
 
-    const setAuthData = (user: User, accessToken: string, refreshToken: string) => {
+    const setAuthData = (user: UserResponse, accessToken: string, refreshToken: string) => {
         localStorage.setItem('client_auth_token', accessToken);
         localStorage.setItem('client_refresh_token', refreshToken);
         localStorage.setItem('client_auth_user', JSON.stringify(user));
@@ -187,6 +187,17 @@ export function ClientAuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
+    const updateUser = (updatedUser: UserResponse) => {
+        // Update localStorage
+        localStorage.setItem('client_auth_user', JSON.stringify(updatedUser));
+        
+        // Update state
+        setAuthState(prev => ({
+            ...prev,
+            user: updatedUser
+        }));
+    };
+
     const logout = () => {
         clearAuthData();
 
@@ -206,6 +217,7 @@ export function ClientAuthProvider({ children }: { children: ReactNode }) {
             value={{
                 ...authState,
                 setAuthData,
+                updateUser,
                 logout,
                 refreshAccessToken,
             }}

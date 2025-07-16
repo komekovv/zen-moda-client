@@ -3,43 +3,69 @@ import {ImageI, StoreShort} from "@/api/queryTypes/Home";
 
 export interface ProductDetailResponse {
     product: ProductDetail;
-    colors: ProductColor[];
-    sizes: ProductSize[];
+    productType: string;
+    isVariant: boolean;
+    hasVariants: boolean;
 }
 
 export interface ProductDetail {
     id: string;
-    names: LocalizedText;
-    descriptions: LocalizedText;
-    basePrice: string;
-    discountPrice: string;
-    discountPercentage: string;
-    brand: ProductBrand;
+    sku: string;
+    name: LocalizedText;
+    description: LocalizedText;
+    basePrice: number;
+    discountPrice: number;
+    discountPercentage: number;
+    currency: string;
+    size: string;
+    stock: number;
+    rating: number;
+    viewCount: number;
+    isNew: boolean;
+    isFeatured: boolean;
+    isRecommended: boolean;
+    isInWishlist: boolean;
+    isInComparison: boolean;
+    isInCart: boolean;
+    inStock: boolean;
+    productType: string;
+    isVariant: boolean;
+    hasVariants: boolean;
+    parentProductId: string | null;
+    variantCount: number;
+    mainImage: ProductPhoto;
+    photos: ProductPhoto[];
     market: ProductMarket;
     category: ProductCategory;
-    subcategory: ProductCategory;
+    brand: ProductBrand;
     catalog: ProductCategory;
+    color: ProductColor;
+    sizes: string[];
+    variants: ProductVariant[];
+}
+
+export interface ProductVariant {
+    id: string;
+    sku: string;
+    name: LocalizedText;
+    basePrice: number;
+    discountPrice: number;
+    stock: number;
+    size: string;
+    productType: string;
+    isVariant: boolean;
+    parentProductId: string;
     photos: ProductPhoto[];
-    specifications: ProductSpecification[];
-    rating: number;
-    reviewCount: number;
-    saleEndTime: string;
-    isInWishlist: boolean;
-    isInCart: boolean;
-    slug: string;
-    deliveryTime: string;
 }
 
 export interface ProductBrand {
-    id: string;
+    id: number;
     name: string;
 }
 
 export interface ProductMarket {
     id: string;
     name: string;
-    photo: string;
-    followerCount: number;
 }
 
 export interface ProductCategory {
@@ -48,6 +74,7 @@ export interface ProductCategory {
 }
 
 export interface ProductPhoto {
+    id: string;
     path: string;
 }
 
@@ -59,9 +86,7 @@ export interface ProductSpecification {
 export interface ProductColor {
     id: string;
     name: LocalizedText;
-    isAvailable: boolean;
-    code: string;
-    photos: ProductPhoto[];
+    colorCode: string;
 }
 
 export interface ProductSize {
@@ -94,4 +119,18 @@ export interface ProductShortResponse {
     store: StoreShort;
     photo: string;
     saleEndDate?: string;
+}
+
+export interface ColorOption {
+    id: string;
+    name: LocalizedText;
+    code: string;
+    image: string;
+    available: boolean;
+}
+
+export interface SizeOption {
+    id: string;
+    size: string;
+    available: boolean;
 }

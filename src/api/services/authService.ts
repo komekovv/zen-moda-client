@@ -7,7 +7,7 @@ import {
     UpdateProfileRequest,
     UpdateProfileResponse,
     RefreshTokenRequest,
-    RefreshTokenResponse
+    RefreshTokenResponse, UserResponse, UserApiResponse
 } from '@/api/queryTypes/User';
 
 /**
@@ -73,38 +73,11 @@ export const authService = {
             url: '/auth/login',
             data: { phone }
         });
-    }
-};
-
-/**
- * Generic service functions for reusability
- */
-export const apiService = {
-    /**
-     * Generic public GET request
-     */
-    publicGet: async <T>(url: string): Promise<T> => {
-        return api.publicGet<T>({ url });
     },
 
-    /**
-     * Generic private GET request
-     */
-    privateGet: async <T>(url: string): Promise<T> => {
-        return api.privateGet<T>({ url });
-    },
-
-    /**
-     * Generic public POST request
-     */
-    publicPost: async <TRequest, TResponse>(url: string, data: TRequest): Promise<TResponse> => {
-        return api.publicPost<TRequest, TResponse>({ url, data });
-    },
-
-    /**
-     * Generic private POST request
-     */
-    privatePost: async <TRequest, TResponse>(url: string, data: TRequest): Promise<TResponse> => {
-        return api.post<TRequest, TResponse>({ url, data });
+    getUserProfile: async (userId: string): Promise<UserApiResponse> => {
+        return api.privateGet<UserApiResponse>({
+            url: `/user/${userId}`
+        })
     }
 };

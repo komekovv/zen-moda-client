@@ -11,7 +11,6 @@ export const HOME_QUERY_KEYS = {
     HOME_DATA: ['home', 'data'] as const,
 } as const;
 
-
 export const CATALOG_QUERY_KEYS = {
     // Base keys
     CATALOGS: ['catalogs'] as const,

@@ -1,8 +1,12 @@
-export interface User {
+export interface UserResponse {
     id: string;
     phone_number: string;
     fullname?: string;
     gender?: 'MALE' | 'FEMALE';
+}
+
+export interface UserApiResponse {
+    user: UserResponse;
 }
 
 export interface AuthTokens {
@@ -28,7 +32,7 @@ export interface VerifyOTPResponse {
     access_token: string;
     refresh_token: string;
     userAlreadyExist?: boolean;
-    user?: User;
+    user?: UserResponse;
 }
 
 export type GenderType = 'MALE' | 'FEMALE';
@@ -40,7 +44,7 @@ export interface UpdateProfileRequest {
 }
 
 export interface UpdateProfileResponse {
-    user: User;
+    user: UserResponse;
 }
 
 export interface RefreshTokenRequest {
@@ -53,14 +57,15 @@ export interface RefreshTokenResponse {
 
 export interface AuthState {
     isAuthenticated: boolean;
-    user: User | null;
+    user: UserResponse | null;
     token: string | null;
     refreshToken: string | null;
     loading: boolean;
 }
 
 export interface AuthContextType extends AuthState {
-    setAuthData: (user: User, accessToken: string, refreshToken: string) => void;
+    setAuthData: (user: UserResponse, accessToken: string, refreshToken: string) => void;
+    updateUser: (user: UserResponse) => void;
     logout: () => void;
     refreshAccessToken: () => Promise<string | null>;
 }

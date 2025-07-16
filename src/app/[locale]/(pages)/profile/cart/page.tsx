@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { ChevronRight, Heart, Trash2, Plus, Minus, ChevronRightIcon } from 'lucide-react';
 import { Link } from "@/i18n/navigation";
 import { AddressSelection, OrderSummary, Address, setGlobalAddressHandler } from '@/components/address';
+import {useCart} from "@/hooks/useCart";
 
 interface CartItem {
     id: string;
@@ -20,6 +21,8 @@ interface CartItem {
 }
 
 export default function ShoppingCartPage() {
+
+    const {data: cartItems, isLoading, isError } = useCart();
     // Initial cart items - in a real app, this would come from a context or API
     const initialCartItems: CartItem[] = [
         {

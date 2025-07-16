@@ -1,6 +1,6 @@
 // hooks/useAuth.ts
-import { useMutation, useQuery, UseMutationOptions, UseQueryOptions } from '@tanstack/react-query';
-import { authService, apiService } from '@/api/services/authService';
+import { useMutation, useQuery, useQueryClient, UseMutationOptions, UseQueryOptions } from '@tanstack/react-query';
+import { authService } from '@/api/services/authService';
 import {
     LoginRequest,
     LoginResponse,
@@ -10,9 +10,10 @@ import {
     UpdateProfileResponse,
     RefreshTokenRequest,
     RefreshTokenResponse,
-    User
+    UserResponse, UserApiResponse
 } from '@/api/queryTypes/User';
 import { AUTH_QUERY_KEYS } from '@/api/queryKeys';
+import {api} from "@/api/apiHelper";
 
 // Auth Mutations
 export const useLoginMutation = (
@@ -72,76 +73,35 @@ export const useResendLoginSMSMutation = (
 // Auth Queries
 export const useUserProfile = (
     userId: string,
-    options?: Omit<UseQueryOptions<User>, 'queryKey' | 'queryFn'>
+    options?: Omit<UseQueryOptions<UserApiResponse>, 'queryKey' | 'queryFn'>
 ) => {
-    return useQuery<User>({
-        queryKey: AUTH_QUERY_KEYS.USER_PROFILE,
-        queryFn: () => apiService.privateGet<User>(`/user/${userId}`),
+    return useQuery<UserApiResponse>({
+        queryKey: ['profile', userId],
+        queryFn: () => authService.getUserProfile(userId),
+        staleTime: 5 * 60 * 1000, // 5 minutes
+        retry: 2,
         ...options,
     });
 };
 
-export const useUserOrders = (
-    options?: Omit<UseQueryOptions<any[]>, 'queryKey' | 'queryFn'>
+// Enhanced update profile mutation with cache management
+export const useUpdateProfileWithCache = (
+    options?: UseMutationOptions<UpdateProfileResponse, Error, UpdateProfileRequest>
 ) => {
-    return useQuery<any[]>({
-        queryKey: AUTH_QUERY_KEYS.USER_ORDERS,
-        queryFn: () => apiService.privateGet<any[]>('/user/orders'),
+    const queryClient = useQueryClient();
+    
+    return useMutation<UpdateProfileResponse, Error, UpdateProfileRequest>({
+        mutationFn: authService.updateProfile,
+        onSuccess: (data, variables) => {
+            // Update the profile query cache
+            queryClient.setQueryData(['profile', data.user.id], {
+                user: data.user
+            });
+            
+            // Invalidate profile queries to refetch
+            queryClient.invalidateQueries({ queryKey: ['profile'] });
+        },
         ...options,
     });
 };
 
-export const useUserFavorites = (
-    options?: Omit<UseQueryOptions<any[]>, 'queryKey' | 'queryFn'>
-) => {
-    return useQuery<any[]>({
-        queryKey: AUTH_QUERY_KEYS.USER_FAVORITES,
-        queryFn: () => apiService.privateGet<any[]>('/user/favorites'),
-        ...options,
-    });
-};
-
-// Generic hooks for reusability
-export const usePublicQuery = <T>(
-    url: string,
-    queryKey: readonly string[],
-    options?: Omit<UseQueryOptions<T>, 'queryKey' | 'queryFn'>
-) => {
-    return useQuery<T>({
-        queryKey,
-        queryFn: () => apiService.publicGet<T>(url),
-        ...options,
-    });
-};
-
-export const usePrivateQuery = <T>(
-    url: string,
-    queryKey: readonly string[],
-    options?: Omit<UseQueryOptions<T>, 'queryKey' | 'queryFn'>
-) => {
-    return useQuery<T>({
-        queryKey,
-        queryFn: () => apiService.privateGet<T>(url),
-        ...options,
-    });
-};
-
-export const usePublicMutation = <TRequest, TResponse>(
-    url: string,
-    options?: UseMutationOptions<TResponse, Error, TRequest>
-) => {
-    return useMutation<TResponse, Error, TRequest>({
-        mutationFn: (data: TRequest) => apiService.publicPost<TRequest, TResponse>(url, data),
-        ...options,
-    });
-};
-
-export const usePrivateMutation = <TRequest, TResponse>(
-    url: string,
-    options?: UseMutationOptions<TResponse, Error, TRequest>
-) => {
-    return useMutation<TResponse, Error, TRequest>({
-        mutationFn: (data: TRequest) => apiService.privatePost<TRequest, TResponse>(url, data),
-        ...options,
-    });
-};

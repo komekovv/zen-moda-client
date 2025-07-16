@@ -46,6 +46,7 @@ const SimilarProducts: React.FC<SimilarProductsProps> = ({
             <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-4 lg:gap-12">
                 {products.map((product) => (
                     <ProductCard
+                        key={product.id}
                         id={product.id}
                         name={getLocalizedText(product.name, locale)}
                         description={getLocalizedText(product.description, locale)}
