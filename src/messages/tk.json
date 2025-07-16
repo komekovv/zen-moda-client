@@ -172,5 +172,64 @@
     "default": {
       "unnamed_user": "Atsyz ulanyjy"
     }
+  },
+  "address": {
+    "select_address": "Adres Saýlaň",
+    "add_new_address": "Täze adres goş",
+    "payment_method": "Töleg görnüşi",
+    "cash_payment": "Nagt töleg",
+    "add_address": "Adress goşmak",
+    "address_label_placeholder": "Adresiňizi atlandyryň #Öý",
+    "phone": "Telefon",
+    "region": "Raýonyňyz",
+    "address_details": "Adress bellän",
+    "confirm": "Tassykla",
+    "adding": "Goşulýar...",
+    "order_summary": "Sargyt barada",
+    "subtotal": "Harytlaryň jemi bahasy:",
+    "delivery_fee": "Eltip bermek hyzmaty:",
+    "discount": "Arzanladyş:",
+    "total": "Jemi baha",
+    "confirm_order": "Sebedi tassykla",
+    "processing": "Garaşyň..."
+  },
+  "orders": {
+    "title": "Zakaz taryhy",
+    "order_history": "Zakaz taryhy",
+    "returns": "Yzyna gaýtaranlarym",
+    "order_number": "Zakaz kody",
+    "order_date": "Zakaz wä berilen wagty",
+    "delivery_date": "Eltip berilen wagty",
+    "item_count": "Haryt sany",
+    "status": {
+      "waiting": "Garaşylýar",
+      "accepted": "Zakaz kabul edildi",
+      "preparing": "Taýýarlanýar",
+      "on_way": "Yola çykdy",
+      "delivered": "Gowşuryldy",
+      "returned": "Yzyna ugradyldy",
+      "cancelled": "Red edildi"
+    },
+    "progress": {
+      "title": "Umumy Statusy",
+      "step_waiting": "Garaşylýar",
+      "step_accepted": "Kabul edildi",
+      "step_preparing": "Taýýarlanýar",
+      "step_on_way": "Yola çykdy",
+      "step_delivered": "Eltip berildi"
+    },
+    "item_details": {
+      "size": "Razmer",
+      "seller": "Satyjy",
+      "items_left": "Solky",
+      "items_text": "haryt"
+    },
+    "actions": {
+      "return": "Yzyna tabşyrmak",
+      "review": "Bahalandyrmak",
+      "download_invoice": "Hasabat Fakturasy"
+    },
+    "address_title": "Adres",
+    "payment_title": "Töleg"
   }
 }

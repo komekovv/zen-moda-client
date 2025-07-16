@@ -1,8 +1,9 @@
 'use client'
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 
-import {ChevronRight, Heart, Trash2, Plus, Minus, ChevronRightIcon} from 'lucide-react';
-import {Link} from "@/i18n/navigation";
+import { ChevronRight, Heart, Trash2, Plus, Minus, ChevronRightIcon } from 'lucide-react';
+import { Link } from "@/i18n/navigation";
+import { AddressSelection, OrderSummary, Address, setGlobalAddressHandler } from '@/components/address';
 
 interface CartItem {
     id: string;
@@ -59,49 +60,63 @@ export default function ShoppingCartPage() {
             quantity: 1,
             deliveryTime: '1 - 3 gün',
             isFavorite: false
-        },
-        {
-            id: '4',
-            storeId: 'apple',
-            storeName: 'Apple',
-            image: '/xiaomi-bluetooth.jpg',
-            name: 'XIAOMI Mijia Bluetooth of the Ther...',
-            size: 'XS',
-            originalPrice: 2455,
-            discountedPrice: 2455,
-            quantity: 100,
-            deliveryTime: '1 - 3 gün',
-            isFavorite: false
         }
     ];
     
     const [items, setItems] = useState(initialCartItems);
+    const [currentStep, setCurrentStep] = useState<'cart' | 'address'>('cart');
+    
+    // Address management
+    const [addresses, setAddresses] = useState<Address[]>([
+        {
+            id: '1',
+            label: 'Öýüm',
+            phone: '+993 65 646362',
+            fullAddress: 'Aşgabat, Mir 1, Sport işewürlik merkezi',
+            isDefault: true
+        },
+        {
+            id: '2',
+            label: 'Öýüm',
+            phone: '+993 65 646362',
+            fullAddress: 'Aşgabat, Mir 1, Sport işewürlik merkezi',
+            isDefault: false
+        }
+    ]);
+    
+    const [selectedAddressId, setSelectedAddressId] = useState<string>(
+        addresses.find(addr => addr.isDefault)?.id || addresses[0]?.id || ''
+    );
+    
+    const [isOrderLoading, setIsOrderLoading] = useState(false);
+
+    // Set up global address handler
+    React.useEffect(() => {
+        setGlobalAddressHandler(handleAddNewAddress);
+    }, []);
 
     const handleQuantityChange = (itemId: string, newQuantity: number) => {
         if (newQuantity < 1) return;
 
         setItems(prevItems =>
             prevItems.map(item =>
-                item.id === itemId ? {...item, quantity: newQuantity} : item
+                item.id === itemId ? { ...item, quantity: newQuantity } : item
             )
         );
-        // In a real app, you would call an API or update context here
         console.log('Quantity updated:', itemId, newQuantity);
     };
 
     const handleRemoveItem = (itemId: string) => {
         setItems(prevItems => prevItems.filter(item => item.id !== itemId));
-        // In a real app, you would call an API or update context here
         console.log('Item removed:', itemId);
     };
 
     const handleToggleFavorite = (itemId: string) => {
         setItems(prevItems =>
             prevItems.map(item =>
-                item.id === itemId ? {...item, isFavorite: !item.isFavorite} : item
+                item.id === itemId ? { ...item, isFavorite: !item.isFavorite } : item
             )
         );
-        // In a real app, you would call an API or update context here
         console.log('Favorite toggled:', itemId);
     };
 
@@ -112,6 +127,47 @@ export default function ShoppingCartPage() {
     const deliveryFee = 15;
     const discount = -10;
     const total = calculateSubtotal() + deliveryFee + discount;
+
+    const handleProceedToAddress = () => {
+        setCurrentStep('address');
+    };
+
+    const handleBackToCart = () => {
+        setCurrentStep('cart');
+    };
+
+    const handleAddressSelect = (addressId: string) => {
+        setSelectedAddressId(addressId);
+    };
+
+    const handleAddNewAddress = (newAddress: Address) => {
+        setAddresses(prev => [...prev, newAddress]);
+        setSelectedAddressId(newAddress.id);
+    };
+
+    const handleConfirmOrder = async () => {
+        setIsOrderLoading(true);
+        
+        try {
+            // Order processing logic here
+            console.log('Order confirmed:', {
+                addressId: selectedAddressId,
+                items: items,
+                total: total
+            });
+            
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            alert('Sargydyňyz üstünlikli kabul edildi!');
+            
+        } catch (error) {
+            console.error('Order confirmation error:', error);
+            alert('Sargyt taýýarlamakda ýalňyşlyk boldy. Gaýtadan synanyşyň.');
+        } finally {
+            setIsOrderLoading(false);
+        }
+    };
 
     // Group items by store
     const itemsByStore = items.reduce((groups, item) => {
@@ -126,14 +182,60 @@ export default function ShoppingCartPage() {
         return groups;
     }, {} as Record<string, { storeName: string; items: CartItem[] }>);
 
+    if (currentStep === 'address') {
+        return (
+            <div className="max-w-7xl mx-auto py-2 px-6">
+                <div className="mx-auto py-4">
+                    <nav className="text-sm flex items-center gap-2">
+                        <Link href={`/`} className="text-black">Home</Link>
+                        <ChevronRightIcon size={15} />
+                        <span className="text-black">Profile</span>
+                        <ChevronRightIcon size={15} />
+                        <button onClick={handleBackToCart} className="text-black hover:text-primary">Cart</button>
+                        <ChevronRightIcon size={15} />
+                        <span className="text-primary font-medium">Address</span>
+                    </nav>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* Address Selection - Takes 2 columns on large screens */}
+                    <div className="lg:col-span-2">
+                        <AddressSelection
+                            addresses={addresses}
+                            selectedAddressId={selectedAddressId}
+                            onAddressSelect={handleAddressSelect}
+                        />
+                    </div>
+
+                    {/* Order Summary - Takes 1 column on large screens */}
+                    <div className="lg:col-span-1">
+                        <div className="sticky top-8">
+                            <OrderSummary
+                                subtotal={calculateSubtotal()}
+                                deliveryFee={deliveryFee}
+                                discount={Math.abs(discount)}
+                                total={total}
+                                currency="TMT"
+                                onConfirmOrder={handleConfirmOrder}
+                                isLoading={isOrderLoading}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        );
+    }
+
     return (
         <div className="max-w-7xl mx-auto py-2 px-6">
             <div className="mx-auto py-4">
                 <nav className="text-sm flex items-center gap-2">
                     <Link href={`/`} className="text-black">Home</Link>
-                    <ChevronRightIcon size={15}/>
+                    <ChevronRightIcon size={15} />
                     <span className="text-black">Profile</span>
-                    <ChevronRightIcon size={15}/>
+                    <ChevronRightIcon size={15} />
                     <span className="text-primary font-medium">Cart</span>
                 </nav>
             </div>
@@ -153,7 +255,7 @@ export default function ShoppingCartPage() {
                                 <div className="flex items-center gap-1 text-sm">
                                     <span className="text-[#161616]">Satyjy:</span>
                                     <span className="text-[#0762C8] font-medium">{storeData.storeName}</span>
-                                    <ChevronRight className="w-3 h-3 text-[#0762C8]"/>
+                                    <ChevronRight className="w-3 h-3 text-[#0762C8]" />
                                 </div>
 
                                 {/* Store Items */}
@@ -185,19 +287,18 @@ export default function ShoppingCartPage() {
                                                     <div className="flex items-center gap-4">
                                                         <button
                                                             onClick={() => handleToggleFavorite(item.id)}
-                                                            className={`flex items-center gap-1 text-sm ${
-                                                                item.isFavorite ? 'text-[#FC185B]' : 'text-[#A0A3BD]'
-                                                            }`}
+                                                            className={`flex items-center gap-1 text-sm ${item.isFavorite ? 'text-[#FC185B]' : 'text-[#A0A3BD]'
+                                                                }`}
                                                         >
                                                             <Heart
-                                                                className={`w-4 h-4 ${item.isFavorite ? 'fill-current' : ''}`}/>
+                                                                className={`w-4 h-4 ${item.isFavorite ? 'fill-current' : ''}`} />
                                                             Haladym
                                                         </button>
                                                         <button
                                                             onClick={() => handleRemoveItem(item.id)}
                                                             className="flex items-center gap-1 text-sm text-[#A0A3BD]"
                                                         >
-                                                            <Trash2 className="w-4 h-4"/>
+                                                            <Trash2 className="w-4 h-4" />
                                                             Aýyrmak
                                                         </button>
                                                     </div>
@@ -212,17 +313,16 @@ export default function ShoppingCartPage() {
                                                             className="p-1 hover:bg-gray-50"
                                                             disabled={item.quantity <= 1}
                                                         >
-                                                            <Minus className="w-4 h-4 text-[#A0A3BD]"/>
+                                                            <Minus className="w-4 h-4 text-[#A0A3BD]" />
                                                         </button>
-                                                        <span
-                                                            className="px-3 py-1 text-sm border-x border-[#E5E5E5] min-w-[50px] text-center">
-                                                          {item.quantity}
+                                                        <span className="px-3 py-1 text-sm border-x border-[#E5E5E5] min-w-[50px] text-center">
+                                                            {item.quantity}
                                                         </span>
                                                         <button
                                                             onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
                                                             className="p-1 hover:bg-gray-50"
                                                         >
-                                                            <Plus className="w-4 h-4 text-[#A0A3BD]"/>
+                                                            <Plus className="w-4 h-4 text-[#A0A3BD]" />
                                                         </button>
                                                     </div>
 
@@ -270,7 +370,7 @@ export default function ShoppingCartPage() {
                                 <span className="text-[#161616]">Arzanladyş:</span>
                                 <span className="text-[#161616]">{discount} TMT</span>
                             </div>
-                            <hr className="border-[#E5E5E5]"/>
+                            <hr className="border-[#E5E5E5]" />
                             <div className="flex justify-between font-semibold">
                                 <span className="text-[#161616]">Jemi baha</span>
                                 <span className="text-[#161616]">{total} TMT</span>
@@ -278,17 +378,16 @@ export default function ShoppingCartPage() {
                         </div>
 
                         <button
-                            onClick={() => {
-                                // In a real app, this would handle checkout logic
-                                console.log('Checkout clicked');
-                            }}
-                            className="w-full bg-[#0762C8] text-white py-3 rounded-lg font-medium"
+                            onClick={handleProceedToAddress}
+                            className="w-full bg-[#0762C8] text-white py-3 rounded-lg font-medium hover:bg-[#0651A8] transition-colors duration-200"
                         >
                             Sebeti tassykla
                         </button>
                     </div>
                 </div>
             </div>
+
+
         </div>
     );
 };

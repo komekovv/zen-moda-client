@@ -4,6 +4,7 @@ import {Inter, Rubik} from "next/font/google";
 import {ModalProvider} from "@/contexts/modal-context";
 import {ClientAuthProvider} from "@/contexts/auth-provider";
 import LoginModal from "@/components/modals/LoginModal";
+import { AddAddressModal } from "@/components/address";
 import {notFound} from "next/navigation";
 import {SupportedLocales} from "@/types/types";
 import {routing} from "@/i18n/routing";
@@ -58,6 +59,7 @@ export default async function RootLayout({
                     <ModalProvider>
                         {children}
                         <LoginModal/>
+                        <AddAddressModal/>
                     </ModalProvider>
                 </ClientAuthProvider>
             </QueryProvider>
