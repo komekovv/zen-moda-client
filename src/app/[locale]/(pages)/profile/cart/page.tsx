@@ -1,135 +1,108 @@
 'use client'
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 
 import { ChevronRight, Heart, Trash2, Plus, Minus, ChevronRightIcon } from 'lucide-react';
 import { Link } from "@/i18n/navigation";
-import { AddressSelection, OrderSummary, Address, setGlobalAddressHandler } from '@/components/address';
-import {useCart} from "@/hooks/useCart";
-
-interface CartItem {
-    id: string;
-    storeId: string;
-    storeName: string;
-    image: string;
-    name: string;
-    size: string;
-    originalPrice: number;
-    discountedPrice: number;
-    quantity: number;
-    deliveryTime: string;
-    isFavorite: boolean;
-}
+import { AddressSelection, OrderSummary, setGlobalAddressHandler } from '@/components/address';
+import EditAddressModal from '@/components/address/EditAddressModal';
+import ConfirmDeleteModal from '@/components/address/ConfirmDeleteModal';
+import {useCart, useUpdateCartItem, useRemoveFromCart} from "@/hooks/useCart";
+import {LocalizedText} from "@/types/types";
+import {CartItem} from "@/api/queryTypes/Cart";
+import { useTranslations } from 'next-intl';
+import {LocationResponse} from "@/api/queryTypes/Location";
+import {useUserLocation} from "@/hooks/useAddress";
 
 export default function ShoppingCartPage() {
+    const t = useTranslations();
 
-    const {data: cartItems, isLoading, isError } = useCart();
-    // Initial cart items - in a real app, this would come from a context or API
-    const initialCartItems: CartItem[] = [
-        {
-            id: '1',
-            storeId: 'apple',
-            storeName: 'Apple',
-            image: '/xiaomi-bluetooth.jpg',
-            name: 'XIAOMI Mijia Bluetooth of the Ther...',
-            size: 'XS',
-            originalPrice: 2455,
-            discountedPrice: 2455,
-            quantity: 100,
-            deliveryTime: '1 - 3 gün',
-            isFavorite: false
-        },
-        {
-            id: '2',
-            storeId: 'samsung',
-            storeName: 'Samsung',
-            image: '/xiaomi-bluetooth.jpg',
-            name: 'XIAOMI Mijia Bluetooth of the Ther...',
-            size: 'XS',
-            originalPrice: 2455,
-            discountedPrice: 2455,
-            quantity: 1,
-            deliveryTime: '1 - 3 gün',
-            isFavorite: false
-        },
-        {
-            id: '3',
-            storeId: 'apple',
-            storeName: 'Apple',
-            image: '/xiaomi-bluetooth.jpg',
-            name: 'XIAOMI Mijia Bluetooth of the Ther...',
-            size: 'XS',
-            originalPrice: 2455,
-            discountedPrice: 2455,
-            quantity: 1,
-            deliveryTime: '1 - 3 gün',
-            isFavorite: false
-        }
-    ];
-    
-    const [items, setItems] = useState(initialCartItems);
+    const {data: cartResponse, isLoading, isError, refetch } = useCart();
+    const updateCartItem = useUpdateCartItem();
+    const removeFromCart = useRemoveFromCart();
+
+    // Use the address API hook
+    const {data: addressResponse, isLoading: addressLoading, isError: addressError, refetch: refetchAddresses} = useUserLocation();
+
     const [currentStep, setCurrentStep] = useState<'cart' | 'address'>('cart');
-    
-    // Address management
-    const [addresses, setAddresses] = useState<Address[]>([
-        {
-            id: '1',
-            label: 'Öýüm',
-            phone: '+993 65 646362',
-            fullAddress: 'Aşgabat, Mir 1, Sport işewürlik merkezi',
-            isDefault: true
-        },
-        {
-            id: '2',
-            label: 'Öýüm',
-            phone: '+993 65 646362',
-            fullAddress: 'Aşgabat, Mir 1, Sport işewürlik merkezi',
-            isDefault: false
-        }
-    ]);
-    
+
+    // Get addresses from API response
+    const addresses: LocationResponse[] = addressResponse?.data || [];
+
     const [selectedAddressId, setSelectedAddressId] = useState<string>(
-        addresses.find(addr => addr.isDefault)?.id || addresses[0]?.id || ''
+        addresses.length > 0 ? addresses[0].id : ''
     );
-    
+
     const [isOrderLoading, setIsOrderLoading] = useState(false);
+
+    const cartItems: CartItem[] = cartResponse?.data || [];
+
+    // Update selected address when addresses are loaded
+    useEffect(() => {
+        if (addresses.length > 0 && !selectedAddressId) {
+            setSelectedAddressId(addresses[0].id);
+        }
+    }, [addresses, selectedAddressId]);
 
     // Set up global address handler
     React.useEffect(() => {
         setGlobalAddressHandler(handleAddNewAddress);
     }, []);
 
-    const handleQuantityChange = (itemId: string, newQuantity: number) => {
+    const handleQuantityChange = async (itemId: string, newQuantity: number) => {
         if (newQuantity < 1) return;
 
-        setItems(prevItems =>
-            prevItems.map(item =>
-                item.id === itemId ? { ...item, quantity: newQuantity } : item
-            )
-        );
-        console.log('Quantity updated:', itemId, newQuantity);
+        try {
+            // Find the cart item to get basketItemId
+            const cartItem = cartItems.find(item => item.id === itemId);
+            if (!cartItem) return;
+
+            await updateCartItem.mutateAsync({
+                itemId: parseInt(cartItem.basketItemId),
+                data: { quantity: newQuantity }
+            });
+
+            // Refetch cart data to get updated state
+            refetch();
+
+            console.log('Quantity updated:', itemId, newQuantity);
+        } catch (error) {
+            console.error(t('cart.errors.quantity_update'), error);
+        }
     };
 
-    const handleRemoveItem = (itemId: string) => {
-        setItems(prevItems => prevItems.filter(item => item.id !== itemId));
-        console.log('Item removed:', itemId);
+    const handleRemoveItem = async (itemId: string) => {
+        try {
+            // Find the cart item to get basketItemId
+            const cartItem = cartItems.find(item => item.id === itemId);
+            if (!cartItem) return;
+
+            await removeFromCart.mutateAsync(parseInt(cartItem.basketItemId));
+
+            // Refetch cart data to get updated state
+            refetch();
+
+            console.log('Item removed:', itemId);
+        } catch (error) {
+            console.error(t('cart.errors.item_remove'), error);
+        }
     };
 
     const handleToggleFavorite = (itemId: string) => {
-        setItems(prevItems =>
-            prevItems.map(item =>
-                item.id === itemId ? { ...item, isFavorite: !item.isFavorite } : item
-            )
-        );
+        // This would require a separate API call to toggle wishlist status
+        // For now, just log the action since the API endpoint isn't provided
         console.log('Favorite toggled:', itemId);
+        // You'll need to implement this with your wishlist API
     };
 
     const calculateSubtotal = () => {
-        return items.reduce((total, item) => total + (item.discountedPrice * item.quantity), 0);
+        return cartItems.reduce((total, item) => {
+            const price = parseFloat(item.discountPrice) || 0;
+            return total + (price * item.quantity);
+        }, 0);
     };
 
     const deliveryFee = 15;
-    const discount = -10;
-    const total = calculateSubtotal() + deliveryFee + discount;
+    const total = calculateSubtotal() + deliveryFee;
 
     const handleProceedToAddress = () => {
         setCurrentStep('address');
@@ -143,60 +116,95 @@ export default function ShoppingCartPage() {
         setSelectedAddressId(addressId);
     };
 
-    const handleAddNewAddress = (newAddress: Address) => {
-        setAddresses(prev => [...prev, newAddress]);
+    const handleAddNewAddress = (newAddress: LocationResponse) => {
+        // Refetch addresses to get the latest data including the new address
+        refetchAddresses();
         setSelectedAddressId(newAddress.id);
+    };
+
+    const handleAddressUpdate = (updatedAddress: LocationResponse) => {
+        // Refetch addresses to get the latest data
+        refetchAddresses();
+        console.log('Address updated:', updatedAddress);
+    };
+
+    const handleAddressDelete = (deletedAddressId: string) => {
+        // Refetch addresses to get the latest data
+        refetchAddresses();
+
+        // If the deleted address was selected, select the first available address
+        if (selectedAddressId === deletedAddressId && addresses.length > 1) {
+            const remainingAddresses = addresses.filter(addr => addr.id !== deletedAddressId);
+            if (remainingAddresses.length > 0) {
+                setSelectedAddressId(remainingAddresses[0].id);
+            } else {
+                setSelectedAddressId('');
+            }
+        }
+
+        console.log('Address deleted:', deletedAddressId);
     };
 
     const handleConfirmOrder = async () => {
         setIsOrderLoading(true);
-        
+
         try {
             // Order processing logic here
+            const selectedAddress = addresses.find(addr => addr.id === selectedAddressId);
             console.log('Order confirmed:', {
                 addressId: selectedAddressId,
-                items: items,
+                address: selectedAddress,
+                items: cartItems,
                 total: total
             });
-            
+
             // Simulate API call
             await new Promise(resolve => setTimeout(resolve, 2000));
-            
-            alert('Sargydyňyz üstünlikli kabul edildi!');
-            
+
+            alert(t('cart.success.order_confirmed'));
+
         } catch (error) {
             console.error('Order confirmation error:', error);
-            alert('Sargyt taýýarlamakda ýalňyşlyk boldy. Gaýtadan synanyşyň.');
+            alert(t('cart.errors.order_confirm'));
         } finally {
             setIsOrderLoading(false);
         }
     };
 
-    // Group items by store
-    const itemsByStore = items.reduce((groups, item) => {
-        const storeKey = item.storeId;
-        if (!groups[storeKey]) {
-            groups[storeKey] = {
-                storeName: item.storeName,
-                items: []
-            };
-        }
-        groups[storeKey].items.push(item);
-        return groups;
-    }, {} as Record<string, { storeName: string; items: CartItem[] }>);
+    // Loading state
+    if (isLoading || addressLoading) {
+        return (
+            <div className="max-w-7xl mx-auto py-2 px-6">
+                <div className="flex items-center justify-center min-h-[400px]">
+                    <div className="text-lg">{t('cart.loading')}</div>
+                </div>
+            </div>
+        );
+    }
+
+    // Error state
+    if (isError || addressError) {
+        return (
+            <div className="max-w-7xl mx-auto py-2 px-6">
+                <div className="flex items-center justify-center min-h-[400px]">
+                    <div className="text-lg text-red-500">{t('cart.error')}</div>
+                </div>
+            </div>
+        );
+    }
 
     if (currentStep === 'address') {
         return (
             <div className="max-w-7xl mx-auto py-2 px-6">
                 <div className="mx-auto py-4">
                     <nav className="text-sm flex items-center gap-2">
-                        <Link href={`/`} className="text-black">Home</Link>
+                        <Link href={`/`} className="text-black">{t('cart.breadcrumb.home')}</Link>
                         <ChevronRightIcon size={15} />
-                        <span className="text-black">Profile</span>
+                        <Link href={`/profile`} className="text-black">{t('cart.breadcrumb.profile')}</Link>
                         <ChevronRightIcon size={15} />
-                        <button onClick={handleBackToCart} className="text-black hover:text-primary">Cart</button>
+                        <button onClick={handleBackToCart} className="text-black hover:text-primary">{t('cart.breadcrumb.cart')}</button>
                         <ChevronRightIcon size={15} />
-                        <span className="text-primary font-medium">Address</span>
+                        <span className="text-primary font-medium">{t('cart.breadcrumb.address')}</span>
                     </nav>
                 </div>
 
@@ -207,6 +215,8 @@ export default function ShoppingCartPage() {
                             addresses={addresses}
                             selectedAddressId={selectedAddressId}
                             onAddressSelect={handleAddressSelect}
+                            onAddressUpdate={handleAddressUpdate}
+                            onAddressDelete={handleAddressDelete}
                         />
                     </div>
 
@@ -216,7 +226,6 @@ export default function ShoppingCartPage() {
                             <OrderSummary
                                 subtotal={calculateSubtotal()}
                                 deliveryFee={deliveryFee}
-                                discount={Math.abs(discount)}
                                 total={total}
                                 currency="TMT"
                                 onConfirmOrder={handleConfirmOrder}
@@ -226,20 +235,30 @@ export default function ShoppingCartPage() {
                     </div>
                 </div>
 
+                {/* Edit Address Modal */}
+                <EditAddressModal
+                    address={null}
+                    onAddressUpdate={handleAddressUpdate}
+                />
 
+                {/* Confirm Delete Modal */}
+                <ConfirmDeleteModal
+                    address={null}
+                    onAddressDelete={handleAddressDelete}
+                />
             </div>
         );
     }
 
     return (
-        <div className="max-w-7xl mx-auto py-2 px-6">
+        <div className="max-w-7xl mx-auto py-2 px-6 mb-3">
             <div className="mx-auto py-4">
                 <nav className="text-sm flex items-center gap-2">
-                    <Link href={`/`} className="text-black">Home</Link>
-                    <ChevronRightIcon size={15} />
-                    <span className="text-black">Profile</span>
-                    <ChevronRightIcon size={15} />
-                    <span className="text-primary font-medium">Cart</span>
+                    <Link href={`/`} className="text-black">{t('cart.breadcrumb.home')}</Link>
+                    <ChevronRightIcon size={15}/>
+                    <Link href={`/profile`} className="text-black">{t('cart.breadcrumb.profile')}</Link>
+                    <ChevronRightIcon size={15}/>
+                    <span className="text-primary font-medium">{t('cart.breadcrumb.cart')}</span>
                 </nav>
             </div>
 
@@ -247,150 +266,139 @@ export default function ShoppingCartPage() {
                 {/* Cart Items */}
                 <div className="lg:col-span-2">
                     <div className="flex items-center gap-2 mb-6">
-                        <h1 className="text-[#161616] text-2xl font-bold">Sebetim</h1>
-                        <span className="text-[#A0A3BD] text-lg">{items.length} haryt</span>
+                        <h1 className="text-[#161616] text-2xl font-bold">{t('cart.title')}</h1>
+                        <span className="text-[#A0A3BD] text-lg">{cartItems.length} {t('cart.item_count')}</span>
                     </div>
 
-                    <div className="space-y-6">
-                        {Object.entries(itemsByStore).map(([storeId, storeData]) => (
-                            <div key={storeId} className="space-y-4">
-                                {/* Store Header */}
-                                <div className="flex items-center gap-1 text-sm">
-                                    <span className="text-[#161616]">Satyjy:</span>
-                                    <span className="text-[#0762C8] font-medium">{storeData.storeName}</span>
-                                    <ChevronRight className="w-3 h-3 text-[#0762C8]" />
-                                </div>
+                    {cartItems.length === 0 ? (
+                        <div className="text-center py-8">
+                            <p className="text-[#A0A3BD] text-lg">{t('cart.empty')}</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-6">
+                            <div className="space-y-4">
+                                {cartItems.map((item) => (
+                                    <div key={item.id} className="bg-white border border-[#E5E5E5] rounded-lg p-4">
+                                        <div className="flex gap-4">
+                                            {/* Product Image */}
+                                            <div
+                                                className="w-20 h-20 bg-[#F8F9FA] rounded-lg border border-[#E5E5E5] flex items-center justify-center overflow-hidden flex-shrink-0">
+                                                <img
+                                                    src={item.photo}
+                                                    alt={item.name.tk}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            </div>
 
-                                {/* Store Items */}
-                                <div className="space-y-4">
-                                    {storeData.items.map((item) => (
-                                        <div key={item.id} className="bg-white border border-[#E5E5E5] rounded-lg p-4">
-                                            <div className="flex gap-4">
-                                                {/* Product Image */}
-                                                <div
-                                                    className="w-20 h-20 bg-[#F8F9FA] rounded-lg border border-[#E5E5E5] flex items-center justify-center overflow-hidden flex-shrink-0">
-                                                    <img
-                                                        src={item.image}
-                                                        alt={item.name}
-                                                        className="w-full h-full object-cover"
-                                                    />
+                                            {/* Product Details */}
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="text-[#161616] font-medium mb-1 truncate">
+                                                    {item.name.tk}
+                                                </h3>
+                                                <div className="text-[#A0A3BD] text-sm mb-3">
+                                                    {t('cart.size')}: <span
+                                                    className="text-[#161616]">{item.size}</span>
                                                 </div>
 
-                                                {/* Product Details */}
-                                                <div className="flex-1 min-w-0">
-                                                    <h3 className="text-[#161616] font-medium mb-1 truncate">
-                                                        {item.name}
-                                                    </h3>
-                                                    <div className="text-[#A0A3BD] text-sm mb-3">
-                                                        Razmer: <span className="text-[#161616]">{item.size}</span>
-                                                        <span className="ml-4 text-[#FC185B]">Solky 3 haryt</span>
-                                                    </div>
+                                                {/* Actions */}
+                                                <div className="flex items-center gap-4">
+                                                    <button
+                                                        onClick={() => handleToggleFavorite(item.id)}
+                                                        className={`flex items-center gap-1 text-sm ${
+                                                            item.isInWishlist ? 'text-[#FC185B]' : 'text-[#A0A3BD]'
+                                                        }`}
+                                                    >
+                                                        <Heart
+                                                            className={`w-4 h-4 ${item.isInWishlist ? 'fill-current' : ''}`}
+                                                        />
+                                                        {t('cart.actions.favorite')}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleRemoveItem(item.id)}
+                                                        className="flex items-center gap-1 text-sm text-[#A0A3BD]"
+                                                        disabled={removeFromCart.isPending}
+                                                    >
+                                                        <Trash2 className="w-4 h-4"/>
+                                                        {t('cart.actions.remove')}
+                                                    </button>
+                                                </div>
+                                            </div>
 
-                                                    {/* Actions */}
-                                                    <div className="flex items-center gap-4">
-                                                        <button
-                                                            onClick={() => handleToggleFavorite(item.id)}
-                                                            className={`flex items-center gap-1 text-sm ${item.isFavorite ? 'text-[#FC185B]' : 'text-[#A0A3BD]'
-                                                                }`}
-                                                        >
-                                                            <Heart
-                                                                className={`w-4 h-4 ${item.isFavorite ? 'fill-current' : ''}`} />
-                                                            Haladym
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleRemoveItem(item.id)}
-                                                            className="flex items-center gap-1 text-sm text-[#A0A3BD]"
-                                                        >
-                                                            <Trash2 className="w-4 h-4" />
-                                                            Aýyrmak
-                                                        </button>
-                                                    </div>
+                                            {/* Quantity and Price */}
+                                            <div className="flex flex-col items-end gap-3">
+                                                {/* Quantity Controls */}
+                                                <div className="flex items-center border border-[#E5E5E5] rounded">
+                                                    <button
+                                                        onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                                                        className="p-1 hover:bg-gray-50"
+                                                        disabled={item.quantity <= 1 || updateCartItem.isPending}
+                                                    >
+                                                        <Minus className="w-4 h-4 text-[#A0A3BD]"/>
+                                                    </button>
+                                                    <span
+                                                        className="px-3 py-1 text-sm border-x border-[#E5E5E5] min-w-[50px] text-center">
+                                                        {item.quantity}
+                                                    </span>
+                                                    <button
+                                                        onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                                                        className="p-1 hover:bg-gray-50"
+                                                        disabled={updateCartItem.isPending}
+                                                    >
+                                                        <Plus className="w-4 h-4 text-[#A0A3BD]"/>
+                                                    </button>
                                                 </div>
 
-                                                {/* Quantity and Price */}
-                                                <div className="flex flex-col items-end gap-3">
-                                                    {/* Quantity Controls */}
-                                                    <div className="flex items-center border border-[#E5E5E5] rounded">
-                                                        <button
-                                                            onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
-                                                            className="p-1 hover:bg-gray-50"
-                                                            disabled={item.quantity <= 1}
-                                                        >
-                                                            <Minus className="w-4 h-4 text-[#A0A3BD]" />
-                                                        </button>
-                                                        <span className="px-3 py-1 text-sm border-x border-[#E5E5E5] min-w-[50px] text-center">
-                                                            {item.quantity}
-                                                        </span>
-                                                        <button
-                                                            onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
-                                                            className="p-1 hover:bg-gray-50"
-                                                        >
-                                                            <Plus className="w-4 h-4 text-[#A0A3BD]" />
-                                                        </button>
+                                                {/* Price */}
+                                                <div className="text-right">
+                                                    <div className="text-[#A0A3BD] text-sm line-through">
+                                                        {item.basePrice} TMT
                                                     </div>
-
-                                                    {/* Price */}
-                                                    <div className="text-right">
-                                                        <div className="text-[#A0A3BD] text-sm line-through">
-                                                            {item.originalPrice} TMT
-                                                        </div>
-                                                        <div className="text-[#FC185B] font-semibold">
-                                                            {item.discountedPrice} TMT
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Delivery */}
-                                                    <div className="text-[#A0A3BD] text-xs">
-                                                        Gowşurmak: {item.deliveryTime}
+                                                    <div className="text-[#FC185B] font-semibold">
+                                                        {item.discountPrice} TMT
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    ))}
-                                </div>
+                                    </div>
+                                ))}
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Order Summary */}
                 <div className="lg:col-span-1">
                     <div className="bg-white border border-[#E5E5E5] rounded-lg p-6 sticky top-6">
                         <h2 className="text-[#161616] text-xl font-semibold mb-4">
-                            Sargyt barada
+                            {t('cart.order_summary.title')}
                         </h2>
 
                         <div className="space-y-3 mb-6">
                             <div className="flex justify-between">
-                                <span className="text-[#161616]">Harytlaryň jemi bahasy:</span>
-                                <span className="text-[#161616]">{calculateSubtotal()} TMT</span>
+                                <span className="text-[#161616]">{t('cart.order_summary.subtotal')}</span>
+                                <span className="text-[#161616]">{calculateSubtotal().toFixed(2)} TMT</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-[#161616]">Eltip bermek hyzmatý:</span>
+                                <span className="text-[#161616]">{t('cart.order_summary.delivery_fee')}</span>
                                 <span className="text-[#161616]">{deliveryFee} TMT</span>
                             </div>
-                            <div className="flex justify-between">
-                                <span className="text-[#161616]">Arzanladyş:</span>
-                                <span className="text-[#161616]">{discount} TMT</span>
-                            </div>
-                            <hr className="border-[#E5E5E5]" />
+                            <hr className="border-[#E5E5E5]"/>
                             <div className="flex justify-between font-semibold">
-                                <span className="text-[#161616]">Jemi baha</span>
-                                <span className="text-[#161616]">{total} TMT</span>
+                                <span className="text-[#161616]">{t('cart.order_summary.total')}</span>
+                                <span className="text-[#161616]">{total.toFixed(2)} TMT</span>
                             </div>
                         </div>
 
                         <button
                             onClick={handleProceedToAddress}
-                            className="w-full bg-[#0762C8] text-white py-3 rounded-lg font-medium hover:bg-[#0651A8] transition-colors duration-200"
+                            className="w-full bg-[#0762C8] text-white py-3 rounded-lg font-medium hover:bg-[#0651A8] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={cartItems.length === 0}
                         >
-                            Sebeti tassykla
+                            {t('cart.order_summary.confirm_cart')}
                         </button>
                     </div>
                 </div>
             </div>
-
-
         </div>
     );
 };

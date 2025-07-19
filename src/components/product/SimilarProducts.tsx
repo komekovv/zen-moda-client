@@ -33,6 +33,7 @@ const SimilarProducts: React.FC<SimilarProductsProps> = ({
     if (!products || products.length === 0) {
         return null;
     }
+
     const handleFavoriteToggle = (productId: string) => {
         console.log('Favorite toggled for product:', productId);
     };
@@ -67,7 +68,6 @@ const SimilarProducts: React.FC<SimilarProductsProps> = ({
                         saleEndDate={product.saleEndDate}
                         store={product.store}
                         currency={"TMT"}
-
                         isOnSale={true}
                         onFavoriteToggle={handleFavoriteToggle}
                     />

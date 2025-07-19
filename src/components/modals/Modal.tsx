@@ -103,7 +103,7 @@ const Modal: React.FC<ModalProps> = ({
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <div className="relative">
+                            <div className={`relative ${sizeClasses[size]} w-full`}>
                                 {/* Icon positioned half outside modal - only for icon type */}
                                 {type === 'icon' && icon && (
                                     <div
@@ -116,7 +116,7 @@ const Modal: React.FC<ModalProps> = ({
                                 )}
 
                                 <Dialog.Panel
-                                    className={`w-full ${sizeClasses[size]} transform overflow-hidden rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all`}
+                                    className={`w-full transform overflow-hidden rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all`}
                                     onClick={(e) => e.stopPropagation()}
                                 >
                                     <div className={`flex justify-end ${type === 'icon' ? 'pb-2' : 'pb-2'}`}>

@@ -10,8 +10,14 @@ export const productService = {
         return api.publicGet<ProductDetailResponse>({url: `/product/${productId}/complete`});
     },
 
-    getProductQuestions: async (productId: string): Promise<ListResponse<ProductQuestionResponse>> => {
-        return api.publicGet<ListResponse<ProductQuestionResponse>>({url: `/product-question/${productId}`});
+    getProductQuestions: async (
+        productId: string,
+        page: number = 1,
+        size: number = 5
+    ): Promise<ListResponse<ProductQuestionResponse>> => {
+        return api.publicGet<ListResponse<ProductQuestionResponse>>({
+            url: `/product-question/${productId}?page=${page}&size=${size}`
+        });
     },
 
     postProductQuestions: async (productId: string, data: ProductQuestionRequest): Promise<ProductQuestionResponse> => {

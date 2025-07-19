@@ -48,23 +48,6 @@ interface ProductVariant {
     }>;
 }
 
-interface ColorOption {
-    id: string;
-    name: {
-        ru: string;
-        tk: string;
-    };
-    colorCode: string;
-    variants: ProductVariant[];
-}
-
-interface SizeOption {
-    id: string;
-    size: string;
-    available: boolean;
-    variants: ProductVariant[];
-}
-
 export default function ProductPage({params}: ProductPageProps) {
     const t = useTranslations('product_detail');
     const locale = useLocale();
@@ -413,9 +396,11 @@ export default function ProductPage({params}: ProductPageProps) {
                     <SimilarProducts products={similarProducts}/>
                     <AskQuestion
                         productId={productId}
-                        questions={questionsData as ListResponse<ProductQuestionResponse>}
-                        error={questionsError}
-                        loading={questionsLoading}
+                        productInfo={{
+                            image: displayProduct.photos[0]?.path || '',
+                            brand: product.brand.name,
+                            name: localizedTitle
+                        }}
                     />
                     <ProductReviews
                         product={{

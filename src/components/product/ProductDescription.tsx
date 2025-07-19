@@ -28,7 +28,7 @@ const ProductDescription: React.FC<ProductDescriptionProps> = ({ description }) 
 
             <div className="py-4">
                 <div className="text-body-description text-black font-rubik leading-relaxed">
-                    {description}
+                    {/*{description}*/}
                     {isExpanded ? description : shortDescription}
                 </div>
 

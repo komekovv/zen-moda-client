@@ -4,7 +4,7 @@ import {StaticImport} from "next/dist/shared/lib/get-img-props";
 import Image from "next/image";
 import {LocalizedText} from "@/types/types";
 import {getLocalizedText} from "@/lib/utils/helpers";
-import {useLocale} from "next-intl";
+import {useLocale, useTranslations} from "next-intl";
 
 interface ColorOption {
     id: string;
@@ -26,6 +26,8 @@ const ProductColorSelector: React.FC<ProductColorSelectorProps> = ({
                                                                        onColorSelect
                                                                    }) => {
     const locale = useLocale();
+    const t = useTranslations('product_detail');
+
     const handleColorSelect = (colorId: string) => {
         const color = colors.find(c => c.id === colorId);
         if (color && color.available) {
@@ -41,7 +43,7 @@ const ProductColorSelector: React.FC<ProductColorSelectorProps> = ({
     return (
         <div className="mb-2">
             <div className="mb-4 text-body-brand">
-                <span className="text-black">Reňk: </span>
+                <span className="text-black">{t('color_selector.color_label')} </span>
                 <span className="text-passive">{selectedColorName}</span>
             </div>
 
@@ -61,7 +63,7 @@ const ProductColorSelector: React.FC<ProductColorSelectorProps> = ({
                                 width={200}
                                 height={200}
                                 src={color.image}
-                                alt={color.name.tk}
+                                alt={getLocalizedText(color.name, locale)}
                                 className="w-full aspect-square object-cover"
                             />
                             {!color.available && (

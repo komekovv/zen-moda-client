@@ -1,22 +1,19 @@
-export interface CartItemVariation {
-    id: number;
-    name: string;
-    price: number;
-    stock: number;
-}
+import {LocalizedText} from "@/types/types";
 
 export interface CartItem {
-    id: number;
-    name: string;
-    basePrice: number;
-    discountPrice: number;
-    quantity: number;
-    basketItemId: number;
-    variation: CartItemVariation;
-    currentPrice: number;
+    id: string;
+    variationId: string;
+    basketItemId: string;
+    name: LocalizedText;
+    photo: string;
+    size: string;
+    basePrice: string;
+    currentPrice: string;
+    discountPrice: string;
     subtotal: number;
+    quantity: number;
     isAvailable: boolean;
-    photos: string;
+    isInWishlist: boolean;
 }
 
 export interface CartResponse {

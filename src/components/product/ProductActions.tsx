@@ -24,7 +24,7 @@ const ProductActions: React.FC<ProductActionsProps> = ({
     const useAddToCartMutation = useAddToCart({
         onSuccess: () => {
             setIsAddingToCart(false);
-            alert("added successfully")
+            alert("Added successfully")
         },
         onError: (error: any) => {
             setIsAddingToCart(false);
@@ -39,7 +39,6 @@ const ProductActions: React.FC<ProductActionsProps> = ({
             quantity: 1
         });
     };
-
 
     const isDisabled = availability === 'out_of_stock' || !selectedSize || !selectedColor;
 

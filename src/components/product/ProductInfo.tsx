@@ -43,8 +43,6 @@ const ProductInfo: React.FC<ProductInfoProps> = ({
         }
     };
 
-    const localizedTitle = getLocalizedText(product.title, locale);
-
     // Calculate availability based on stock
     const getAvailability = () => {
         if (!product.stock || product.stock === 0) return 'out_of_stock';
@@ -63,18 +61,18 @@ const ProductInfo: React.FC<ProductInfoProps> = ({
                     </h2>
                     {availability === 'limited' && (
                         <span className="text-sale text-sm font-medium">
-                            Gutarýar
+                            {t('info.limited_stock')}
                         </span>
                     )}
                     {availability === 'out_of_stock' && (
                         <span className="text-red-500 text-sm font-medium">
-                            Tükendi
+                            {t('info.out_of_stock')}
                         </span>
                     )}
                 </div>
 
                 <h3 className="text-black text-body-brand font-medium mb-2">
-                    {product.brand}. {localizedTitle}
+                    {product.brand}. {product.title}
                 </h3>
 
                 <div className="flex items-center gap-2 text-black">
@@ -87,7 +85,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({
                 {/* Stock info */}
                 {/*{product.stock && (*/}
                 {/*    <div className="mt-2 text-body-description">*/}
-                {/*        <span className="text-black">Stok: </span>*/}
+                {/*        <span className="text-black">{t('info.stock')}: </span>*/}
                 {/*        <span className={`font-medium ${product.stock < 10 ? 'text-warning' : 'text-green-600'}`}>*/}
                 {/*            {product.stock} adet*/}
                 {/*        </span>*/}
@@ -135,7 +133,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({
                             isLarge
                         />
                         <div className="text-black text-body-brand">
-                            {product.reviewCount} Teswir ({product.rating})
+                            {product.reviewCount} {t('reviews.title')} ({product.rating})
                         </div>
                     </div>
                 </div>

@@ -331,7 +331,7 @@ const Header: React.FC<HeaderProps> = ({
                                 backgroundColor="white"
                                 size={"sm"}
                             >
-                                <Link href="/orders">
+                                <Link href="/profile/orders">
                                     <BoxIcon width={20} height={19.9} color="#000000"
                                              className="hover:text-primary transition-colors"/>
                                 </Link>
@@ -342,7 +342,7 @@ const Header: React.FC<HeaderProps> = ({
                                 backgroundColor="white"
                                 size={"sm"}
                             >
-                                <Link href="/wishlist">
+                                <Link href="/profile/favorite">
                                     <HeartIcon
                                         width={20}
                                         height={18.75}
@@ -359,7 +359,7 @@ const Header: React.FC<HeaderProps> = ({
                                 backgroundColor="white"
                                 size={"sm"}
                             >
-                                <Link href="/cart">
+                                <Link href="/profile/cart">
                                     <BagIcon
                                         width={20}
                                         height={20}
@@ -438,7 +438,7 @@ const Header: React.FC<HeaderProps> = ({
                                     })()}`}>
                                         {getCurrentCategory(activeDropdown)?.subcategories.map((subcat) => (
                                             <div key={subcat.name} className="min-w-0">
-                                                <h3 className="font-semibold text-gray-900 mb-4 text-base text-black">
+                                                <h3 className="font-semibold mb-4 text-base text-black">
                                                     {subcat.name}
                                                 </h3>
                                                 <ul className="space-y-2">
@@ -566,7 +566,7 @@ const Header: React.FC<HeaderProps> = ({
                             />
                         </Link>
 
-                        <Link href="/cart" className="flex flex-col items-center space-y-1 p-2">
+                        <Link href="/profile/cart" className="flex flex-col items-center space-y-1 p-2">
                             <ShoppingCart
                                 width={24}
                                 height={24}
@@ -574,7 +574,7 @@ const Header: React.FC<HeaderProps> = ({
                             />
                         </Link>
 
-                        <Link href="/favorite" className="flex flex-col items-center space-y-1 p-2">
+                        <Link href="/profile/favorite" className="flex flex-col items-center space-y-1 p-2">
                             <Heart
                                 width={24}
                                 height={24}

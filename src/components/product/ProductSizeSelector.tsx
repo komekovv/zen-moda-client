@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslations } from 'next-intl';
 
 interface SizeOption {
     id: string;
@@ -17,6 +18,8 @@ const ProductSizeSelector: React.FC<ProductSizeSelectorProps> = ({
                                                                      selectedSize,
                                                                      onSizeSelect
                                                                  }) => {
+    const t = useTranslations('product_detail');
+
     const handleSizeSelect = (sizeId: string) => {
         const size = sizes.find(s => s.id === sizeId);
         if (size && size.available) {
@@ -29,7 +32,7 @@ const ProductSizeSelector: React.FC<ProductSizeSelectorProps> = ({
     return (
         <div>
             <div className="mb-2 text-body-brand">
-                <span className="text-black">Razmer: </span>
+                <span className="text-black">{t('size_selector.size_label')} </span>
                 <span className="text-passive">{selectedSizeValue}</span>
             </div>
 

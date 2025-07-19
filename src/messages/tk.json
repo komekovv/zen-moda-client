@@ -66,14 +66,22 @@
       "size": "Ölçeg",
       "add_favorite": "Halanlaryna goş",
       "remove_favorite": "Halanlaryndan aýyr",
-      "share": "Paýlaş"
+      "share": "Paýlaş",
+      "out_of_stock": "Tükendi",
+      "limited_stock": "Gutarýar",
+      "stock": "Stok"
     },
     "actions": {
-      "add_to_cart": "Sebet goş",
+      "add_to_cart": "Sebete goş",
       "adding": "Goşulýar..."
     },
     "color_selector": {
-      "select": "Reňk saýla"
+      "select": "Reňk saýla",
+      "color_label": "Reňk:"
+    },
+    "size_selector": {
+      "select": "Razmer saýla",
+      "size_label": "Razmer:"
     },
     "specifications": {
       "title": "Aýratynlyklary",
@@ -103,12 +111,38 @@
       "count": "syn",
       "verified": "Tassyklanan",
       "show_all": "{{count}} synyň hemmesini görkez",
-      "show_less": "Synlary gizle"
+      "show_less": "Synlary gizle",
+      "no_reviews": "Henüz teswir ýok",
+      "view_all": "Hemmesini gör"
+    },
+    "questions": {
+      "title": "Dükan bilen sorag jogap",
+      "ask_question": "Sorag ber",
+      "ask_description": "Eger-de haryt barada soragyňyz bolsa onda \"Sorag ber\" düwmesini basyň",
+      "submit_question": "Ugrat",
+      "cancel": "Ýatyr",
+      "placeholder": "Soragyňyzy ýazyň...",
+      "submitting": "Ugradylýar...",
+      "no_questions": "Heniz sorag berilmedi",
+      "no_answer": "Heniz jogap berilmedi",
+      "error": "Sorag ugratmakda näsazlyk ýüze çykdy. Gaýtadan synanyşyň.",
+      "view_all": "Hemmesini gör",
+      "close": "Ýapmak",
+      "page": "Sahypa",
+      "of": "dan",
+      "previous": "Öňki",
+      "next": "Indiki"
     },
     "complaint": {
       "title": "Şikaýat etmek",
-      "description": "Eger-de haryt sargydy maglumatlaryň bolsa, \"Sorag ber\" düwmesine basyň."
-    }
+      "description": "Eger harytda ýalňyş bir maglumat ýa-da ýetmezçilik görünse habar beriň",
+      "submit": "Şikaýat et",
+      "send": "Ugrat",
+      "cancel": "Ýatyr",
+      "placeholder": "Şikaýatyňyzy ýazyň..."
+    },
+    "loading": "Ýüklenýär...",
+    "error": "Ýalňyşlyk"
   },
   "brands": {
     "title": "Brendler",
@@ -173,25 +207,106 @@
       "unnamed_user": "Atsyz ulanyjy"
     }
   },
+  "cart": {
+    "breadcrumb": {
+      "home": "Öý",
+      "profile": "Profil",
+      "cart": "Sebet",
+      "address": "Salgy"
+    },
+    "title": "Sebetim",
+    "item_count": "haryt",
+    "loading": "Sebet ýüklenýär...",
+    "error": "Sebet ýüklemekde ýalňyşlyk boldy. Gaýtadan synanyşyň.",
+    "empty": "Sebetiňiz boş",
+    "actions": {
+      "favorite": "Haladym",
+      "remove": "Aýyrmak",
+      "add_to_wishlist": "Halanlaryna goş",
+      "remove_from_wishlist": "Halanlaryndan aýyr"
+    },
+    "size": "Razmer",
+    "stock_left": "Solky",
+    "stock_items": "haryt",
+    "out_of_stock": "Ýok",
+    "order_summary": {
+      "title": "Sargyt barada",
+      "subtotal": "Harytlaryň jemi bahasy:",
+      "delivery_fee": "Eltip bermek hyzmatý:",
+      "discount": "Arzanladyş:",
+      "total": "Jemi baha",
+      "confirm_cart": "Sebeti tassykla"
+    },
+    "errors": {
+      "quantity_update": "Mukdary täzelemekde ýalňyşlyk",
+      "item_remove": "Haryt aýyrmakda ýalňyşlyk",
+      "order_confirm": "Sargyt taýýarlamakda ýalňyşlyk boldy. Gaýtadan synanyşyň."
+    },
+    "success": {
+      "order_confirmed": "Sargydyňyz üstünlikli kabul edildi!"
+    }
+  },
   "address": {
     "select_address": "Adres Saýlaň",
     "add_new_address": "Täze adres goş",
+    "click_to_add": "Goşmak üçin basyň",
+    "no_addresses": "Adres ýok",
+    "add_first_address": "Ilkinji adresiňizi goşuň",
+    "add_address": "Adres goşmak",
     "payment_method": "Töleg görnüşi",
     "cash_payment": "Nagt töleg",
-    "add_address": "Adress goşmak",
+    "pay_on_delivery": "Eltip bereniňde tölemek",
+    "card_payment": "Kart bilen töleg",
+    "coming_soon": "Gysga wagtyň içinde",
     "address_label_placeholder": "Adresiňizi atlandyryň #Öý",
+    "address_label": "Adres ady",
     "phone": "Telefon",
     "region": "Raýonyňyz",
-    "address_details": "Adress bellän",
+    "select_region": "Raýon saýlaň",
+    "address_details": "Adres bellän",
+    "address_details_placeholder": "Adres bellikleriňizi ýazyň",
     "confirm": "Tassykla",
     "adding": "Goşulýar...",
+    "cancel": "Ýatyrmak",
+    "edit": "Üýtgetmek",
+    "remove": "Aýyrmak",
+    "delete": "Pozmak",
+    "delete_address": "Adresi pozmak",
+    "are_you_sure_delete": "Adresi pozmak isleýärsiňizmi?",
+    "deleting": "Pozulýar...",
+    "edit_address": "Adresi üýtgetmek",
+    "update_address": "Adresi täzelemek",
+    "update_address_details": "Adres maglumatlaryny täzeleň",
+    "updating": "Täzelenýär...",
     "order_summary": "Sargyt barada",
     "subtotal": "Harytlaryň jemi bahasy:",
     "delivery_fee": "Eltip bermek hyzmaty:",
     "discount": "Arzanladyş:",
     "total": "Jemi baha",
     "confirm_order": "Sebedi tassykla",
-    "processing": "Garaşyň..."
+    "processing": "Garaşyň...",
+    "add_failed": "Adres goşup bolmady",
+    "update_failed": "Adres täzeläp bolmady",
+    "delete_failed": "Adres pozup bolmady",
+    "try_again_later": "Soňra gaýtadan synanyşyň",
+    "validation": {
+      "name_min_length": "At azyndan 2 harp bolmaly",
+      "phone_invalid": "Telefon belgisi azyndan 8 san bolmaly",
+      "district_required": "Raýon hökman saýlanmaly",
+      "address_min_length": "Adres azyndan 10 harp bolmaly"
+    },
+    "actions": {
+      "edit": "Üýtgetmek",
+      "remove": "Aýyrmak"
+    },
+    "regions": {
+      "ashgabat": "Aşgabat",
+      "balkan": "Balkan",
+      "dashoguz": "Daşoguz",
+      "lebap": "Lebap",
+      "mary": "Mary",
+      "turkmenbashi": "Turkmenbashi"
+    }
   },
   "orders": {
     "title": "Zakaz taryhy",

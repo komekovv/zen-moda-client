@@ -37,11 +37,13 @@ export const useProductReviews = (
 
 export const useProductQuestions = (
     productId: string,
+    page: number = 1,
+    size: number = 5,
     options?: Omit<UseQueryOptions<ListResponse<ProductQuestionResponse>>, 'queryKey' | 'queryFn'>
 ) => {
     return useQuery<ListResponse<ProductQuestionResponse>>({
-        queryKey: ['product_questions', productId],
-        queryFn: () => productService.getProductQuestions(productId),
+        queryKey: ['product_questions', productId, page, size],
+        queryFn: () => productService.getProductQuestions(productId, page, size),
         enabled: !!productId,
         ...options,
     });

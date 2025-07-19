@@ -58,7 +58,7 @@
     },
     "info": {
       "code": "Код",
-      "delivery_time": "Eltip berilmeli wagty:",
+      "delivery_time": "Время доставки:",
       "reviews": "отзывов",
       "reviews_link": "32 Отзыва (4.2)",
       "installment": "Рассрочка",
@@ -66,48 +66,83 @@
       "size": "Размер",
       "add_favorite": "Добавить в избранное",
       "remove_favorite": "Удалить из избранного",
-      "share": "Поделиться"
+      "share": "Поделиться",
+      "out_of_stock": "Нет в наличии",
+      "limited_stock": "Заканчивается",
+      "stock": "Остаток"
     },
     "actions": {
-      "add_to_cart": "Корзина жөн",
+      "add_to_cart": "В корзину",
       "adding": "Добавление..."
     },
     "color_selector": {
-      "select": "Выбрать цвет"
+      "select": "Выбрать цвет",
+      "color_label": "Цвет:"
+    },
+    "size_selector": {
+      "select": "Выбрать размер",
+      "size_label": "Размер:"
     },
     "specifications": {
-      "title": "Афраштыынлыклары",
+      "title": "Характеристики",
       "material": "Материал",
       "brand": "Бренд",
       "season": "Сезон",
       "color": "Цвет",
       "size": "Размер",
       "weight": "Вес",
-      "country": "Страна производитель"
+      "country": "Страна производитель",
+      "warranty": "Гарантия"
     },
     "description": {
-      "title": "Берян",
+      "title": "Описание",
       "show_more": "Показать больше",
       "show_less": "Показать меньше"
     },
     "store": {
-      "followers": "Yzarlaýjy",
-      "visit_store": "Магазина гир"
+      "followers": "Подписчиков",
+      "visit_store": "Посетить магазин"
     },
     "similar_products": {
-      "title": "Мерсиз харытлар"
+      "title": "Похожие товары"
     },
     "reviews": {
-      "title": "Тесвир",
+      "title": "Отзывы",
       "count": "отзывов",
       "verified": "Проверено",
       "show_all": "Показать все {{count}} отзывов",
-      "show_less": "Скрыть отзывы"
+      "show_less": "Скрыть отзывы",
+      "no_reviews": "Пока нет отзывов",
+      "view_all": "Посмотреть все"
+    },
+    "questions": {
+      "title": "Вопросы и ответы с магазином",
+      "ask_question": "Задать вопрос",
+      "ask_description": "Если у вас есть вопрос о товаре, нажмите \"Задать вопрос\"",
+      "submit_question": "Отправить",
+      "cancel": "Отмена",
+      "placeholder": "Напишите ваш вопрос...",
+      "submitting": "Отправляется...",
+      "no_questions": "Пока нет вопросов",
+      "no_answer": "Пока нет ответа",
+      "error": "Ошибка при отправке вопроса. Попробуйте еще раз.",
+      "view_all": "Посмотреть все",
+      "close": "Закрыть",
+      "page": "Страница",
+      "of": "из",
+      "previous": "Предыдущая",
+      "next": "Следующая"
     },
     "complaint": {
-      "title": "Шикает етмек",
-      "description": "Агзр-ман харыт сарнады талазтраьын бајла бидра, \"Сорая бер\" дуумаанте басйп."
-    }
+      "title": "Пожаловаться",
+      "description": "Если в товаре есть неточная информация или недостатки, сообщите нам",
+      "submit": "Пожаловаться",
+      "send": "Отправить",
+      "cancel": "Отмена",
+      "placeholder": "Напишите вашу жалобу..."
+    },
+    "loading": "Загрузка...",
+    "error": "Ошибка"
   },
   "brands": {
     "title": "Бренды",
@@ -171,5 +206,145 @@
     "default": {
       "unnamed_user": "Пользователь без имени"
     }
+  },
+  "cart": {
+    "breadcrumb": {
+      "home": "Главная",
+      "profile": "Профиль",
+      "cart": "Корзина",
+      "address": "Адрес"
+    },
+    "title": "Моя корзина",
+    "item_count": "товаров",
+    "loading": "Загрузка корзины...",
+    "error": "Ошибка загрузки корзины. Попробуйте снова.",
+    "empty": "Ваша корзина пуста",
+    "actions": {
+      "favorite": "Нравится",
+      "remove": "Удалить",
+      "add_to_wishlist": "Добавить в избранное",
+      "remove_from_wishlist": "Удалить из избранного"
+    },
+    "size": "Размер",
+    "stock_left": "Осталось",
+    "stock_items": "шт",
+    "out_of_stock": "Нет в наличии",
+    "order_summary": {
+      "title": "Информация о заказе",
+      "subtotal": "Общая стоимость товаров:",
+      "delivery_fee": "Служба доставки:",
+      "discount": "Скидка:",
+      "total": "Общая стоимость",
+      "confirm_cart": "Подтвердить корзину"
+    },
+    "errors": {
+      "quantity_update": "Ошибка обновления количества",
+      "item_remove": "Ошибка удаления товара",
+      "order_confirm": "Ошибка при оформлении заказа. Попробуйте снова."
+    },
+    "success": {
+      "order_confirmed": "Ваш заказ успешно принят!"
+    }
+  },
+  "address": {
+    "select_address": "Выберите адрес",
+    "add_new_address": "Добавить новый адрес",
+    "click_to_add": "Нажмите, чтобы добавить",
+    "no_addresses": "Нет адресов",
+    "add_first_address": "Добавьте ваш первый адрес",
+    "add_address": "Добавить адрес",
+    "payment_method": "Способ оплаты",
+    "cash_payment": "Наличными",
+    "pay_on_delivery": "Оплата при доставке",
+    "card_payment": "Оплата картой",
+    "coming_soon": "Скоро",
+    "address_label_placeholder": "Назовите ваш адрес #Дом",
+    "address_label": "Название адреса",
+    "phone": "Телефон",
+    "region": "Ваш район",
+    "select_region": "Выберите район",
+    "address_details": "Детали адреса",
+    "address_details_placeholder": "Напишите детали адреса",
+    "confirm": "Подтвердить",
+    "adding": "Добавление...",
+    "cancel": "Отмена",
+    "edit": "Редактировать",
+    "remove": "Удалить",
+    "delete": "Удалить",
+    "delete_address": "Удалить адрес",
+    "are_you_sure_delete": "Вы уверены, что хотите удалить адрес?",
+    "deleting": "Удаление...",
+    "edit_address": "Редактировать адрес",
+    "update_address": "Обновить адрес",
+    "update_address_details": "Обновите данные адреса",
+    "updating": "Обновление...",
+    "order_summary": "О заказе",
+    "subtotal": "Общая стоимость товаров:",
+    "delivery_fee": "Служба доставки:",
+    "discount": "Скидка:",
+    "total": "Общая стоимость",
+    "confirm_order": "Подтвердить корзину",
+    "processing": "Подождите...",
+    "add_failed": "Не удалось добавить адрес",
+    "update_failed": "Не удалось обновить адрес",
+    "delete_failed": "Не удалось удалить адрес",
+    "try_again_later": "Попробуйте позже",
+    "validation": {
+      "name_min_length": "Название должно содержать минимум 2 символа",
+      "phone_invalid": "Номер телефона должен содержать минимум 8 цифр",
+      "district_required": "Район обязателен для выбора",
+      "address_min_length": "Адрес должен содержать минимум 10 символов"
+    },
+    "actions": {
+      "edit": "Редактировать",
+      "remove": "Удалить"
+    },
+    "regions": {
+      "ashgabat": "Ашхабад",
+      "balkan": "Балкан",
+      "dashoguz": "Дашогуз",
+      "lebap": "Лебап",
+      "mary": "Мары",
+      "turkmenbashi": "Туркменбаши"
+    }
+  },
+  "orders": {
+    "title": "История заказов",
+    "order_history": "История заказов",
+    "returns": "Мои возвраты",
+    "order_number": "Код заказа",
+    "order_date": "Дата заказа",
+    "delivery_date": "Дата доставки",
+    "item_count": "Количество товаров",
+    "status": {
+      "waiting": "Ожидание",
+      "accepted": "Заказ принят",
+      "preparing": "Готовится",
+      "on_way": "В пути",
+      "delivered": "Доставлен",
+      "returned": "Возвращен",
+      "cancelled": "Отменен"
+    },
+    "progress": {
+      "title": "Общий статус",
+      "step_waiting": "Ожидание",
+      "step_accepted": "Принят",
+      "step_preparing": "Готовится",
+      "step_on_way": "В пути",
+      "step_delivered": "Доставлен"
+    },
+    "item_details": {
+      "size": "Размер",
+      "seller": "Продавец",
+      "items_left": "Осталось",
+      "items_text": "товаров"
+    },
+    "actions": {
+      "return": "Вернуть",
+      "review": "Оценить",
+      "download_invoice": "Скачать счет"
+    },
+    "address_title": "Адрес",
+    "payment_title": "Оплата"
   }
 }
