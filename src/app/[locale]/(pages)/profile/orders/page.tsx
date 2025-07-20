@@ -157,7 +157,7 @@ const HorizontalTimeline: React.FC<HorizontalTimelineProps> = ({
 
                             {/* Connecting line */}
                             {!isLast && (
-                                <div className={`absolute left-3 top-6 w-px h-6 ${
+                                <div className={`absolute top-6 w-px h-6 ${
                                     isCompleted && !isCancelled ? 'bg-primary' :
                                         isCancelled ? 'bg-sale' : 'bg-gray-200'
                                 }`} />

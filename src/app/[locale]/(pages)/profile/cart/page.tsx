@@ -6,12 +6,13 @@ import { Link } from "@/i18n/navigation";
 import { AddressSelection, OrderSummary, setGlobalAddressHandler } from '@/components/address';
 import EditAddressModal from '@/components/address/EditAddressModal';
 import ConfirmDeleteModal from '@/components/address/ConfirmDeleteModal';
-import {useCart, useUpdateCartItem, useRemoveFromCart} from "@/hooks/useCart";
+import {useCart, useUpdateCartItem, useRemoveFromCart, useClearCart} from "@/hooks/useCart";
 import {LocalizedText} from "@/types/types";
 import {CartItem} from "@/api/queryTypes/Cart";
 import { useTranslations } from 'next-intl';
 import {LocationResponse} from "@/api/queryTypes/Location";
 import {useUserLocation} from "@/hooks/useAddress";
+import { useCreateOrderFromBasketMutation } from "@/hooks/useOrder";
 
 export default function ShoppingCartPage() {
     const t = useTranslations();
@@ -19,6 +20,8 @@ export default function ShoppingCartPage() {
     const {data: cartResponse, isLoading, isError, refetch } = useCart();
     const updateCartItem = useUpdateCartItem();
     const removeFromCart = useRemoveFromCart();
+    const clearCart = useClearCart();
+    const createOrderFromBasket = useCreateOrderFromBasketMutation();
 
     // Use the address API hook
     const {data: addressResponse, isLoading: addressLoading, isError: addressError, refetch: refetchAddresses} = useUserLocation();
@@ -149,23 +152,56 @@ export default function ShoppingCartPage() {
         setIsOrderLoading(true);
 
         try {
-            // Order processing logic here
-            const selectedAddress = addresses.find(addr => addr.id === selectedAddressId);
-            console.log('Order confirmed:', {
-                addressId: selectedAddressId,
-                address: selectedAddress,
-                items: cartItems,
-                total: total
-            });
+            // Validate that we have an address selected
+            if (!selectedAddressId) {
+                alert(t('cart.errors.select_address'));
+                return;
+            }
 
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            // Validate that we have items in cart
+            if (cartItems.length === 0) {
+                alert(t('cart.errors.empty_cart'));
+                return;
+            }
 
+            // Get all basketItemIds from cart items
+            const basketItemIds = cartItems.map(item => parseInt(item.basketItemId));
+
+            // Create order from basket
+            const orderData = {
+                addressId: parseInt(selectedAddressId),
+                basketItemIds: basketItemIds
+            };
+
+            console.log('Creating order with data:', orderData);
+
+            // Call the API to create order
+            const orderResponse = await createOrderFromBasket.mutateAsync(orderData);
+
+            console.log('Order created successfully:', orderResponse);
+
+            // Clear the cart after successful order creation
+            await clearCart.mutateAsync();
+
+            // Refetch cart to update UI
+            refetch();
+
+            // Show success message
             alert(t('cart.success.order_confirmed'));
+
+            // Optionally redirect to orders page or show order details
+            // You can uncomment this if you want to redirect
+            // window.location.href = '/orders';
 
         } catch (error) {
             console.error('Order confirmation error:', error);
-            alert(t('cart.errors.order_confirm'));
+
+            // Show appropriate error message
+            if (error instanceof Error) {
+                alert(`${t('cart.errors.order_confirm')}: ${error.message}`);
+            } else {
+                alert(t('cart.errors.order_confirm'));
+            }
         } finally {
             setIsOrderLoading(false);
         }
@@ -229,7 +265,7 @@ export default function ShoppingCartPage() {
                                 total={total}
                                 currency="TMT"
                                 onConfirmOrder={handleConfirmOrder}
-                                isLoading={isOrderLoading}
+                                isLoading={isOrderLoading || createOrderFromBasket.isPending}
                             />
                         </div>
                     </div>
